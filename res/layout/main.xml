@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_height="fill_parent" android:layout_width="wrap_content">
+	android:layout_height="fill_parent" android:layout_width="wrap_content"
+	android:orientation="vertical">
 	<RelativeLayout android:layout_height="wrap_content"
 		android:id="@+id/relativeLayout1" android:layout_width="match_parent">
 		<Button android:layout_height="wrap_content" android:text="Back"
@@ -14,7 +15,15 @@
 			android:id="@+id/button_next" android:layout_width="wrap_content"
 			android:layout_alignParentRight="true"></Button>
 	</RelativeLayout>
-	<RelativeLayout android:layout_height="wrap_content" android:id="@+id/relativeLayout2" android:layout_width="match_parent">
-		<TextSwitcher android:id="@+id/textSwitcher_flippy" android:layout_height="wrap_content" android:layout_width="match_parent"></TextSwitcher>
+	<RelativeLayout android:layout_height="wrap_content"
+		android:id="@+id/relativeLayout2" android:layout_width="match_parent">
+		<TextSwitcher android:id="@+id/textSwitcher_flippy"
+			android:layout_height="wrap_content" android:layout_width="match_parent"></TextSwitcher>
+	</RelativeLayout>
+	<RelativeLayout android:id="@+id/relativeLayout3"
+		android:layout_height="wrap_content" android:layout_width="match_parent">
+		<Button android:text="@string/count_down" android:id="@+id/button_count"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:layout_centerHorizontal="true"></Button>
 	</RelativeLayout>
 </LinearLayout>

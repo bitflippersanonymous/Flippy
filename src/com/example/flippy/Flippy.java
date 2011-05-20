@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
@@ -25,6 +26,39 @@ import org.xmlpull.v1.XmlPullParserException;
 
 public class Flippy extends FlippyBase {
 	
+	private class FlippyTask extends AsyncTask<Object, Integer, Integer> {
+		Button mButton;
+		
+		@Override
+        protected Integer doInBackground(Object... params) {
+        	for ( int i = (Integer)params[0]; i > 0; i-- ) {
+        		publishProgress(i);
+        		 try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+        	}
+        	return 0;
+        }
+        @Override
+        protected void onCancelled() {
+            mButton.setText("Cancelled");
+        }
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            mButton.setText(progress[0].toString());
+        }
+        @Override
+        protected void onPostExecute(Integer result) {
+            mButton.setText("Done");
+        }
+        @Override
+        protected void onPreExecute() {
+            mButton = (Button)findViewById(R.id.button_count);
+        }
+	}
+	
 	public class MyTextSwitcherFactory implements ViewFactory {
 		@Override
 		public View makeView() {
@@ -40,6 +74,7 @@ public class Flippy extends FlippyBase {
 	ArrayList<Score> mScores;
     SharedPreferences mSettings;
 	int mCurrLoc;
+	FlippyTask mFlippyTask;
 		
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +101,16 @@ public class Flippy extends FlippyBase {
 		        }
 			}
 		});
+        
+        Button countButton = (Button)findViewById(R.id.button_count);
+        countButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mFlippyTask = new FlippyTask();
+				mFlippyTask.execute(5);
+			}
+		});
+
 
         Animation inAnimation = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
         Animation outAnimation = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
@@ -81,6 +126,9 @@ public class Flippy extends FlippyBase {
         Editor editor = mSettings.edit();
         editor.putInt(PREFERENCES_LOCATION, mCurrLoc);
         editor.commit();
+        if (mFlippyTask != null && mFlippyTask.getStatus() != AsyncTask.Status.FINISHED) {
+            mFlippyTask.cancel(true);
+        }
     }
     
     @Override
