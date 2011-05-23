@@ -37,9 +37,9 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mScores = new ArrayList<Score>();
-
         mSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-             
+        startTask(mFlippyTask);
+        
         Button backButton = (Button)findViewById(R.id.button_back);
         backButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -72,14 +72,18 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
     public void onClick(View v) {
     	switch(v.getId()) {
     	case R.id.button_count:
-    		mFlippyTask = new FlippyTask();
-    		mFlippyTask.execute(5);
+    		startTask(mFlippyTask);
     		break;
     	case R.id.button_cancel:
     		cancelTask(mFlippyTask);
     		break;
     	default:
     	}
+    }
+    
+    protected void startTask(FlippyTask task) {
+    	task = new FlippyTask();
+    	task.execute(2);
     }
     
     protected void cancelTask(FlippyTask task) {
@@ -122,13 +126,7 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
 	
 	protected void updateText(int offset, boolean animate) {
 		if ( mScores.size() == 0 ) {
-			try {
-				loadScores();
-			} catch (XmlPullParserException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			return;
 		}
 		
 		mCurrLoc += offset;
@@ -146,7 +144,7 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         	flippyTextSwitcher.setCurrentText(scoreString);
 	}
 	
-	private void loadScores() throws XmlPullParserException, IOException {
+	protected void loadScores() throws XmlPullParserException, IOException {
         XmlResourceParser scores = getResources().getXml(R.xml.allscores);
         int eventType = -1;
         while (eventType != XmlResourceParser.END_DOCUMENT) {
@@ -197,6 +195,8 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         	for ( int i = 0; i <= max; i++ ) {
         		if ( !isCancelled() ) {
         			publishProgress(i);
+        		} else {
+        			return -1;
         		}
         		try {
 					Thread.sleep(1000);
@@ -204,12 +204,20 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
 					e.printStackTrace();
 				}
         	}
+			try {
+				loadScores();
+			} catch (XmlPullParserException e) {
+				e.printStackTrace();
+				return -1;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return -1;
+			}
         	return 0;
         }
         @Override
         protected void onCancelled() {
         	mProgress.setMax(0);
-        	mProgress = null;
         }
         @Override
         protected void onProgressUpdate(Integer... progress) {
@@ -218,7 +226,6 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         @Override
         protected void onPostExecute(Integer result) {
         	mProgress.setMax(0);
-        	mProgress = null;
         }
         @Override
         protected void onPreExecute() {
