@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
@@ -24,52 +25,7 @@ import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParserException;
 
-public class Flippy extends FlippyBase {
-	
-	private class FlippyTask extends AsyncTask<Object, Integer, Integer> {
-		Button mButton;
-		
-		@Override
-        protected Integer doInBackground(Object... params) {
-        	for ( int i = (Integer)params[0]; i > 0; i-- ) {
-        		publishProgress(i);
-        		 try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-        	}
-        	return 0;
-        }
-        @Override
-        protected void onCancelled() {
-            mButton.setText("Cancelled");
-        }
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            mButton.setText(progress[0].toString());
-        }
-        @Override
-        protected void onPostExecute(Integer result) {
-            mButton.setText("Done");
-        }
-        @Override
-        protected void onPreExecute() {
-            mButton = (Button)findViewById(R.id.button_count);
-        }
-	}
-	
-	public class MyTextSwitcherFactory implements ViewFactory {
-		@Override
-		public View makeView() {
-			TextView textView = new TextView(Flippy.this);
-			textView.setGravity(Gravity.CENTER);
-			Resources res = getResources();
-			float dimension = res.getDimension(R.dimen.text_size);
-			textView.setTextSize(dimension);
-			return textView;
-		}
-	}
+public class Flippy extends FlippyBase implements View.OnClickListener {
 	
 	ArrayList<Score> mScores;
     SharedPreferences mSettings;
@@ -102,15 +58,8 @@ public class Flippy extends FlippyBase {
 			}
 		});
         
-        Button countButton = (Button)findViewById(R.id.button_count);
-        countButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mFlippyTask = new FlippyTask();
-				mFlippyTask.execute(5);
-			}
-		});
-
+        findViewById(R.id.button_count).setOnClickListener(this);
+        findViewById(R.id.button_cancel).setOnClickListener(this);
 
         Animation inAnimation = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
         Animation outAnimation = AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right);
@@ -120,15 +69,32 @@ public class Flippy extends FlippyBase {
         flippyTextSwitcher.setFactory(new MyTextSwitcherFactory());
     }
     
+    public void onClick(View v) {
+    	switch(v.getId()) {
+    	case R.id.button_count:
+    		mFlippyTask = new FlippyTask();
+    		mFlippyTask.execute(5);
+    		break;
+    	case R.id.button_cancel:
+    		cancelTask(mFlippyTask);
+    		break;
+    	default:
+    	}
+    }
+    
+    protected void cancelTask(FlippyTask task) {
+        if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
+        	task.cancel(true);
+        }
+    }
+    
     @Override
     protected void onPause() {
         super.onPause();
         Editor editor = mSettings.edit();
         editor.putInt(PREFERENCES_LOCATION, mCurrLoc);
         editor.commit();
-        if (mFlippyTask != null && mFlippyTask.getStatus() != AsyncTask.Status.FINISHED) {
-            mFlippyTask.cancel(true);
-        }
+        cancelTask(mFlippyTask);
     }
     
     @Override
@@ -207,6 +173,55 @@ public class Flippy extends FlippyBase {
 			mScore = score;
 			mRank = rank;
 		}
+	}
+
+	public class MyTextSwitcherFactory implements ViewFactory {
+		@Override
+		public View makeView() {
+			TextView textView = new TextView(Flippy.this);
+			textView.setGravity(Gravity.CENTER);
+			Resources res = getResources();
+			float dimension = res.getDimension(R.dimen.text_size);
+			textView.setTextSize(dimension);
+			return textView;
+		}
+	}
+	
+	private class FlippyTask extends AsyncTask<Object, Integer, Integer> {
+		ProgressBar mProgress;
+		
+		@Override
+        protected Integer doInBackground(Object... params) {
+        	int max = (Integer)params[0];
+			mProgress.setMax(max);
+        	for ( int i = 0; i <= max; i++ ) {
+        		if ( !isCancelled() ) {
+        			publishProgress(i);
+        		}
+        		try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+        	}
+        	return 0;
+        }
+        @Override
+        protected void onCancelled() {
+        	mProgress.setMax(0);
+        }
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+        		mProgress.setProgress(progress[0]);
+        }
+        @Override
+        protected void onPostExecute(Integer result) {
+        	mProgress.setMax(0);
+        }
+        @Override
+        protected void onPreExecute() {
+        	mProgress = (ProgressBar)findViewById(R.id.progress);
+        }
 	}
 }
 
