@@ -209,14 +209,16 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         @Override
         protected void onCancelled() {
         	mProgress.setMax(0);
+        	mProgress = null;
         }
         @Override
         protected void onProgressUpdate(Integer... progress) {
-        		mProgress.setProgress(progress[0]);
+        	mProgress.setProgress(progress[0]);
         }
         @Override
         protected void onPostExecute(Integer result) {
         	mProgress.setMax(0);
+        	mProgress = null;
         }
         @Override
         protected void onPreExecute() {
