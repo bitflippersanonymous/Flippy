@@ -38,8 +38,8 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         setContentView(R.layout.main);
         mScores = new ArrayList<Score>();
         mSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        startTask(mFlippyTask);
-        
+       	startTask();
+       	
         Button backButton = (Button)findViewById(R.id.button_back);
         backButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -72,23 +72,23 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
     public void onClick(View v) {
     	switch(v.getId()) {
     	case R.id.button_count:
-    		startTask(mFlippyTask);
+    		startTask();
     		break;
     	case R.id.button_cancel:
-    		cancelTask(mFlippyTask);
+    		cancelTask();
     		break;
     	default:
     	}
     }
     
-    protected void startTask(FlippyTask task) {
-    	task = new FlippyTask();
-    	task.execute(2);
+    protected void startTask() {
+    	mFlippyTask = new FlippyTask();
+    	mFlippyTask.execute(2);
     }
     
-    protected void cancelTask(FlippyTask task) {
-        if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
-        	task.cancel(true);
+    protected void cancelTask() {
+        if (mFlippyTask != null && mFlippyTask.getStatus() != AsyncTask.Status.FINISHED) {
+        	mFlippyTask.cancel(true);
         }
     }
     
@@ -98,14 +98,13 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         Editor editor = mSettings.edit();
         editor.putInt(PREFERENCES_LOCATION, mCurrLoc);
         editor.commit();
-        cancelTask(mFlippyTask);
+        cancelTask();
     }
     
     @Override
     protected void onResume() {
         super.onResume();
        	mCurrLoc = mSettings.getInt(PREFERENCES_LOCATION, 0);
-        updateText(0, false);
     }    
 
     @Override
@@ -226,6 +225,7 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         @Override
         protected void onPostExecute(Integer result) {
         	mProgress.setMax(0);
+           	updateText(0, false);
         }
         @Override
         protected void onPreExecute() {
