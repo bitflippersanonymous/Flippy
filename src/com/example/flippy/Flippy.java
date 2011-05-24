@@ -82,6 +82,8 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
     }
     
     protected void startTask() {
+        findViewById(R.id.button_back).setEnabled(false);
+        findViewById(R.id.button_next).setEnabled(false);
     	mFlippyTask = new FlippyTask();
     	mFlippyTask.execute(2);
     }
@@ -128,19 +130,28 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
 			return;
 		}
 		
+		Boolean load = false;
 		mCurrLoc += offset;
-		if ( mCurrLoc < 0 )
+		if ( mCurrLoc < 0 ) {
 			mCurrLoc = mScores.size()-1;
-		if ( mCurrLoc >= mScores.size() )
+			load = true;
+		}
+		if ( mCurrLoc >= mScores.size() ) {
 			mCurrLoc = 0;
-
-		Score score = mScores.get(mCurrLoc);
-		String scoreString = score.mUsername + " " + score.mScore + " " + score.mRank;
-        TextSwitcher flippyTextSwitcher = (TextSwitcher)findViewById(R.id.textSwitcher_flippy);
-        if ( animate )
-        	flippyTextSwitcher.setText(scoreString);
-        else
-        	flippyTextSwitcher.setCurrentText(scoreString);
+			load = true;
+		}
+		
+		if ( load )
+			startTask();
+		else {
+			Score score = mScores.get(mCurrLoc);
+			String scoreString = score.mUsername + " " + score.mScore + " " + score.mRank;
+			TextSwitcher flippyTextSwitcher = (TextSwitcher)findViewById(R.id.textSwitcher_flippy);
+			if ( animate )
+				flippyTextSwitcher.setText(scoreString);
+			else
+				flippyTextSwitcher.setCurrentText(scoreString);
+		}
 	}
 	
 	protected void loadScores() throws XmlPullParserException, IOException {
@@ -225,6 +236,8 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         @Override
         protected void onPostExecute(Integer result) {
         	mProgress.setMax(0);
+            findViewById(R.id.button_back).setEnabled(true);
+            findViewById(R.id.button_next).setEnabled(true);
            	updateText(0, false);
         }
         @Override
