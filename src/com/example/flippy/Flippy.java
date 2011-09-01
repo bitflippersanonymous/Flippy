@@ -1,6 +1,9 @@
 package com.example.flippy;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -21,16 +24,21 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParserException;
 
-public class Flippy extends FlippyBase implements View.OnClickListener {
+import com.example.flippy.R.drawable;
+
+public class Flippy extends FlippyBase implements View.OnClickListener, DialogInterface.OnClickListener {
 	
+	private static final int USELESS_DIALOG = 0;
 	ArrayList<Score> mScores;
     SharedPreferences mSettings;
 	int mCurrLoc;
 	FlippyTask mFlippyTask;
+	int mDialogHit = 0;
 		
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +75,7 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         flippyTextSwitcher.setInAnimation(inAnimation);
         flippyTextSwitcher.setOutAnimation(outAnimation);
         flippyTextSwitcher.setFactory(new MyTextSwitcherFactory());
+        flippyTextSwitcher.setOnClickListener(this);
     }
     
     public void onClick(View v) {
@@ -77,15 +86,72 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
     	case R.id.button_cancel:
     		cancelTask();
     		break;
+    	case R.id.textSwitcher_flippy:
+    		showDialog(USELESS_DIALOG);
+    		break;
+    	default:
+    		showDialog(v.getId());
+    	}
+    }
+    
+	@Override
+	public void onClick(DialogInterface dialog, int id) {
+		mDialogHit++;
+	}
+	
+    @Override
+    protected void  onPrepareDialog(int id, Dialog dialog) {
+    	super.onPrepareDialog(id, dialog);
+    	dialog.setTitle(String.valueOf(mDialogHit) + " Times");
+    }
+    
+    @Override
+    protected Dialog onCreateDialog(int id, Bundle args) {
+    	switch ( id ) {
+    	case USELESS_DIALOG:
+    		String message = "";
+    		try {
+	    		InputStream ins = getResources().openRawResource(R.raw.about);
+	    		int size = ins.available();
+	    		byte[] buffer = new byte[size];
+	    		ins.read(buffer);
+	    		ins.close();
+	    		message = new String(buffer);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	    	builder.setMessage(message)
+	    	.setIcon(drawable.icon)
+	    	.setTitle(String.valueOf(mDialogHit) + " Times")
+	    	.setPositiveButton(R.string.got_it, this)
+	    	.setCancelable(true);
+	    	return builder.create();
+    	case R.id.button1:
+	    	return (new AlertDialog.Builder(this))
+	    	.setMessage(((Button)findViewById(id)).getText())
+	    	.setCancelable(true).create();
+    	case R.id.button2:
+    		return (new AlertDialog.Builder(this))
+    		.setItems(R.array.sarray, new DialogInterface.OnClickListener() {
+    			public void onClick(DialogInterface dialog, int which) {
+    				String[] items = getResources().getStringArray(R.array.sarray);
+    				new AlertDialog.Builder(Flippy.this)
+    				.setMessage("You selected: " + which + " , " + items[which])
+    				.show();
+    			}
+    		})
+	    	.setCancelable(true).create();
     	default:
     	}
+    	return null;
     }
     
     protected void startTask() {
         findViewById(R.id.button_back).setEnabled(false);
         findViewById(R.id.button_next).setEnabled(false);
     	mFlippyTask = new FlippyTask();
-    	mFlippyTask.execute(2);
+    	mFlippyTask.execute(1);
     }
     
     protected void cancelTask() {
@@ -245,5 +311,6 @@ public class Flippy extends FlippyBase implements View.OnClickListener {
         	mProgress = (ProgressBar)findViewById(R.id.progress);
         }
 	}
+
 }
 

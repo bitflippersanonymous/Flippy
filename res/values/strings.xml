@@ -9,4 +9,12 @@
     <string name="are_you_sure">Are You Sure?</string>
     <string name="press_next">Press Next</string>
     <string name="count_down">Count Down</string>
+    <string name="got_it">Whatever</string>
+
+	<string-array name="sarray">
+		<item>Cow</item>
+		<item>Cat</item>
+		<item>Dog</item>
+		<item>Ant</item>
+	</string-array>
 </resources>
