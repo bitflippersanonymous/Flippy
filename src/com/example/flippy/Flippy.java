@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -35,7 +36,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import com.example.flippy.R.drawable;
 
 public class Flippy extends FlippyBase implements View.OnClickListener,
-		DialogInterface.OnClickListener {
+		DialogInterface.OnClickListener, OnDismissListener {
 
 	private static final int USELESS_DIALOG = 0;
 	ArrayList<Score> mScores;
@@ -113,6 +114,12 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 	}
 
 	@Override
+	public void onDismiss(DialogInterface arg0) {
+		Button button = (Button) findViewById(R.id.button5);
+		button.setText(R.string.pressed);
+	}
+	
+	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		super.onPrepareDialog(id, dialog);
 		dialog.setTitle(String.valueOf(mDialogHit) + " Times");
@@ -184,6 +191,7 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 			text.setText("Hello, this is a custom dialog!");
 			ImageView image = (ImageView) dialog.findViewById(R.id.cust_image);
 			image.setImageResource(R.drawable.icon);
+			dialog.setOnDismissListener(this);
 			return dialog;
     	default:
     	}
@@ -365,5 +373,4 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 			mProgress = (ProgressBar) findViewById(R.id.progress);
 		}
 	}
-
 }
