@@ -20,6 +20,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
@@ -175,6 +176,15 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
     				
     			}})
     		.create();
+		case R.id.button5:
+			Dialog dialog = new Dialog(this);
+			dialog.setContentView(R.layout.custom_dialog);
+			dialog.setTitle(R.string.how_custom);
+			TextView text = (TextView) dialog.findViewById(R.id.cust_text);
+			text.setText("Hello, this is a custom dialog!");
+			ImageView image = (ImageView) dialog.findViewById(R.id.cust_image);
+			image.setImageResource(R.drawable.icon);
+			return dialog;
     	default:
     	}
     	return null;
