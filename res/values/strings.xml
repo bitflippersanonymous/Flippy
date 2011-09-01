@@ -17,4 +17,5 @@
 		<item>Dog</item>
 		<item>Ant</item>
 	</string-array>
+		<string name="put_something_here">Put Something Here</string>
 </resources>
