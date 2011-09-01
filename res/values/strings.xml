@@ -12,6 +12,7 @@
     <string name="got_it">Whatever</string>
     <string name="how_custom">HowCustom</string>
     <string name="pressed">Pressed</string>
+    <string name="auto_hide">Auto Hide Dialog</string>
 
 
 	<string-array name="sarray">

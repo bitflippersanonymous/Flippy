@@ -30,6 +30,8 @@ import android.widget.ViewSwitcher.ViewFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -44,7 +46,20 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 	int mCurrLoc;
 	FlippyTask mFlippyTask;
 	int mDialogHit = 0;
+	Dialog mDialog;
+	Timer mTimer;
 
+	private class PopupDelay extends TimerTask {
+		Dialog mDialog;
+		public PopupDelay(Dialog dialog) {
+			mDialog = dialog;
+		}
+		@Override
+		public void run() {
+			mDialog.dismiss();
+		}
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -83,6 +98,10 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 		flippyTextSwitcher.setOutAnimation(outAnimation);
 		flippyTextSwitcher.setFactory(new MyTextSwitcherFactory());
 		flippyTextSwitcher.setOnClickListener(this);
+		
+		mDialog = new AlertDialog.Builder(this)
+			.setTitle(R.string.auto_hide).create();
+		mTimer = new Timer("Popup");
 	}
 
 	public void onClick(View v) {
@@ -96,6 +115,9 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 		case R.id.textSwitcher_flippy:
 			showDialog(USELESS_DIALOG);
 			break;
+    	case R.id.button3:
+    		mTimer.schedule(new PopupDelay(mDialog), 2000);
+    		mDialog.show();
 		default:
 			showDialog(v.getId());
 		}
@@ -164,11 +186,7 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
     		})
 	    	.setCancelable(true)
 	    	.create();
-    	case R.id.button3:
-    		return (new AlertDialog.Builder(this))
-    		.setSingleChoiceItems(R.array.sarray, 0, this)
-    		.setCancelable(true)
-    		.create();
+
     	case R.id.button4:
     		LayoutInflater factory = LayoutInflater.from(this);
             final View textEntryView = factory.inflate(R.layout.alert, null);
@@ -219,6 +237,7 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 		editor.putInt(PREFERENCES_LOCATION, mCurrLoc);
 		editor.commit();
 		cancelTask();
+		//mTimer.purge(); ?? 
 	}
 
 	@Override
