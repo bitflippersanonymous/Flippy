@@ -179,9 +179,11 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
     		.setItems(R.array.sarray, new DialogInterface.OnClickListener() {
     			public void onClick(DialogInterface dialog, int which) {
     				String[] items = getResources().getStringArray(R.array.sarray);
-    				new AlertDialog.Builder(Flippy.this)
+    				Dialog infoDialog = new AlertDialog.Builder(Flippy.this)
     				.setMessage("You selected: " + which + " , " + items[which])
-    				.show();
+    				.create();
+    	    		mTimer.schedule(new PopupDelay(infoDialog), 2000);
+    	    		infoDialog.show();
     			}
     		})
 	    	.setCancelable(true)
