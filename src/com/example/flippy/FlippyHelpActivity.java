@@ -2,7 +2,7 @@ package com.example.flippy;
 
 import java.util.LinkedList;
 import java.util.List;
-
+import android.graphics.Bitmap;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -17,11 +17,41 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.RawContacts;
 
 public class FlippyHelpActivity extends FlippyBase {
+	
+
+	class SpinnerEntry {
+	        private final int contactId;
+	        //private final Bitmap contactPhoto;
+	        private final String contactName;
+
+	        public SpinnerEntry(int contactID, 
+	        				//Bitmap contactPhoto,
+	                        String contactName) {
+	                this.contactId = contactID;
+	                //this.contactPhoto = contactPhoto;
+	                this.contactName = contactName;
+	        }
+	        public int getContactId() {
+	                return contactId;
+	        }
+	        /*
+	        public Bitmap getContactPhoto() {
+	                return contactPhoto;
+	        }
+	        */
+	        public String getContactName() {
+	                return contactName;
+	        }
+	}
+
 	
 	class ListViewEntry {
 		private final String destinationAddress;
@@ -52,22 +82,18 @@ public class FlippyHelpActivity extends FlippyBase {
             mContent = content;
             mActivity = activity;
 		}
-		
 		@Override
 		public int getCount() {
 			return mContent.size();
 		}
-
 		@Override
-		public ListViewEntry getItem(int arg0) {
-			return mContent.get(arg0);
+		public ListViewEntry getItem(int position) {
+			return mContent.get(position);
 		}
-
 		@Override
-		public long getItemId(int arg0) {
-			return arg0;
+		public long getItemId(int position) {
+			return position;
 		}
-
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
     		final LayoutInflater factory = mActivity.getLayoutInflater();
@@ -85,58 +111,72 @@ public class FlippyHelpActivity extends FlippyBase {
 		}
 	}
 	
+	class ContactsSpinnerAdapater extends BaseAdapter implements SpinnerAdapter {
+		private final List<SpinnerEntry> mContent;
+		private final Activity mActivity;
+	
+		public ContactsSpinnerAdapater(List<SpinnerEntry> content, Activity activity) {
+			mContent = content;
+			mActivity = activity;
+		}
+		@Override
+		public int getCount() {
+			return mContent.size();
+		}
+		@Override
+		public SpinnerEntry getItem(int position) {
+			return mContent.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+		@Override
+		public View getView(int position, View arg1, ViewGroup arg2) {
+            final LayoutInflater inflater = mActivity.getLayoutInflater();
+            View spinnerEntry = inflater.inflate(android.R.layout.simple_spinner_item, null);
+            TextView text = (TextView) spinnerEntry.findViewById(android.R.id.text1);
+            SpinnerEntry entry = getItem(position);
+            text.setText(entry.getContactName());
+			return spinnerEntry;
+		}
+		
+	}
+	
+    private final List<SpinnerEntry> spinnerContent = new LinkedList<SpinnerEntry>();
+    private final ContactsSpinnerAdapater adapter = new ContactsSpinnerAdapater(spinnerContent, this);
     private Spinner contactSpinner;
     private ListView contactListView;
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		setContentView(R.layout.help);
-
-		/*
-        Spinner s1 = (Spinner) findViewById(R.id.spinner1);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-            this, R.array.planets, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        s1.setAdapter(adapter);
-        */
-     
+   
         contactSpinner = (Spinner)findViewById(R.id.contactsSpinner);
         contactListView = (ListView)findViewById(R.id.contactsListView);
-       
-        Cursor managedCursor = getContentResolver().query(Data.CONTENT_URI,
-                new String[] {Data._ID, Data.CONTACT_ID, Data.DISPLAY_NAME},
-                null, null, null);
-        
-        final SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
-        		android.R.layout.simple_spinner_item,
-        		managedCursor,
-        		new String[] {Data.DISPLAY_NAME},
-        		new int[] {android.R.id.text1});
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        contactSpinner.setAdapter(adapter);
         
         contactSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				updateList(position);
 			}
-
 			@Override
             public void onNothingSelected(AdapterView<?> parent) {
 				updateList(contactSpinner.getSelectedItemPosition());
 			}
-			
-            private void updateList(int position) {
+			private void updateList(int position) {
             	if(position < adapter.getCount() && position >= 0) {
-            		Cursor cursor = (Cursor) adapter.getItem(position);
-            		long contactId = cursor.getLong(cursor.getColumnIndex(Data.CONTACT_ID));
+            		SpinnerEntry entry = adapter.getItem(position);
             		final List<ListViewEntry> content = new LinkedList<ListViewEntry>();
-            		loadContent(contactId, content);
+            		loadContent(entry.getContactId(), content);
             		contactListView.setAdapter(new ContactListViewAdapter(content, FlippyHelpActivity.this));
             	}
             }
         });
-              
+        
+        queryAllRawContacts();
+        contactSpinner.setAdapter(adapter);
     }
     
 	private void loadContent(long contactId, List<ListViewEntry> content) {
@@ -147,7 +187,7 @@ public class FlippyHelpActivity extends FlippyBase {
 		                  + Data.MIMETYPE + "='" + Phone.CONTENT_ITEM_TYPE + "'",
 		          new String[] {String.valueOf(contactId)}, null);
          
-		 if(curs.moveToFirst()) {
+		 if ( curs.moveToFirst() ) {
              final int contactNumberColumnIndex = curs.getColumnIndex(Phone.NUMBER);
              final int contactTypeColumnIndex = curs.getColumnIndex(Phone.TYPE);
              final int contactLabelColumnIndex = curs.getColumnIndex(Phone.LABEL);
@@ -161,6 +201,48 @@ public class FlippyHelpActivity extends FlippyBase {
              
 		 }
 		 curs.close();
+	}
+	
+	private void queryAllRawContacts() {
+		final Cursor curs = getContentResolver().query( // diff between managedQuery?
+				RawContacts.CONTENT_URI, 
+				new String[] {RawContacts.CONTACT_ID, RawContacts.DELETED},
+				null, null, null);
+
+        final int contactIdColumnIndex = curs.getColumnIndex(RawContacts.CONTACT_ID);
+        final int deletedColumnIndex = curs.getColumnIndex(RawContacts.DELETED);
+		
+		spinnerContent.clear();
+		if ( curs.moveToFirst() ) {
+			while ( !curs.isAfterLast() ) {
+				final int id = curs.getInt(contactIdColumnIndex);
+				final int deleted = curs.getInt(deletedColumnIndex);
+				if ( deleted != 1) {
+					spinnerContent.add(querySpinnerEntry(id));
+				}
+                curs.moveToNext();
+			}
+		}
+		curs.close();
+	}
+	
+	private SpinnerEntry querySpinnerEntry(int id) {
+		
+        final Cursor curs = managedQuery(
+                Contacts.CONTENT_URI,
+                new String[]{Contacts.DISPLAY_NAME, Contacts.PHOTO_ID},
+                Contacts._ID + "=?",
+                new String[]{String.valueOf(id)},
+                null);
+
+        final int contactNameColumnIndex = curs.getColumnIndex(Contacts.DISPLAY_NAME);
+		if ( curs.moveToFirst() ) {
+			final String name = curs.getString(contactNameColumnIndex);
+			curs.close();
+			return new SpinnerEntry(id, name);
+		}
+		curs.close();
+		return null;		
 	}
 
 }
