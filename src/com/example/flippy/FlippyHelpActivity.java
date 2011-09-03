@@ -1,10 +1,14 @@
 package com.example.flippy;
 
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.app.Activity;
+import android.content.ContentUris;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +17,14 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
@@ -29,24 +35,22 @@ public class FlippyHelpActivity extends FlippyBase {
 
 	class SpinnerEntry {
 	        private final int contactId;
-	        //private final Bitmap contactPhoto;
+	        private final int contactPhotoId;
 	        private final String contactName;
 
 	        public SpinnerEntry(int contactID, 
-	        				//Bitmap contactPhoto,
+	        				int contactPhotoId,
 	                        String contactName) {
 	                this.contactId = contactID;
-	                //this.contactPhoto = contactPhoto;
+	                this.contactPhotoId = contactPhotoId;
 	                this.contactName = contactName;
 	        }
 	        public int getContactId() {
 	                return contactId;
 	        }
-	        /*
-	        public Bitmap getContactPhoto() {
-	                return contactPhoto;
+	        public int getContactPhotoId() {
+	                return contactPhotoId;
 	        }
-	        */
 	        public String getContactName() {
 	                return contactName;
 	        }
@@ -165,18 +169,32 @@ public class FlippyHelpActivity extends FlippyBase {
             public void onNothingSelected(AdapterView<?> parent) {
 				updateList(contactSpinner.getSelectedItemPosition());
 			}
-			private void updateList(int position) {
-            	if(position < adapter.getCount() && position >= 0) {
-            		SpinnerEntry entry = adapter.getItem(position);
-            		final List<ListViewEntry> content = new LinkedList<ListViewEntry>();
-            		loadContent(entry.getContactId(), content);
-            		contactListView.setAdapter(new ContactListViewAdapter(content, FlippyHelpActivity.this));
-            	}
-            }
+
         });
         
         queryAllRawContacts();
         contactSpinner.setAdapter(adapter);
+    }
+    
+	private void updateList(int position) {
+    	if(position < adapter.getCount() && position >= 0) {
+    		SpinnerEntry entry = adapter.getItem(position);
+    		updatePhoto(entry.getContactId());
+    		final List<ListViewEntry> content = new LinkedList<ListViewEntry>();
+    		loadContent(entry.getContactId(), content);
+    		contactListView.setAdapter(new ContactListViewAdapter(content, FlippyHelpActivity.this));
+    	}
+    }
+	
+	private void updatePhoto(int id) {
+		Bitmap photo = queryContactBitmap(id);
+		ImageView img = (ImageView) findViewById(R.id.imageView1);
+		if ( photo == null ) {
+			img.setVisibility(View.GONE);
+			return;
+		}
+		img.setVisibility(View.VISIBLE);
+		img.setImageBitmap(photo);
     }
     
 	private void loadContent(long contactId, List<ListViewEntry> content) {
@@ -191,6 +209,7 @@ public class FlippyHelpActivity extends FlippyBase {
              final int contactNumberColumnIndex = curs.getColumnIndex(Phone.NUMBER);
              final int contactTypeColumnIndex = curs.getColumnIndex(Phone.TYPE);
              final int contactLabelColumnIndex = curs.getColumnIndex(Phone.LABEL);
+
              while(!curs.isAfterLast()) {
                      final String number = curs.getString(contactNumberColumnIndex);
                      final int type = curs.getInt(contactTypeColumnIndex);
@@ -227,7 +246,6 @@ public class FlippyHelpActivity extends FlippyBase {
 	}
 	
 	private SpinnerEntry querySpinnerEntry(int id) {
-		
         final Cursor curs = managedQuery(
                 Contacts.CONTENT_URI,
                 new String[]{Contacts.DISPLAY_NAME, Contacts.PHOTO_ID},
@@ -236,13 +254,30 @@ public class FlippyHelpActivity extends FlippyBase {
                 null);
 
         final int contactNameColumnIndex = curs.getColumnIndex(Contacts.DISPLAY_NAME);
+        final int contactPhotoIdColumnIndex = curs.getColumnIndex(Contacts.PHOTO_ID);
+
 		if ( curs.moveToFirst() ) {
 			final String name = curs.getString(contactNameColumnIndex);
+			final int photoId = curs.getInt(contactPhotoIdColumnIndex);
 			curs.close();
-			return new SpinnerEntry(id, name);
+			return new SpinnerEntry(id, photoId, name);
 		}
 		curs.close();
 		return null;		
 	}
+	
+    private Bitmap queryContactBitmap(int id) {
+    	final Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
+    	if ( uri == null ) {
+    		return null;
+    	}
+    	
+        InputStream input = Contacts.openContactPhotoInputStream(getContentResolver(), uri);
+        if (input == null) {
+            return null;
+        }
+        return BitmapFactory.decodeStream(input);
+    }
+
 
 }
