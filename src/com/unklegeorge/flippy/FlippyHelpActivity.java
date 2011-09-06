@@ -13,6 +13,7 @@ import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -148,6 +149,24 @@ public class FlippyHelpActivity extends FlippyBase {
             text.setText(entry.getContactName());
 			return spinnerEntry;
 		}
+		@Override
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			View spinnerEntry;
+			if ( convertView == null ) {
+				final LayoutInflater inflater = mActivity.getLayoutInflater();
+				spinnerEntry = inflater.inflate(R.layout.spinner_itemdrop, null);
+			} else {
+				spinnerEntry = convertView;
+			}
+			
+			TextView text = (TextView) spinnerEntry.findViewById(R.id.contact_text1);
+			ImageView image = (ImageView) spinnerEntry.findViewById(R.id.contact_image1);
+
+			SpinnerEntry entry = getItem(position);
+			text.setText(entry.getContactName());
+			updatePhoto(entry.getContactId(), image);
+			return spinnerEntry;
+		}
 		
 	}
 	
@@ -162,7 +181,7 @@ public class FlippyHelpActivity extends FlippyBase {
    
         contactSpinner = (Spinner)findViewById(R.id.contactsSpinner);
         contactListView = (ListView)findViewById(R.id.contactsListView);
-        
+
         contactSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -177,21 +196,27 @@ public class FlippyHelpActivity extends FlippyBase {
         
         queryAllRawContacts();
         contactSpinner.setAdapter(adapter);
+        /*
+        ActivitySwipeDetector activitySwipeDetector = new ActivitySwipeDetector(this);
+        View layout = findViewById(R.id.helpLayout);
+        if ( layout != null ) { 
+        	layout.setOnTouchListener(activitySwipeDetector);
+        }
+        */
+
     }
     
 	private void updateList(int position) {
     	if(position < adapter.getCount() && position >= 0) {
     		SpinnerEntry entry = adapter.getItem(position);
-    		updatePhoto(entry.getContactId());
     		final List<ListViewEntry> content = new LinkedList<ListViewEntry>();
     		loadContent(entry.getContactId(), content);
     		contactListView.setAdapter(new ContactListViewAdapter(content, FlippyHelpActivity.this));
     	}
     }
 	
-	private void updatePhoto(int id) {
+	private void updatePhoto(int id, ImageView img) {
 		Bitmap photo = queryContactBitmap(id);
-		ImageView img = (ImageView) findViewById(R.id.imageView1);
 		if ( photo == null ) {
 			img.setVisibility(View.GONE);
 			return;
