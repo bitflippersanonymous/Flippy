@@ -1,8 +1,11 @@
-package com.example.flippy;
+package com.unklegeorge.flippy;
 
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.unklegeorge.flippy.R;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.app.Activity;

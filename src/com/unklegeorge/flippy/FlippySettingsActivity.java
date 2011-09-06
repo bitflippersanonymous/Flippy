@@ -1,4 +1,6 @@
-package com.example.flippy;
+package com.unklegeorge.flippy;
+
+import com.unklegeorge.flippy.R;
 
 import android.os.Bundle;
 import android.view.View;

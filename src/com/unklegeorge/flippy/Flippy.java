@@ -1,4 +1,4 @@
-package com.example.flippy;
+package com.unklegeorge.flippy;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -35,7 +35,8 @@ import java.util.TimerTask;
 
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.example.flippy.R.drawable;
+import com.unklegeorge.flippy.R;
+import com.unklegeorge.flippy.R.drawable;
 
 public class Flippy extends FlippyBase implements View.OnClickListener,
 		DialogInterface.OnClickListener, OnDismissListener {

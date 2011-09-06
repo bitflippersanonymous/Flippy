@@ -1,4 +1,4 @@
-package com.example.flippy;
+package com.unklegeorge.flippy;
 
 import android.app.Activity;
 
