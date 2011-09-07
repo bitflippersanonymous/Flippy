@@ -1,40 +1,22 @@
 package com.unklegeorge.flippy;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class ActivitySwipeDetector implements View.OnTouchListener {
+abstract public class ActivitySwipeDetector implements View.OnTouchListener {
 
 	static final String logTag = "ActivitySwipeDetector";
 	static final int MIN_DISTANCE = 100;
 	private float downX, downY, upX, upY;
-	private final Activity mActivity;
+	enum Type {
+		LeftToRight,
+		RightToLeft,
+		TopToBottom,
+		BottomToTop
+	};
+
+	abstract public boolean onSwipe(Type type, View view);
 	
-	public ActivitySwipeDetector(Activity activity) {
-		mActivity = activity;
-	}
-
-	public void onRightToLeftSwipe(){
-	    Log.i(logTag, "RightToLeftSwipe!");
-		new AlertDialog.Builder(mActivity).setMessage("Swipe").show();
-	}
-
-	public void onLeftToRightSwipe(){
-	    Log.i(logTag, "LeftToRightSwipe!");
-		new AlertDialog.Builder(mActivity).setMessage("Swipe").show();
-	}
-
-	public void onTopToBottomSwipe(){
-	    Log.i(logTag, "onTopToBottomSwipe!");
-	}
-
-	public void onBottomToTopSwipe(){
-	    Log.i(logTag, "onBottomToTopSwipe!");
-	}
-
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 	    switch(event.getAction()){
@@ -53,17 +35,16 @@ public class ActivitySwipeDetector implements View.OnTouchListener {
 	            // swipe horizontal?
 	            if(Math.abs(deltaX) > MIN_DISTANCE){
 	                // left or right
-	                if(deltaX < 0) { this.onLeftToRightSwipe(); return true; }
-	                if(deltaX > 0) { this.onRightToLeftSwipe(); return true; }
-	            } else { Log.i(logTag, "Swipe was only " + Math.abs(deltaX) + " long, need at least " + MIN_DISTANCE); }
+	                if(deltaX < 0) { return onSwipe(Type.LeftToRight, v); }
+	                if(deltaX > 0) { return onSwipe(Type.RightToLeft, v); }
+	            }
 
 	            // swipe vertical?
 	            if(Math.abs(deltaY) > MIN_DISTANCE){
 	                // top or down
-	                if(deltaY < 0) { this.onTopToBottomSwipe(); return true; }
-	                if(deltaY > 0) { this.onBottomToTopSwipe(); return true; }
-	            } else { Log.i(logTag, "Swipe was only " + Math.abs(deltaX) + " long, need at least " + MIN_DISTANCE); }
-
+	                if(deltaY < 0) { return onSwipe(Type.TopToBottom, v); }
+	                if(deltaY > 0) { return onSwipe(Type.BottomToTop, v); }
+	            }
 	            return true;
 	        }
 	    }
