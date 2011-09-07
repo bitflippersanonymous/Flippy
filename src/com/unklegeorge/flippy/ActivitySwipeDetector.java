@@ -1,6 +1,7 @@
 package com.unklegeorge.flippy;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,16 +11,20 @@ public class ActivitySwipeDetector implements View.OnTouchListener {
 	static final String logTag = "ActivitySwipeDetector";
 	static final int MIN_DISTANCE = 100;
 	private float downX, downY, upX, upY;
+	private final Activity mActivity;
 	
 	public ActivitySwipeDetector(Activity activity) {
+		mActivity = activity;
 	}
 
 	public void onRightToLeftSwipe(){
 	    Log.i(logTag, "RightToLeftSwipe!");
+		new AlertDialog.Builder(mActivity).setMessage("Swipe").show();
 	}
 
 	public void onLeftToRightSwipe(){
 	    Log.i(logTag, "LeftToRightSwipe!");
+		new AlertDialog.Builder(mActivity).setMessage("Swipe").show();
 	}
 
 	public void onTopToBottomSwipe(){

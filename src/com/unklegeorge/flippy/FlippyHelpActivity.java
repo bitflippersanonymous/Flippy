@@ -196,14 +196,6 @@ public class FlippyHelpActivity extends FlippyBase {
         
         queryAllRawContacts();
         contactSpinner.setAdapter(adapter);
-        /*
-        ActivitySwipeDetector activitySwipeDetector = new ActivitySwipeDetector(this);
-        View layout = findViewById(R.id.helpLayout);
-        if ( layout != null ) { 
-        	layout.setOnTouchListener(activitySwipeDetector);
-        }
-        */
-
     }
     
 	private void updateList(int position) {

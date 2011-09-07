@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:layout_width="wrap_content"
-	android:orientation="vertical">
+	android:orientation="vertical" android:id="@+id/LinearLayoutMain">
 	<RelativeLayout android:layout_height="wrap_content"
 		android:id="@+id/relativeLayout1" android:layout_width="match_parent">
 		<Button android:layout_height="wrap_content" android:text="Back"

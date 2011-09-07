@@ -103,6 +103,14 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 		mDialog = new AlertDialog.Builder(this)
 			.setTitle(R.string.auto_hide).create();
 		mTimer = new Timer("Popup");
+		        		
+        ActivitySwipeDetector activitySwipeDetector = new ActivitySwipeDetector(this) {
+        	@Override
+        	public void onRightToLeftSwipe() {
+        		new AlertDialog.Builder(Flippy.this).setMessage("Override").show();
+        	}
+        };
+        findViewById(R.id.LinearLayoutMain).setOnTouchListener(activitySwipeDetector);
 	}
 
 	public void onClick(View v) {
