@@ -49,6 +49,8 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 	int mDialogHit = 0;
 	Dialog mDialog;
 	Timer mTimer;
+	ArrayList<Animation> animation;
+	int last_offset = 0;
 
 	private class PopupDelay extends TimerTask {
 		Dialog mDialog;
@@ -90,18 +92,16 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 		findViewById(R.id.button_count).setOnClickListener(this);
 		findViewById(R.id.button_cancel).setOnClickListener(this);
 
-		Animation inAnimation = AnimationUtils.loadAnimation(this,
-				android.R.anim.slide_in_left);
-		Animation outAnimation = AnimationUtils.loadAnimation(this,
-				android.R.anim.slide_out_right);
+		animation.add(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
+		animation.add(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
+		//animation.add(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
+		//animation.add(AnimationUtils.loadAnimation(this, R.anim.slide_out_left));
 		TextSwitcher flippyTextSwitcher = (TextSwitcher) findViewById(R.id.textSwitcher_flippy);
-		flippyTextSwitcher.setInAnimation(inAnimation);
-		flippyTextSwitcher.setOutAnimation(outAnimation);
+		swapAnimation(1, flippyTextSwitcher);
 		flippyTextSwitcher.setFactory(new MyTextSwitcherFactory());
 		flippyTextSwitcher.setOnClickListener(this);
 		
-		mDialog = new AlertDialog.Builder(this)
-			.setTitle(R.string.auto_hide).create();
+		mDialog = new AlertDialog.Builder(this).setTitle(R.string.auto_hide).create();
 		mTimer = new Timer("Popup");
 		        		
         ActivitySwipeDetector activitySwipeDetector = new ActivitySwipeDetector() {
@@ -306,11 +306,23 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 			String scoreString = score.mUsername + " " + score.mScore + " "
 					+ score.mRank;
 			TextSwitcher flippyTextSwitcher = (TextSwitcher) findViewById(R.id.textSwitcher_flippy);
-			if (animate)
+			if (animate) {
+				swapAnimation(offset, flippyTextSwitcher);
 				flippyTextSwitcher.setText(scoreString);
-			else
+			} else
 				flippyTextSwitcher.setCurrentText(scoreString);
 		}
+	}
+
+	private void swapAnimation(int offset, TextSwitcher flippyTextSwitcher) {
+		if ( offset == 1 && last_offset != 1 ) {
+			flippyTextSwitcher.setInAnimation(animation.get(0));
+			flippyTextSwitcher.setOutAnimation(animation.get(1));
+		} else if ( offset == -1 && last_offset != -1 ) {
+			flippyTextSwitcher.setInAnimation(animation.get(2));
+			flippyTextSwitcher.setOutAnimation(animation.get(3));
+		}
+		last_offset = offset;
 	}
 
 	protected void loadScores() throws XmlPullParserException, IOException {
