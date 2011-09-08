@@ -136,6 +136,10 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
     	case R.id.button3:
     		mTimer.schedule(new PopupDelay(mDialog), 2000);
     		mDialog.show();
+    		break;
+    	case R.id.imageButton1:
+    		startActivity(new Intent(this, FlippyRadioActivity.class));
+    		break;
 		default:
 			showDialog(v.getId());
 		}
@@ -274,6 +278,8 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 				new Intent(this, FlippySettingsActivity.class));
 		menu.findItem(R.id.help_menu_item).setIntent(
 				new Intent(this, FlippyHelpActivity.class));
+		menu.findItem(R.id.radio_menu_item).setIntent(
+				new Intent(this, FlippyRadioActivity.class));
 		return true;
 	}
 
