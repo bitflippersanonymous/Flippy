@@ -49,7 +49,7 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 	int mDialogHit = 0;
 	Dialog mDialog;
 	Timer mTimer;
-	ArrayList<Animation> animation;
+	ArrayList<Animation> mAnimation;
 	int last_offset = 0;
 
 	private class PopupDelay extends TimerTask {
@@ -91,11 +91,12 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 
 		findViewById(R.id.button_count).setOnClickListener(this);
 		findViewById(R.id.button_cancel).setOnClickListener(this);
-
-		animation.add(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
-		animation.add(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
-		//animation.add(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
-		//animation.add(AnimationUtils.loadAnimation(this, R.anim.slide_out_left));
+		
+		mAnimation = new ArrayList<Animation>();
+		mAnimation.add(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left));
+		mAnimation.add(AnimationUtils.loadAnimation(this, android.R.anim.slide_out_right));
+		mAnimation.add(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
+		mAnimation.add(AnimationUtils.loadAnimation(this, R.anim.slide_out_left));
 		TextSwitcher flippyTextSwitcher = (TextSwitcher) findViewById(R.id.textSwitcher_flippy);
 		swapAnimation(1, flippyTextSwitcher);
 		flippyTextSwitcher.setFactory(new MyTextSwitcherFactory());
@@ -109,10 +110,10 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
         	public boolean onSwipe(ActivitySwipeDetector.Type type, View v) {
         		switch ( type ) {
         		case LeftToRight:
-    				updateText(-1, true);
+    				updateText(1, true);
         			break;
         		case RightToLeft:
-    				updateText(1, true);
+    				updateText(-1, true);
         		default:
         		}
         		return true;
@@ -316,11 +317,11 @@ public class Flippy extends FlippyBase implements View.OnClickListener,
 
 	private void swapAnimation(int offset, TextSwitcher flippyTextSwitcher) {
 		if ( offset == 1 && last_offset != 1 ) {
-			flippyTextSwitcher.setInAnimation(animation.get(0));
-			flippyTextSwitcher.setOutAnimation(animation.get(1));
+			flippyTextSwitcher.setInAnimation(mAnimation.get(0));
+			flippyTextSwitcher.setOutAnimation(mAnimation.get(1));
 		} else if ( offset == -1 && last_offset != -1 ) {
-			flippyTextSwitcher.setInAnimation(animation.get(2));
-			flippyTextSwitcher.setOutAnimation(animation.get(3));
+			flippyTextSwitcher.setInAnimation(mAnimation.get(2));
+			flippyTextSwitcher.setOutAnimation(mAnimation.get(3));
 		}
 		last_offset = offset;
 	}
