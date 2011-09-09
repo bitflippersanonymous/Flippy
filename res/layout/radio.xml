@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="fill_parent" android:orientation="vertical" android:id="@+id/LinearLayoutRadio" android:weightSum="1" android:layout_width="match_parent">
-    <ScrollView android:id="@+id/scrollView1" android:layout_width="match_parent" android:layout_weight="0.92" android:layout_height="match_parent">
-        <TextView android:id="@+id/radioRextView1" android:layout_height="match_parent" android:layout_width="match_parent" android:text="TextView"></TextView>
-    </ScrollView>
-	
+	android:layout_height="fill_parent" android:orientation="vertical"
+	android:id="@+id/LinearLayoutRadio" android:weightSum="1"
+	android:layout_width="match_parent">
+	<ScrollView android:id="@+id/scrollView1"
+		android:layout_width="match_parent" android:layout_weight="0.92"
+		android:layout_height="wrap_content">
+		<TextView android:id="@+id/radioTextView1"
+			android:layout_height="wrap_content" android:layout_width="match_parent"
+			android:text="TextView"></TextView>
+	</ScrollView>
+	<ListView android:layout_height="wrap_content" android:id="@+id/radioListView1"
+		android:layout_weight="0.92" android:layout_width="match_parent"></ListView>
+
 </LinearLayout>
