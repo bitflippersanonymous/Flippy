@@ -8,7 +8,7 @@
 		android:layout_height="wrap_content">
 		<TextView android:id="@+id/radioTextView1"
 			android:layout_height="wrap_content" android:layout_width="match_parent"
-			android:text="TextView"></TextView>
+			android:text=""></TextView>
 	</ScrollView>
 	<ListView android:layout_height="wrap_content" android:id="@+id/radioListView1"
 		android:layout_weight="0.92" android:layout_width="match_parent"></ListView>
