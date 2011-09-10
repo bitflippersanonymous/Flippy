@@ -17,7 +17,9 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,9 +27,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.TextView;
 
-public class FlippyRadioActivity extends FlippyBase implements OnPreparedListener {
+public class FlippyRadioActivity extends FlippyBase 
+	implements OnPreparedListener, MediaController.MediaPlayerControl {
 
 	private static final String NEWLINE = System.getProperty("line.separator");
 	private static final String FILE = "File";
@@ -35,7 +39,9 @@ public class FlippyRadioActivity extends FlippyBase implements OnPreparedListene
 	private static final String PLAYLIST = "playlist";
 	private static final String PATH = "path";
 
-	MediaPlayer mMediaPlayer = null;
+	private MediaPlayer mMediaPlayer = null;
+	private MediaController mediaController = null;
+	private Handler handler = new Handler();
 	
 	class PlsEntry {
 		private final String mFile;
@@ -113,9 +119,10 @@ public class FlippyRadioActivity extends FlippyBase implements OnPreparedListene
 	@Override
 	public void onStart() {
 		super.onStart();
+	    mediaController = new MediaController(this);
 		mMediaPlayer = new MediaPlayer();
 		mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		mMediaPlayer.setOnPreparedListener(this);
+		mMediaPlayer.setOnPreparedListener(this);		
 	}
 	
 	@Override
@@ -125,6 +132,12 @@ public class FlippyRadioActivity extends FlippyBase implements OnPreparedListene
 			mMediaPlayer.release();
 			mMediaPlayer = null;
 		}
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		mediaController.show();
+		return false;
 	}
 	
 	public String readPlaylist(String path, ArrayList<PlsEntry> entries) {
@@ -210,5 +223,66 @@ public class FlippyRadioActivity extends FlippyBase implements OnPreparedListene
 	public void onPrepared(MediaPlayer mp) {
 		// Change GUI to show what's playing
 		mp.start();
+	    mediaController.setMediaPlayer(this);
+	    mediaController.setAnchorView(findViewById(R.id.LinearLayoutRadio));
+
+	    handler.post(new Runnable() {
+	      public void run() {
+	        mediaController.setEnabled(true);
+	        mediaController.show();
+	      }
+	    });
 	}
+
+	
+	// All the Overrides for the media controller
+	@Override
+	public boolean canPause() {
+		return false;
+	}
+
+	@Override
+	public boolean canSeekBackward() {
+		return false;
+	}
+
+	@Override
+	public boolean canSeekForward() {
+		return false;
+	}
+
+	@Override
+	public int getBufferPercentage() {
+		return 0;
+	}
+
+	@Override
+	public int getCurrentPosition() {
+		return 0;
+	}
+
+	@Override
+	public int getDuration() {
+		return 0;
+	}
+
+	@Override
+	public boolean isPlaying() {
+	    return mMediaPlayer.isPlaying();
+	}
+
+	@Override
+	public void pause() {
+		mMediaPlayer.pause();
+	}
+
+	@Override
+	public void seekTo(int pos) {
+	}
+
+	@Override
+	public void start() {
+		mMediaPlayer.start();
+	}
+	//
 }
