@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 class PlsEntry implements Parcelable {
+    public static final String PLSENTRY = FlippyBase.PACKAGE + ".PLSENTRY";
+
 	private final String mFile;
 	private String mTitle;
 	public PlsEntry(String file, String title) {

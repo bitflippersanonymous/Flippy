@@ -104,6 +104,7 @@ public class FlippyRadioActivity extends FlippyBase {
 	@Override
 	public void onStop() {
 		super.onStop();
+	    stopService(new Intent(this, FlippyPlayerService.class));
 	}
 	
 	public String readPlaylist(String path, ArrayList<PlsEntry> entries) {
@@ -156,9 +157,9 @@ public class FlippyRadioActivity extends FlippyBase {
 		TextView text = (TextView) findViewById(R.id.radioTextView1);
 		text.setText(entry.getFile() + NEWLINE + entry.getTitle());
 		
-		Bundle extras = new Bundle();
 	    Intent intent = new Intent(this, FlippyPlayerService.class);
-	    intent.putExtras(extras);
+	    intent.putExtra(PlsEntry.PLSENTRY, entry);
+	    intent.setAction(FlippyPlayerService.ACTION_PLAY);
 	    startService(intent);
 	}
 	

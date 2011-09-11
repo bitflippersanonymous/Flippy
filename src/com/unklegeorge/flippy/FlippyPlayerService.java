@@ -6,16 +6,16 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Bundle;
 import android.os.IBinder;
 
-public class FlippyPlayerService extends Service  implements MediaPlayer.OnPreparedListener {
-    private static final String ACTION_PLAY = "com.unklegeorge.action.PLAY";
+public class FlippyPlayerService extends Service implements MediaPlayer.OnPreparedListener {
+    public static final String ACTION_PLAY = FlippyBase.PACKAGE + ".action.PLAY";
     MediaPlayer mMediaPlayer = null;
-    
+        
     public int onStartCommand(Intent intent, int flags, int startId) {
-		
-        if (intent.getAction().equals(ACTION_PLAY)) {
+
+    	if ( intent != null && intent.getAction() != null &&
+        		intent.getAction().equals(ACTION_PLAY) ) {
         	if ( mMediaPlayer == null ) {
         		mMediaPlayer = new MediaPlayer();
         		mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -23,10 +23,10 @@ public class FlippyPlayerService extends Service  implements MediaPlayer.OnPrepa
         	} else
         		mMediaPlayer.reset(); // Assume this is never called?
     		
-        	Bundle bundle = intent.getBundleExtra(name);
-    		String file = null;
+            PlsEntry entry = intent.getParcelableExtra(PlsEntry.PLSENTRY);
+        	
     		try {
-    			mMediaPlayer.setDataSource(file);
+    			mMediaPlayer.setDataSource(entry.getFile());
     		} catch (IllegalArgumentException e) {
     			e.printStackTrace();
     		} catch (IllegalStateException e) {
@@ -37,6 +37,7 @@ public class FlippyPlayerService extends Service  implements MediaPlayer.OnPrepa
     		
             mMediaPlayer.prepareAsync();
         }
+                
     	return START_STICKY; 
     }
     
@@ -47,7 +48,7 @@ public class FlippyPlayerService extends Service  implements MediaPlayer.OnPrepa
 
 	@Override
 	public void onPrepared(MediaPlayer mp) {
-		mp.start();
+			mp.start();
 	}
 
     @Override
