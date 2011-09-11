@@ -1,16 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:orientation="vertical"
-	android:id="@+id/LinearLayoutRadio" android:weightSum="1"
+	android:id="@+id/LinearLayoutRadio"
 	android:layout_width="match_parent">
 	<ScrollView android:id="@+id/scrollView1"
-		android:layout_width="match_parent" android:layout_weight="0.92"
-		android:layout_height="wrap_content">
+		android:layout_width="match_parent" android:layout_weight="0.40"
+		android:layout_height="fill_parent">
 		<TextView android:id="@+id/radioTextView1"
 			android:layout_height="wrap_content" android:layout_width="match_parent"
-			android:text=""></TextView>
+			android:text=""/>
 	</ScrollView>
-	<ListView android:layout_height="wrap_content" android:id="@+id/radioListView1"
-		android:layout_weight="0.92" android:layout_width="match_parent"></ListView>
+	
+	<ListView android:layout_height="fill_parent" android:id="@+id/radioListView1"
+		android:layout_weight="0.30" android:layout_width="match_parent"
+		android:layout_gravity="bottom"/>
+	
+	<LinearLayout android:layout_height="wrap_content"
+		android:id="@+id/LinearLayoutControl" android:layout_width="match_parent" 
+		android:gravity="center">
+		<ImageButton android:id="@+id/imageButtonPrev"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:src="@android:drawable/ic_media_previous"
+			android:onClick="onClick"/>
+		<ImageButton android:id="@+id/imageButtonPP"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:src="@android:drawable/ic_media_play"
+			android:onClick="onClick"/>
+		<ImageButton android:id="@+id/imageButtonNext"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:src="@android:drawable/ic_media_next"
+			android:onClick="onClick"/>
+	</LinearLayout>
 
 </LinearLayout>

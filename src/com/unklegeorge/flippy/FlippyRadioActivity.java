@@ -18,18 +18,21 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class FlippyRadioActivity extends FlippyBase {
+public class FlippyRadioActivity extends FlippyBase implements View.OnClickListener {
 
+	private static final String TAG = "FlippyRadio";
 	private static final String NEWLINE = System.getProperty("line.separator");
 	private static final String FILE = "File";
 	private static final String TITLE = "Title";
@@ -106,6 +109,42 @@ public class FlippyRadioActivity extends FlippyBase {
 		super.onStop();
 	}
 	
+	@Override
+	public void onClick(View v) {
+		switch ( v.getId() ) {
+		case R.id.imageButtonNext:
+			break;
+		case R.id.imageButtonPP:
+			if ( !stopService(new Intent(this, FlippyPlayerService.class)) ) {
+				final ListView list = (ListView) findViewById(R.id.radioListView1);
+				final PlsEntry entry = ((PlsAdapater)list.getAdapter()).getItem(0);
+				startPlay(entry);
+			} else {
+			    ((ImageButton)v).setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+			}
+			break;
+		case R.id.imageButtonPrev:
+			break;
+		default:
+		}
+	}
+	
+	
+	public void startPlay(PlsEntry entry) {
+		TextView text = (TextView) findViewById(R.id.radioTextView1);
+		text.setText(entry.getFile() + NEWLINE + entry.getTitle());
+		
+	    Intent intent = new Intent(this, FlippyPlayerService.class);
+	    intent.putExtra(PlsEntry.PLSENTRY, entry);
+	    intent.setAction(FlippyPlayerService.ACTION_PLAY);
+	    startService(intent);
+	    
+	    // Should put this state stuff in a button subclass
+	    ImageButton buttonPlay = (ImageButton) findViewById(R.id.imageButtonPP);
+	    buttonPlay.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
+	    	    
+	}
+	
 	public String readPlaylist(String path, ArrayList<PlsEntry> entries) {
 		PlsEntry entry = null;
 		String result = executeHttpGet(path);
@@ -150,16 +189,6 @@ public class FlippyRadioActivity extends FlippyBase {
 			}
 		}
 		return page;
-	}
-	
-	public void startPlay(PlsEntry entry) {
-		TextView text = (TextView) findViewById(R.id.radioTextView1);
-		text.setText(entry.getFile() + NEWLINE + entry.getTitle());
-		
-	    Intent intent = new Intent(this, FlippyPlayerService.class);
-	    intent.putExtra(PlsEntry.PLSENTRY, entry);
-	    intent.setAction(FlippyPlayerService.ACTION_PLAY);
-	    startService(intent);
 	}
 	
 	protected void loadPlaylists(ArrayList<PlsEntry> entries) throws XmlPullParserException, IOException {
