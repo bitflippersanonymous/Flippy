@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.xmlpull.v1.XmlPullParserException;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -27,28 +28,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class FlippyRadioActivity extends FlippyBase implements OnPreparedListener {
+public class FlippyRadioActivity extends FlippyBase {
 
 	private static final String NEWLINE = System.getProperty("line.separator");
 	private static final String FILE = "File";
 	private static final String TITLE = "Title";
 	private static final String PLAYLIST = "playlist";
 	private static final String PATH = "path";
-
-	MediaPlayer mMediaPlayer = null;
-	
-	class PlsEntry {
-		private final String mFile;
-		private String mTitle;
-		public PlsEntry(String file, String title) {
-			mFile = file; mTitle = title;
-		}
-		public void setTitle(String title) {
-			mTitle = title;
-		}
-		public String getFile() { return mFile; }
-		public String getTitle() { return mTitle; }
-	}
 	
 	class PlsAdapater extends BaseAdapter implements ListAdapter {
 
@@ -88,7 +74,7 @@ public class FlippyRadioActivity extends FlippyBase implements OnPreparedListene
 		}
 
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -113,18 +99,11 @@ public class FlippyRadioActivity extends FlippyBase implements OnPreparedListene
 	@Override
 	public void onStart() {
 		super.onStart();
-		mMediaPlayer = new MediaPlayer();
-		mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		mMediaPlayer.setOnPreparedListener(this);
 	}
 	
 	@Override
 	public void onStop() {
 		super.onStop();
-		if ( mMediaPlayer != null ) {
-			mMediaPlayer.release();
-			mMediaPlayer = null;
-		}
 	}
 	
 	public String readPlaylist(String path, ArrayList<PlsEntry> entries) {
@@ -176,20 +155,11 @@ public class FlippyRadioActivity extends FlippyBase implements OnPreparedListene
 	public void startPlay(PlsEntry entry) {
 		TextView text = (TextView) findViewById(R.id.radioTextView1);
 		text.setText(entry.getFile() + NEWLINE + entry.getTitle());
-		// Start progress ???
 		
-		mMediaPlayer.reset();
-				
-		try {
-			mMediaPlayer.setDataSource(entry.getFile());
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		mMediaPlayer.prepareAsync();
+		Bundle extras = new Bundle();
+	    Intent intent = new Intent(this, FlippyPlayerService.class);
+	    intent.putExtras(extras);
+	    startService(intent);
 	}
 	
 	protected void loadPlaylists(ArrayList<PlsEntry> entries) throws XmlPullParserException, IOException {
@@ -204,11 +174,5 @@ public class FlippyRadioActivity extends FlippyBase implements OnPreparedListene
 			}
 			eventType = parser.next();
 		}
-	}
-
-	@Override
-	public void onPrepared(MediaPlayer mp) {
-		// Change GUI to show what's playing
-		mp.start();
 	}
 }
