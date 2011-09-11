@@ -34,10 +34,15 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 
 	private static final String TAG = "FlippyRadio";
 	private static final String NEWLINE = System.getProperty("line.separator");
+
+	// PLS file
 	private static final String FILE = "File";
 	private static final String TITLE = "Title";
-	private static final String PLAYLIST = "playlist";
+	
+	// XML file
 	private static final String PATH = "path";
+	private static final String NAME = "name";
+	private static final String PLAYLIST = "playlist";
 	
 	private int mCurPlayingPos = 0;
 	
@@ -155,14 +160,14 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	    
 	}
 	
-	public String readPlaylist(String path, ArrayList<PlsEntry> entries) {
+	public String readPlaylist(String path, String name, ArrayList<PlsEntry> entries) {
 		PlsEntry entry = null;
 		String result = executeHttpGet(path);
 		String lines[] = result.split(NEWLINE);
 		for ( int i=0; i<lines.length; i++ ) {
 			String line = lines[i];
 			if ( line.startsWith(FILE) ) {
-				entry = new PlsEntry(line.substring(FILE.length()+2), null);
+				entry = new PlsEntry(line.substring(FILE.length()+2), name);
 				entries.add(entry);
 			} else if ( line.startsWith(TITLE) ) {
 				entry.setTitle(line.substring(TITLE.length()+2));
@@ -208,7 +213,9 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 			if (eventType == XmlResourceParser.START_TAG) {
 				String strName = parser.getName();
 				if (strName.equals(PLAYLIST)) {
-					readPlaylist(parser.getAttributeValue(null, PATH), entries);
+					String path = parser.getAttributeValue(null, PATH);
+					String name = parser.getAttributeValue(null, NAME);
+					readPlaylist(path, name, entries);
 				}
 			}
 			eventType = parser.next();
