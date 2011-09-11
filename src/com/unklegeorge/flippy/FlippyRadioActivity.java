@@ -39,6 +39,8 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	private static final String PLAYLIST = "playlist";
 	private static final String PATH = "path";
 	
+	private int mCurPlayingPos = 0;
+	
 	class PlsAdapater extends BaseAdapter implements ListAdapter {
 
 		private final List<PlsEntry> mContent;
@@ -96,6 +98,7 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				startPlay(adapter.getItem(position));
+				list.setSelection(position);
             }});
 	}
 
@@ -113,23 +116,30 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	public void onClick(View v) {
 		switch ( v.getId() ) {
 		case R.id.imageButtonNext:
+			seek(1);
 			break;
 		case R.id.imageButtonPP:
-			if ( !stopService(new Intent(this, FlippyPlayerService.class)) ) {
-				final ListView list = (ListView) findViewById(R.id.radioListView1);
-				final PlsEntry entry = ((PlsAdapater)list.getAdapter()).getItem(0);
-				startPlay(entry);
-			} else {
-			    ((ImageButton)v).setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
-			}
+			if ( stopService(new Intent(this, FlippyPlayerService.class)) )
+				((ImageButton)v).setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+			else
+				seek(0);
 			break;
 		case R.id.imageButtonPrev:
+			seek(-1);
 			break;
 		default:
 		}
 	}
 	
-	
+	public void seek(int direction) {
+		final ListView list = (ListView) findViewById(R.id.radioListView1);
+		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(mCurPlayingPos+direction);
+		if ( entry != null ) {
+			mCurPlayingPos += direction; 
+			startPlay(entry);
+		}
+	}
+		
 	public void startPlay(PlsEntry entry) {
 		TextView text = (TextView) findViewById(R.id.radioTextView1);
 		text.setText(entry.getFile() + NEWLINE + entry.getTitle());
@@ -142,7 +152,7 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	    // Should put this state stuff in a button subclass
 	    ImageButton buttonPlay = (ImageButton) findViewById(R.id.imageButtonPP);
 	    buttonPlay.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
-	    	    
+	    
 	}
 	
 	public String readPlaylist(String path, ArrayList<PlsEntry> entries) {
