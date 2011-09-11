@@ -104,7 +104,6 @@ public class FlippyRadioActivity extends FlippyBase {
 	@Override
 	public void onStop() {
 		super.onStop();
-	    stopService(new Intent(this, FlippyPlayerService.class));
 	}
 	
 	public String readPlaylist(String path, ArrayList<PlsEntry> entries) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="radio_service_notif_id"/>
     <string name="app_name">Flippy</string>
     <string name="back">Back</string>
     <string name="next">Next</string>

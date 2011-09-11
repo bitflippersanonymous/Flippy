@@ -2,6 +2,8 @@ package com.unklegeorge.flippy;
 
 import java.io.IOException;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -33,9 +35,20 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
     			e.printStackTrace();
     		} catch (IOException e) {
     			e.printStackTrace();
-    		}
+    		} //@@@ Need to handle these
     		
             mMediaPlayer.prepareAsync();
+                        
+            PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0,
+                    new Intent(getApplicationContext(), FlippyRadioActivity.class),
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            Notification notification = new Notification();
+            notification.tickerText = entry.getTitle();
+            notification.icon = R.drawable.icon;
+            notification.flags |= Notification.FLAG_ONGOING_EVENT;
+            notification.setLatestEventInfo(getApplicationContext(), "Flippy Player",
+                            "Playing: " + entry.getTitle(), pi);
+            startForeground(R.string.radio_service_notif_id, notification);
         }
                 
     	return START_STICKY; 
@@ -57,6 +70,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
     		mMediaPlayer.release();
     		mMediaPlayer = null;
     	}
+    	
     }
 
 }
