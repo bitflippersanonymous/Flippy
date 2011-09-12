@@ -12,6 +12,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.xmlpull.v1.XmlPullParserException;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.media.AudioManager;
@@ -103,6 +105,8 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 				startPlay(adapter.getItem(position));
 				list.setSelection(position);
             }});
+	    
+	    setPPIcon(isServiceRunning(FlippyPlayerService.class.getName()));
 	}
 
 	@Override
@@ -123,7 +127,7 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 			break;
 		case R.id.imageButtonPP:
 			if ( stopService(new Intent(this, FlippyPlayerService.class)) )
-				((ImageButton)v).setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+				setPPIcon(false);
 			else
 				seek(0);
 			break;
@@ -151,11 +155,25 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	    intent.putExtra(PlsEntry.PLSENTRY, entry);
 	    intent.setAction(FlippyPlayerService.ACTION_PLAY);
 	    startService(intent);
-	    
-	    // Should put this state stuff in a button subclass
-	    ImageButton buttonPlay = (ImageButton) findViewById(R.id.imageButtonPP);
-	    buttonPlay.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
-	    
+	    setPPIcon(true);
+	}
+	
+	private boolean isServiceRunning(String name) {
+	    ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+	    for ( RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE) ) {
+	        if ( name.equals(service.service.getClassName()) ) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	private void setPPIcon(boolean state) {
+		ImageButton buttonPlay = (ImageButton) findViewById(R.id.imageButtonPP);
+		if ( state )
+			buttonPlay.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
+		else
+			buttonPlay.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
 	}
 	
 	public String readPlaylist(String path, String name, ArrayList<PlsEntry> entries) {
