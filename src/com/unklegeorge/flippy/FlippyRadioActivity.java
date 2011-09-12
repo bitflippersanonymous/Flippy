@@ -82,7 +82,6 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
             title.setText(entry.getTitle());
 			return res;
 		}
-
 	}
 
 	@Override
