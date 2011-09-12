@@ -12,12 +12,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.xmlpull.v1.XmlPullParserException;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,36 +29,27 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.TextView;
 
-public class FlippyRadioActivity extends FlippyBase 
-	implements OnPreparedListener, MediaController.MediaPlayerControl {
+public class FlippyRadioActivity extends FlippyBase implements View.OnClickListener {
 
+	private static final String TAG = "FlippyRadio";
 	private static final String NEWLINE = System.getProperty("line.separator");
+
+	// PLS file
 	private static final String FILE = "File";
 	private static final String TITLE = "Title";
-	private static final String PLAYLIST = "playlist";
-	private static final String PATH = "path";
-
-	private MediaPlayer mMediaPlayer = null;
-	private MediaController mediaController = null;
-	private Handler handler = new Handler();
 	
-	class PlsEntry {
-		private final String mFile;
-		private String mTitle;
-		public PlsEntry(String file, String title) {
-			mFile = file; mTitle = title;
-		}
-		public void setTitle(String title) {
-			mTitle = title;
-		}
-		public String getFile() { return mFile; }
-		public String getTitle() { return mTitle; }
-	}
+	// XML file
+	private static final String PATH = "path";
+	private static final String NAME = "name";
+	private static final String PLAYLIST = "playlist";
+	
+	private int mCurPlayingPos = 0;
 	
 	class PlsAdapater extends BaseAdapter implements ListAdapter {
 
@@ -84,17 +79,14 @@ public class FlippyRadioActivity extends FlippyBase
 		@Override
 		public View getView(int position, View reuse, ViewGroup group) {
 			final LayoutInflater inflater = mActivity.getLayoutInflater();
-            View res = inflater.inflate(R.layout.listview_entry, null);
-            TextView file = (TextView) res.findViewById(R.id.numberType);
-            TextView title = (TextView) res.findViewById(R.id.numberPhoneNumber);
+            View res = inflater.inflate(R.layout.playlist_entry, null);
+            TextView title = (TextView) res.findViewById(R.id.entryTitle);
             PlsEntry entry = getItem(position);
-            file.setText(entry.getFile());
             title.setText(entry.getTitle());
 			return res;
 		}
-
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -113,41 +105,87 @@ public class FlippyRadioActivity extends FlippyBase
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				startPlay(adapter.getItem(position));
+				list.setSelection(position);
             }});
+	    
+	    setPPIcon(isServiceRunning(FlippyPlayerService.class.getName()));
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-	    mediaController = new MediaController(this);
-		mMediaPlayer = new MediaPlayer();
-		mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		mMediaPlayer.setOnPreparedListener(this);		
 	}
 	
 	@Override
 	public void onStop() {
 		super.onStop();
-		if ( mMediaPlayer != null ) {
-			mMediaPlayer.release();
-			mMediaPlayer = null;
-		}
 	}
 	
 	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		mediaController.show();
-		return false;
+	public void onClick(View v) {
+		switch ( v.getId() ) {
+		case R.id.imageButtonNext:
+			seek(1);
+			break;
+		case R.id.imageButtonPP:
+			if ( stopService(new Intent(this, FlippyPlayerService.class)) )
+				setPPIcon(false);
+			else
+				seek(0);
+			break;
+		case R.id.imageButtonPrev:
+			seek(-1);
+			break;
+		default:
+		}
 	}
 	
-	public String readPlaylist(String path, ArrayList<PlsEntry> entries) {
+	public void seek(int direction) {
+		final ListView list = (ListView) findViewById(R.id.radioListView1);
+		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(mCurPlayingPos+direction);
+		if ( entry != null ) {
+			mCurPlayingPos += direction; 
+			startPlay(entry);
+		}
+	}
+		
+	public void startPlay(PlsEntry entry) {
+		TextView text = (TextView) findViewById(R.id.radioTextView1);
+		text.setText(entry.getFile() + NEWLINE + entry.getTitle());
+		
+	    Intent intent = new Intent(this, FlippyPlayerService.class);
+	    intent.putExtra(PlsEntry.PLSENTRY, entry);
+	    intent.setAction(FlippyPlayerService.ACTION_PLAY);
+	    startService(intent);
+	    setPPIcon(true);
+	}
+	
+	private boolean isServiceRunning(String name) {
+	    ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+	    for ( RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE) ) {
+	        if ( name.equals(service.service.getClassName()) ) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	private void setPPIcon(boolean state) {
+		ImageButton buttonPlay = (ImageButton) findViewById(R.id.imageButtonPP);
+		if ( state )
+			buttonPlay.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
+		else
+			buttonPlay.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+	}
+	
+	public String readPlaylist(String path, String name, ArrayList<PlsEntry> entries) {
 		PlsEntry entry = null;
 		String result = executeHttpGet(path);
 		String lines[] = result.split(NEWLINE);
 		for ( int i=0; i<lines.length; i++ ) {
 			String line = lines[i];
 			if ( line.startsWith(FILE) ) {
-				entry = new PlsEntry(line.substring(FILE.length()+2), null);
+				entry = new PlsEntry(line.substring(FILE.length()+2), name);
 				entries.add(entry);
 			} else if ( line.startsWith(TITLE) ) {
 				entry.setTitle(line.substring(TITLE.length()+2));
@@ -186,25 +224,6 @@ public class FlippyRadioActivity extends FlippyBase
 		return page;
 	}
 	
-	public void startPlay(PlsEntry entry) {
-		TextView text = (TextView) findViewById(R.id.radioTextView1);
-		text.setText(entry.getFile() + NEWLINE + entry.getTitle());
-		// Start progress ???
-		
-		mMediaPlayer.reset();
-				
-		try {
-			mMediaPlayer.setDataSource(entry.getFile());
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		mMediaPlayer.prepareAsync();
-	}
-	
 	protected void loadPlaylists(ArrayList<PlsEntry> entries) throws XmlPullParserException, IOException {
 		XmlResourceParser parser = getResources().getXml(R.xml.playlists);
 		int eventType = -1;
@@ -212,77 +231,13 @@ public class FlippyRadioActivity extends FlippyBase
 			if (eventType == XmlResourceParser.START_TAG) {
 				String strName = parser.getName();
 				if (strName.equals(PLAYLIST)) {
-					readPlaylist(parser.getAttributeValue(null, PATH), entries);
+					String path = parser.getAttributeValue(null, PATH);
+					String name = parser.getAttributeValue(null, NAME);
+					readPlaylist(path, name, entries);
 				}
 			}
 			eventType = parser.next();
 		}
 	}
 
-	@Override
-	public void onPrepared(MediaPlayer mp) {
-		// Change GUI to show what's playing
-		mp.start();
-	    mediaController.setMediaPlayer(this);
-	    mediaController.setAnchorView(findViewById(R.id.LinearLayoutRadio));
-
-	    handler.post(new Runnable() {
-	      public void run() {
-	        mediaController.setEnabled(true);
-	        mediaController.show();
-	      }
-	    });
-	}
-
-	
-	// All the Overrides for the media controller
-	@Override
-	public boolean canPause() {
-		return false;
-	}
-
-	@Override
-	public boolean canSeekBackward() {
-		return false;
-	}
-
-	@Override
-	public boolean canSeekForward() {
-		return false;
-	}
-
-	@Override
-	public int getBufferPercentage() {
-		return 0;
-	}
-
-	@Override
-	public int getCurrentPosition() {
-		return 0;
-	}
-
-	@Override
-	public int getDuration() {
-		return 0;
-	}
-
-	@Override
-	public boolean isPlaying() {
-	    return mMediaPlayer.isPlaying();
-	}
-
-	@Override
-	public void pause() {
-		mMediaPlayer.pause();
-	}
-
-	@Override
-	public void seekTo(int pos) {
-	}
-
-	@Override
-	public void start() {
-		mMediaPlayer.start();
-	}
-	//
 }

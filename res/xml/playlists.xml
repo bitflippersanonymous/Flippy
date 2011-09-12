@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <playlists>
-<playlist path="http://www.opb.org/programs/streams/opb-radio.pls"/>
-<playlist path="http://wxpnhi.streamguys.com/listen.pls"/>
+<playlist path="http://www.opb.org/programs/streams/opb-radio.pls" name="OPB Radio"/>
+<playlist path="http://wxpnhi.streamguys.com/listen.pls" name="Stream Guys"/>
 </playlists>
