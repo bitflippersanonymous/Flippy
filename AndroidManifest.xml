@@ -4,10 +4,11 @@
 	android:versionName="1.0">
 	<uses-sdk android:minSdkVersion="8" />
 	<uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.INTERNET" />
 
 	<application android:icon="@drawable/icon" android:label="@string/app_name">
 		<activity android:name=".Flippy" android:label="@string/app_name">
+
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
@@ -17,7 +18,7 @@
 		<activity android:name=".FlippyRadioActivity"></activity>
 		<activity android:name=".FlippySettingsActivity"></activity>
 		<activity android:name=".FlippyHelpActivity"></activity>
-    	<service android:name=".FlippyPlayerService"/>
-    	<service android:name=".MyService"/>
+		<service android:name=".FlippyPlayerService" />
+		<service android:name=".MyService" />
 	</application>
 </manifest>

@@ -74,11 +74,9 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		@Override
 		public View getView(int position, View reuse, ViewGroup group) {
 			final LayoutInflater inflater = mActivity.getLayoutInflater();
-            View res = inflater.inflate(R.layout.listview_entry, null);
-            TextView file = (TextView) res.findViewById(R.id.numberType);
-            TextView title = (TextView) res.findViewById(R.id.numberPhoneNumber);
+            View res = inflater.inflate(R.layout.playlist_entry, null);
+            TextView title = (TextView) res.findViewById(R.id.entryTitle);
             PlsEntry entry = getItem(position);
-            file.setText(entry.getFile());
             title.setText(entry.getTitle());
 			return res;
 		}

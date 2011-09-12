@@ -3,18 +3,15 @@
 	android:layout_height="fill_parent" android:orientation="vertical"
 	android:id="@+id/LinearLayoutRadio"
 	android:layout_width="match_parent">
-	<ScrollView android:id="@+id/scrollView1"
-		android:layout_width="match_parent" android:layout_weight="0.40"
-		android:layout_height="fill_parent">
-		<TextView android:id="@+id/radioTextView1"
-			android:layout_height="wrap_content" android:layout_width="match_parent"
-			android:text=""/>
-	</ScrollView>
-	
+
 	<ListView android:layout_height="fill_parent" android:id="@+id/radioListView1"
 		android:layout_weight="0.30" android:layout_width="match_parent"
-		android:layout_gravity="bottom"/>
-	
+		android:layout_gravity="bottom" android:background="@color/PlaylistBackground"
+		android:dividerHeight="2sp"	android:padding="2sp"/>
+
+	<TextView android:id="@+id/radioTextView1"
+		android:layout_height="wrap_content" android:layout_width="match_parent"
+		android:text="" android:padding="2sp"/>	
 	<LinearLayout android:layout_height="wrap_content"
 		android:id="@+id/LinearLayoutControl" android:layout_width="match_parent" 
 		android:gravity="center">
