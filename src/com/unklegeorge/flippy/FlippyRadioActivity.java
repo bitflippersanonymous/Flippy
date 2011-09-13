@@ -23,6 +23,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,6 +140,24 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 			break;
 		default:
 		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu); // need this?
+		getMenuInflater().inflate(R.menu.options, menu);
+		menu.findItem(R.id.settings_menu_item).setIntent(
+				new Intent(this, FlippySettingsActivity.class));
+		menu.findItem(R.id.help_menu_item).setIntent(
+				new Intent(this, FlippyHelpActivity.class));
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		startActivity(item.getIntent());
+		return true;
 	}
 	
 	public void seek(int direction) {

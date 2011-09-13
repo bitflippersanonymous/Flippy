@@ -22,68 +22,8 @@ public class FlippySettingsActivity extends FlippyBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
-        
         mSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-
-        ToggleButton toggleButton = (ToggleButton)findViewById(R.id.toggleButton1);
-        toggleButton.setChecked(mSettings.getBoolean(PREFERENCES_TOGGLE, true));
-        
-        toggleButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-		        Editor editor = mSettings.edit();
-		        editor.putBoolean(PREFERENCES_TOGGLE, ((ToggleButton)v).isChecked());
-		        editor.commit();
-			}
-		});
-        
-        Button nukeButton = (Button)findViewById(R.id.button_nuke);
-        nukeButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				nukeSettings();
-			}
-		});
-        
-        Button aysButton = (Button)findViewById(R.id.button_are_you_sure);
-        aysButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				showDialog(DIALOG_AYS_ID);
-			}
-		});
+       
     }
-	
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch(id) {
-		case DIALOG_AYS_ID:
-			return createAYSDialog();
-		default:
-			return null;
-		}
-	}
-	
-	private Dialog createAYSDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(getString(R.string.are_you_sure))
-		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		                nukeSettings();
-		           }
-		       })
-		       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		                dialog.cancel();
-		           }
-		       });
-		return builder.create();
-	}
 
-	private void nukeSettings() {
-        Editor editor = mSettings.edit();
-        editor.clear();
-        editor.commit();
-        FlippySettingsActivity.this.finish();
-	}
 }

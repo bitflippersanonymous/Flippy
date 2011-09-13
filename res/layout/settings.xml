@@ -2,16 +2,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<LinearLayout android:layout_height="wrap_content"
-		android:id="@+id/linearLayout1" android:layout_width="match_parent">
-		<TextView android:text="@string/seek" android:id="@+id/textViewSeeker"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-		<ToggleButton android:layout_height="wrap_content"
-			android:text="ToggleButton" android:checked="true" android:id="@+id/toggleButton1"
-			android:layout_width="wrap_content"></ToggleButton>
-	</LinearLayout>
-	<Button android:layout_height="wrap_content" android:text="Nuke Settings"
-		android:id="@+id/button_nuke" android:layout_width="match_parent"></Button>
-	<Button android:layout_height="wrap_content" android:text="@string/are_you_sure"
-		android:id="@+id/button_are_you_sure" android:layout_width="match_parent"></Button>
+
 </LinearLayout>
