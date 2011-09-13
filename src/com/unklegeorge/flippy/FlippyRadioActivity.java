@@ -2,6 +2,7 @@ package com.unklegeorge.flippy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -11,9 +12,16 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.xmlpull.v1.XmlPullParserException;
+
+import com.unklegeorge.flippy.R.drawable;
+
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.media.AudioManager;
@@ -25,6 +33,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +46,7 @@ import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.TextView;
 
-public class FlippyRadioActivity extends FlippyBase implements View.OnClickListener {
+public class FlippyRadioActivity extends FlippyBase implements View.OnClickListener, OnClickListener {
 
 	private static final String TAG = "FlippyRadio";
 	private static final String NEWLINE = System.getProperty("line.separator");
@@ -50,6 +59,7 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	private static final String PATH = "path";
 	private static final String NAME = "name";
 	private static final String PLAYLIST = "playlist";
+	private static final int ABOUT_DIALOG = 0;
 	
 	private int mCurPlayingPos = 0;
 	
@@ -148,8 +158,14 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		getMenuInflater().inflate(R.menu.options, menu);
 		menu.findItem(R.id.settings_menu_item).setIntent(
 				new Intent(this, FlippySettingsActivity.class));
-		menu.findItem(R.id.help_menu_item).setIntent(
-				new Intent(this, FlippyHelpActivity.class));
+		menu.findItem(R.id.help_menu_item).setOnMenuItemClickListener(new OnMenuItemClickListener()
+		{
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				showDialog(ABOUT_DIALOG);
+				return true;
+			}
+		});
 		return true;
 	}
 
@@ -158,6 +174,37 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		super.onOptionsItemSelected(item);
 		startActivity(item.getIntent());
 		return true;
+	}
+	
+	@Override
+    protected Dialog onCreateDialog(int id, Bundle args) {
+    	switch ( id ) {
+    	case ABOUT_DIALOG:
+    		String message = "";
+    		try {
+	    		InputStream ins = getResources().openRawResource(R.raw.about);
+	    		int size = ins.available();
+	    		byte[] buffer = new byte[size];
+	    		ins.read(buffer);
+	    		ins.close();
+	    		message = new String(buffer);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	    	builder.setMessage(message)
+	    	.setIcon(drawable.icon)
+	    	.setTitle(R.string.app_name)
+	    	.setPositiveButton(R.string.got_it, this)
+	    	.setCancelable(true);
+	    	return builder.create();
+    	}
+    	return super.onCreateDialog(id, args);
+	}
+	
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		dialog.cancel();
 	}
 	
 	public void seek(int direction) {
