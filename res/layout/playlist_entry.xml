@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="wrap_content">
-	<ImageView android:id="@+id/EntryIcon"
-		android:layout_height="match_parent" android:layout_width="wrap_content"
-		android:src="@android:drawable/ic_menu_add"/>
+	<ImageView android:id="@+id/EntryIcon" android:layout_height="match_parent"
+		android:layout_width="wrap_content" android:src="@drawable/o" android:padding="2sp"/>
 	<TextView android:id="@+id/entryTitle" android:layout_width="wrap_content"
 		android:layout_height="match_parent" style="@style/PlaylistTheme"
-		android:text="Sample" android:gravity="center"/>
+		android:text="Sample" android:gravity="center" />
 </LinearLayout>
