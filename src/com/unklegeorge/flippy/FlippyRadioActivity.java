@@ -27,6 +27,7 @@ import android.content.res.XmlResourceParser;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -45,6 +46,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class FlippyRadioActivity extends FlippyBase implements View.OnClickListener, OnClickListener {
@@ -62,9 +64,8 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	private static final String PLAYLIST = "playlist";
 	private static final int ABOUT_DIALOG = 0;
 	
-	private static final String CURPLAYING = "CURPLAYING";
-	
 	private int mCurPlayingPos = 0;
+	private LoadTask mLoadTask = null;
 	
 	class PlsAdapater extends BaseAdapter implements ListAdapter {
 
@@ -102,6 +103,7 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -109,10 +111,10 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 
 		TextView text = (TextView) findViewById(R.id.radioTextView1);
 		final ArrayList<PlsEntry> entries = new ArrayList<PlsEntry>();
-		try { loadPlaylists(entries); } 
-		catch(Exception e) { 
-            text.setText(e.toString());
-		}
+		
+		mLoadTask = new LoadTask();
+		mLoadTask.execute(entries);
+		
 	    final PlsAdapater adapter = new PlsAdapater(entries, this);
 	    final ListView list = (ListView) findViewById(R.id.radioListView1);
 	    list.setAdapter(adapter);
@@ -310,4 +312,37 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		}
 	}
 
+	private class LoadTask extends AsyncTask<ArrayList<PlsEntry>, Integer, Integer> {
+		@Override
+		protected Integer doInBackground(ArrayList<PlsEntry>... params) {
+			ArrayList<PlsEntry> entries = params[0];
+			try { loadPlaylists(entries); } 
+			catch(Exception e) { 
+				TextView text = (TextView) findViewById(R.id.radioTextView1);
+	            text.setText(e.toString());
+	            return -1;
+			}
+			return 0;
+		}
+
+		@Override
+		protected void onCancelled() {
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... progress) {
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+		    final ListView list = (ListView) findViewById(R.id.radioListView1);
+			((BaseAdapter) list.getAdapter()).notifyDataSetChanged();
+		}
+
+		@Override
+		protected void onPreExecute() {
+		}
+	}
+
+	
 }
