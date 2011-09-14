@@ -38,10 +38,11 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
     		} //@@@ Need to handle these
     		
             mMediaPlayer.prepareAsync();
-                        
+            
+            Intent radioIntent = new Intent(getApplicationContext(), FlippyRadioActivity.class);
+            radioIntent.putExtra("Foo", "Foo");
             PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0,
-                    new Intent(getApplicationContext(), FlippyRadioActivity.class),
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+            		radioIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             Notification notification = new Notification();
             notification.tickerText = entry.getTitle();
             notification.icon = R.drawable.icon;

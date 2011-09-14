@@ -10,20 +10,22 @@
 		android:dividerHeight="2sp"	android:padding="2sp"/>
 
 	<TextView android:id="@+id/radioTextView1"
-		android:layout_height="wrap_content" android:layout_width="match_parent"
-		android:text="" android:padding="2sp"/>	
+		android:layout_width="match_parent" android:gravity="center"
+		android:text="" android:padding="2sp" android:layout_height="50sp"
+		style="@style/PlayingTheme"/>
+			
 	<LinearLayout android:layout_height="wrap_content"
 		android:id="@+id/LinearLayoutControl" android:layout_width="match_parent" 
 		android:gravity="center">
-		<ImageButton android:id="@+id/imageButtonPrev"
+		<ImageView android:id="@+id/imageButtonPrev"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:src="@android:drawable/ic_media_previous"
 			android:onClick="onClick"/>
-		<ImageButton android:id="@+id/imageButtonPP"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:src="@android:drawable/ic_media_play"
-			android:onClick="onClick"/>
-		<ImageButton android:id="@+id/imageButtonNext"
+		<ImageView android:id="@+id/imageButtonPP" android:paddingLeft="4sp"
+			android:paddingRight="4sp"
+			android:onClick="onClick" android:src="@drawable/play" 
+			android:layout_width="50sp" android:layout_height="60sp"/>
+		<ImageView android:id="@+id/imageButtonNext"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:src="@android:drawable/ic_media_next"
 			android:onClick="onClick"/>

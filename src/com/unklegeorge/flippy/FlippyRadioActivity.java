@@ -41,6 +41,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.MediaController;
@@ -60,6 +61,8 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	private static final String NAME = "name";
 	private static final String PLAYLIST = "playlist";
 	private static final int ABOUT_DIALOG = 0;
+	
+	private static final String CURPLAYING = "CURPLAYING";
 	
 	private int mCurPlayingPos = 0;
 	
@@ -104,10 +107,10 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.radio);
 
+		TextView text = (TextView) findViewById(R.id.radioTextView1);
 		final ArrayList<PlsEntry> entries = new ArrayList<PlsEntry>();
 		try { loadPlaylists(entries); } 
 		catch(Exception e) { 
-            TextView text = (TextView) findViewById(R.id.radioTextView1);
             text.setText(e.toString());
 		}
 	    final PlsAdapater adapter = new PlsAdapater(entries, this);
@@ -218,7 +221,7 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		
 	public void startPlay(PlsEntry entry) {
 		TextView text = (TextView) findViewById(R.id.radioTextView1);
-		text.setText(entry.getFile() + NEWLINE + entry.getTitle());
+		text.setText(entry.getTitle());
 		
 	    Intent intent = new Intent(this, FlippyPlayerService.class);
 	    intent.putExtra(PlsEntry.PLSENTRY, entry);
@@ -238,11 +241,11 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	}
 
 	private void setPPIcon(boolean state) {
-		ImageButton buttonPlay = (ImageButton) findViewById(R.id.imageButtonPP);
+		ImageView buttonPlay = (ImageView) findViewById(R.id.imageButtonPP);
 		if ( state )
-			buttonPlay.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
+			buttonPlay.setImageDrawable(getResources().getDrawable(R.drawable.pause));
 		else
-			buttonPlay.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+			buttonPlay.setImageDrawable(getResources().getDrawable(R.drawable.play));
 	}
 	
 	public String readPlaylist(String path, String name, ArrayList<PlsEntry> entries) {
