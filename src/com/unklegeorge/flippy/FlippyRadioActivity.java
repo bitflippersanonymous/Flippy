@@ -121,8 +121,7 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	    list.setOnItemClickListener(new OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				startPlay(adapter.getItem(position));
-				list.setSelection(position);
+            	startPlay(position, 0);
             }});
 	    
 	    setPPIcon(isServiceRunning(FlippyPlayerService.class.getName()));
@@ -142,16 +141,16 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	public void onClick(View v) {
 		switch ( v.getId() ) {
 		case R.id.imageButtonNext:
-			seek(1);
+			startPlay(mCurPlayingPos, 1);
 			break;
 		case R.id.imageButtonPP:
 			if ( stopService(new Intent(this, FlippyPlayerService.class)) )
 				setPPIcon(false);
 			else
-				seek(0);
+				startPlay(mCurPlayingPos, 0);
 			break;
 		case R.id.imageButtonPrev:
-			seek(-1);
+			startPlay(mCurPlayingPos, -1);
 			break;
 		default:
 		}
@@ -212,16 +211,18 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		dialog.cancel();
 	}
 	
-	public void seek(int direction) {
+	public void startPlay(int position, int offset) {
 		final ListView list = (ListView) findViewById(R.id.radioListView1);
-		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(mCurPlayingPos+direction);
-		if ( entry != null ) {
-			mCurPlayingPos += direction; 
-			startPlay(entry);
-		}
-	}
+		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(mCurPlayingPos);
+		if ( entry == null )
+			return;
+
+		// Hide old 'now playing icon'
+		list.getChildAt(mCurPlayingPos).findViewById(R.id.EntryIcon).setVisibility(View.INVISIBLE);
+		mCurPlayingPos = position + offset;
+		list.setSelection(mCurPlayingPos);
+		list.getChildAt(mCurPlayingPos).findViewById(R.id.EntryIcon).setVisibility(View.VISIBLE);
 		
-	public void startPlay(PlsEntry entry) {
 		TextView text = (TextView) findViewById(R.id.radioTextView1);
 		text.setText(entry.getTitle());
 		
@@ -337,6 +338,8 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		protected void onPostExecute(Integer result) {
 		    final ListView list = (ListView) findViewById(R.id.radioListView1);
 			((BaseAdapter) list.getAdapter()).notifyDataSetChanged();
+			findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
+			list.setVisibility(View.VISIBLE);
 		}
 
 		@Override

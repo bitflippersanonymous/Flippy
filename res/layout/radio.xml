@@ -6,14 +6,24 @@
 
 	<ListView android:layout_height="fill_parent" android:id="@+id/radioListView1"
 		android:layout_weight="0.30" android:layout_width="match_parent"
-		android:layout_gravity="bottom" android:background="@color/PlaylistBackground"
-		android:dividerHeight="2sp"	android:padding="2sp"/>
-
+		android:gravity="bottom" android:background="@color/PlaylistBackground"
+		android:dividerHeight="2sp"	android:padding="2sp" android:visibility="gone"/>
+	
+	<LinearLayout android:gravity="center" android:layout_height="fill_parent" 
+		android:id="@+id/linearLayoutProgress"
+		android:layout_weight="0.30" android:layout_width="match_parent"
+		android:background="@color/PlaylistBackground">	
+		<ProgressBar android:id="@+id/progressBar1" android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"/>
+	</LinearLayout>
+	
 	<TextView android:id="@+id/radioTextView1"
 		android:layout_width="match_parent" android:gravity="center"
 		android:text="" android:padding="2sp" android:layout_height="50sp"
 		style="@style/PlayingTheme"/>
 			
+	<LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent"
+		android:gravity="bottom">
 	<LinearLayout android:layout_height="wrap_content"
 		android:id="@+id/LinearLayoutControl" android:layout_width="match_parent" 
 		android:gravity="center">
@@ -29,6 +39,7 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:src="@android:drawable/ic_media_next"
 			android:onClick="onClick"/>
+	</LinearLayout>
 	</LinearLayout>
 
 </LinearLayout>
