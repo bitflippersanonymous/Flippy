@@ -34,7 +34,7 @@ import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.RawContacts;
 
-public class FlippyHelpActivity extends FlippyBase {
+public class FlippyHelpActivity extends Activity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

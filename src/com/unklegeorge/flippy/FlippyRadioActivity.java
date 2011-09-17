@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.unklegeorge.flippy.FlippyPlayerService.LocalBinder;
 import com.unklegeorge.flippy.R.drawable;
 
 import android.app.Activity;
@@ -20,16 +21,21 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.XmlResourceParser;
+import android.database.DataSetObserver;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,94 +55,78 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class FlippyRadioActivity extends FlippyBase implements View.OnClickListener, OnClickListener {
-
-	private static final String TAG = "FlippyRadio";
-	private static final String NEWLINE = System.getProperty("line.separator");
-
-	// PLS file
-	private static final String FILE = "File";
-	private static final String TITLE = "Title";
-	
-	// XML file
-	private static final String PATH = "path";
-	private static final String NAME = "name";
-	private static final String PLAYLIST = "playlist";
+public class FlippyRadioActivity extends Activity implements View.OnClickListener, OnClickListener {
 	private static final int ABOUT_DIALOG = 0;
 	
 	private int mCurPlayingPos = 0;
-	private LoadTask mLoadTask = null;
 	
-	class PlsAdapater extends BaseAdapter implements ListAdapter {
-
-		private final List<PlsEntry> mContent;
-		private final Activity mActivity;
+    private FlippyPlayerService mService;
+    private boolean mBound = false;
 	
-		public PlsAdapater(List<PlsEntry> content, Activity activity) {
-			mContent = content;
-			mActivity = activity;
-		}
-		
-		@Override
-		public int getCount() {
-			return mContent.size();
-		}
-
-		@Override
-		public PlsEntry getItem(int position) {
-			return mContent.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View reuse, ViewGroup group) {
-			final LayoutInflater inflater = mActivity.getLayoutInflater();
-            View res = inflater.inflate(R.layout.playlist_entry, null);
-            TextView title = (TextView) res.findViewById(R.id.entryTitle);
-            PlsEntry entry = getItem(position);
-            title.setText(entry.getTitle());
-			return res;
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.radio);
 
-		TextView text = (TextView) findViewById(R.id.radioTextView1);
-		final ArrayList<PlsEntry> entries = new ArrayList<PlsEntry>();
-		
-		mLoadTask = new LoadTask();
-		mLoadTask.execute(entries);
-		
-	    final PlsAdapater adapter = new PlsAdapater(entries, this);
 	    final ListView list = (ListView) findViewById(R.id.radioListView1);
-	    list.setAdapter(adapter);
 	    list.setOnItemClickListener(new OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	startPlay(position, 0);
             }});
-	    
 	    setPPIcon(isServiceRunning(FlippyPlayerService.class.getName()));
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
+        Intent intent = new Intent(this, FlippyPlayerService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 	
 	@Override
 	public void onStop() {
 		super.onStop();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
 	}
 	
+	@Override
+	public void onPause() {
+		super.onPause();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+	}
+	
+    private ServiceConnection mConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+            LocalBinder binder = (LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+            connectList();
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
+		}
+    };
+    
+    private void connectList() {
+    	final ListView list = (ListView) findViewById(R.id.radioListView1);
+    	list.setAdapter(mService.getPlsAdapter());
+    	// Gets called too early
+    	list.setVisibility(View.VISIBLE);
+    	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
+    }
+ 
 	@Override
 	public void onClick(View v) {
 		switch ( v.getId() ) {
@@ -220,6 +210,9 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	}
 	
 	public void startPlay(int position, int offset) {
+		mService.startPlay(position);
+		
+		/*
 		stopPlay();
 		final ListView list = (ListView) findViewById(R.id.radioListView1);
 
@@ -242,6 +235,7 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 	    intent.setAction(FlippyPlayerService.ACTION_PLAY);
 	    startService(intent);
 	    setPPIcon(true);
+	    */
 	}
 	
 	private boolean isServiceRunning(String name) {
@@ -262,101 +256,10 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 			buttonPlay.setImageDrawable(getResources().getDrawable(R.drawable.play));
 	}
 	
-	public String readPlaylist(String path, String name, ArrayList<PlsEntry> entries) {
-		PlsEntry entry = null;
-		String result = executeHttpGet(path);
-		String lines[] = result.split(NEWLINE);
-		for ( int i=0; i<lines.length; i++ ) {
-			String line = lines[i];
-			if ( line.startsWith(FILE) ) {
-				entry = new PlsEntry(line.substring(FILE.length()+2), name);
-				entries.add(entry);
-			} else if ( line.startsWith(TITLE) ) {
-				entry.setTitle(line.substring(TITLE.length()+2));
-			}
-		}
-		return result;
-	}
+
 	
-	public String executeHttpGet(String path) {
-		BufferedReader in = null;
-		String page = null;
-		try {
-			HttpClient client = new DefaultHttpClient();
-			HttpGet request = new HttpGet();
-			request.setURI(new URI(path));
-			HttpResponse response = client.execute(request);
-			in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			StringBuffer sb = new StringBuffer("");
-			String line = "";
-			while ((line = in.readLine()) != null) {
-				sb.append(line + NEWLINE);
-			}
-			in.close();
-			page = sb.toString();
-		} catch (Exception e) {
-			page = e.getMessage();
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (Exception e) {
-					page = e.getMessage();
-				}
-			}
-		}
-		return page;
-	}
+
+
 	
-	protected void loadPlaylists(ArrayList<PlsEntry> entries) throws XmlPullParserException, IOException {
-		XmlResourceParser parser = getResources().getXml(R.xml.playlists);
-		int eventType = -1;
-		while (eventType != XmlResourceParser.END_DOCUMENT) {
-			if (eventType == XmlResourceParser.START_TAG) {
-				String strName = parser.getName();
-				if (strName.equals(PLAYLIST)) {
-					String path = parser.getAttributeValue(null, PATH);
-					String name = parser.getAttributeValue(null, NAME);
-					readPlaylist(path, name, entries);
-				}
-			}
-			eventType = parser.next();
-		}
-	}
-
-	private class LoadTask extends AsyncTask<ArrayList<PlsEntry>, Integer, Integer> {
-		@Override
-		protected Integer doInBackground(ArrayList<PlsEntry>... params) {
-			ArrayList<PlsEntry> entries = params[0];
-			try { loadPlaylists(entries); } 
-			catch(Exception e) { 
-				TextView text = (TextView) findViewById(R.id.radioTextView1);
-	            text.setText(e.toString());
-	            return -1;
-			}
-			return 0;
-		}
-
-		@Override
-		protected void onCancelled() {
-		}
-
-		@Override
-		protected void onProgressUpdate(Integer... progress) {
-		}
-
-		@Override
-		protected void onPostExecute(Integer result) {
-		    final ListView list = (ListView) findViewById(R.id.radioListView1);
-			((BaseAdapter) list.getAdapter()).notifyDataSetChanged();
-			findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
-			list.setVisibility(View.VISIBLE);
-		}
-
-		@Override
-		protected void onPreExecute() {
-		}
-	}
-
 	
 }

@@ -1,4 +1,10 @@
 bitflippersanonymous.com
 Simple Radio App
 
+TODO
+Move playlist data into service
+Restore now playing on intent onResume from service
+Parse podcast xml into sqllite db
+App main menu activity
+
 
