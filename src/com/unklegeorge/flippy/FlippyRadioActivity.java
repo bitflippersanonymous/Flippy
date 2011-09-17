@@ -145,7 +145,7 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 			break;
 		case R.id.imageButtonPP:
 			if ( stopService(new Intent(this, FlippyPlayerService.class)) )
-				setPPIcon(false);
+				stopPlay();
 			else
 				startPlay(mCurPlayingPos, 0);
 			break;
@@ -211,19 +211,30 @@ public class FlippyRadioActivity extends FlippyBase implements View.OnClickListe
 		dialog.cancel();
 	}
 	
-	public void startPlay(int position, int offset) {
+	public void stopPlay() {
 		final ListView list = (ListView) findViewById(R.id.radioListView1);
-		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(mCurPlayingPos);
-		if ( entry == null )
-			return;
+		final TextView text = (TextView) findViewById(R.id.radioTextView1);
+		list.getChildAt(mCurPlayingPos).findViewById(R.id.EntryIcon).setVisibility(View.GONE);
+		text.setText(null);
+	    setPPIcon(false);
+	}
+	
+	public void startPlay(int position, int offset) {
+		stopPlay();
+		final ListView list = (ListView) findViewById(R.id.radioListView1);
 
-		// Hide old 'now playing icon'
-		list.getChildAt(mCurPlayingPos).findViewById(R.id.EntryIcon).setVisibility(View.INVISIBLE);
-		mCurPlayingPos = position + offset;
+		final int newPos = position + offset;
+		if ( newPos < 0 || newPos >= list.getAdapter().getCount() ) {
+			mCurPlayingPos = 0;
+		} else {
+			mCurPlayingPos = position + offset;
+		}
+		
+		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(mCurPlayingPos);
+		
 		list.setSelection(mCurPlayingPos);
 		list.getChildAt(mCurPlayingPos).findViewById(R.id.EntryIcon).setVisibility(View.VISIBLE);
-		
-		TextView text = (TextView) findViewById(R.id.radioTextView1);
+		final TextView text = (TextView) findViewById(R.id.radioTextView1);
 		text.setText(entry.getTitle());
 		
 	    Intent intent = new Intent(this, FlippyPlayerService.class);
