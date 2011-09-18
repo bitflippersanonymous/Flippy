@@ -1,5 +1,9 @@
 package com.unklegeorge.flippy;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Messenger;
+
 public class Util {
 	static final String PACKAGE = "com.unklegeorge.flippy";
 	static final String APP_PREFERENCES = "App_Prefs";

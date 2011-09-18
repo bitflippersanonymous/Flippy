@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.XmlResourceParser;
 import android.database.DataSetObserver;
+import android.graphics.Canvas;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
@@ -63,7 +64,7 @@ import android.os.Messenger;
 public class FlippyRadioActivity extends Activity implements View.OnClickListener, OnClickListener {
 	private static final int ABOUT_DIALOG = 0;
 		
-    private FlippyPlayerService mService;
+    private static FlippyPlayerService mService;
     private boolean mBound = false;
     
 	@Override
@@ -131,6 +132,8 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
             mBound = false;
 		}
     };
+    
+    public static FlippyPlayerService getService() { return mService; }
  
 	@Override
 	public void onClick(View v) {
@@ -208,7 +211,8 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 
     private void loadComplete() {
     	final ListView list = (ListView) findViewById(R.id.radioListView1);
-    	list.setAdapter(mService.getPlsAdapter());
+    	final PlsAdapter adapter = mService.getPlsAdapter();
+    	list.setAdapter(adapter);
     	if ( mService.getloadComplete() ) {
         	list.setVisibility(View.VISIBLE);
         	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
@@ -216,7 +220,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
     }
 
 	public void stopPlayUI(ListView list) {
-		list.getChildAt(mService.getPosition()).findViewById(R.id.EntryIcon).setVisibility(View.GONE);
+		((EntryView)list.getChildAt(mService.getPosition())).update();
 		final TextView text = (TextView) findViewById(R.id.radioTextView1);
 		text.setText(null);
 		setPPIcon(false);
@@ -226,7 +230,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 		setPPIcon(true);
 		int position = mService.getPosition();
 		list.setSelection(position);
-		list.getChildAt(position).findViewById(R.id.EntryIcon).setVisibility(View.VISIBLE);
+		((EntryView)list.getChildAt(position)).update();
 		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(position);
 		final TextView text = (TextView) findViewById(R.id.radioTextView1);
 		text.setText(entry.getTitle());
@@ -234,8 +238,8 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	
 	public void stopPlay() {
 		final ListView list = (ListView) findViewById(R.id.radioListView1);
+		mService.stopPlay();	
 		stopPlayUI(list);
-		mService.stopPlay();		
 	}
 	
 	public void startPlay(int position, int offset) {

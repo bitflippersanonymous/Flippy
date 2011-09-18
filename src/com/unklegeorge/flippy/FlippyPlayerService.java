@@ -61,7 +61,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	@SuppressWarnings("unchecked")
 	public void onCreate() {
 		final ArrayList<PlsEntry> entries = new ArrayList<PlsEntry>();
-		mAdapter = new PlsAdapter(entries, this.getApplicationContext());
+		mAdapter = new PlsAdapter(entries, this);
 		final LoadTask loadTask = new LoadTask();
 		loadTask.execute(entries);
 	}
