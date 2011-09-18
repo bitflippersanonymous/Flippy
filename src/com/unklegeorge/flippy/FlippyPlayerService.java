@@ -34,7 +34,12 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	private PlsAdapter mAdapter = null;
 	private Bundle mExtras = null;
 	private int mCurPlayingPos = 0;
+	private boolean mLoadComplete = false;
 
+	public boolean getloadComplete() {
+		return mLoadComplete;
+	}
+	
 	public PlsAdapter getPlsAdapter() {
 		return mAdapter;
 	}
@@ -128,6 +133,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 
 	public void sendLoadComplete() {
+		mLoadComplete  = true;
 		Messenger messenger = (Messenger)mExtras.get(Util.EXTRA_MESSENGER);
 		Message msg = Message.obtain();
 		try {
@@ -164,6 +170,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 		@Override
 		protected void onPreExecute() {
+			mLoadComplete = false;
 		}
 
 		private void loadPlaylists(ArrayList<PlsEntry> entries) throws XmlPullParserException, IOException {

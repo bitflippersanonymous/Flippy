@@ -62,13 +62,10 @@ import android.os.Messenger;
 
 public class FlippyRadioActivity extends Activity implements View.OnClickListener, OnClickListener {
 	private static final int ABOUT_DIALOG = 0;
-	
-
-	
+		
     private FlippyPlayerService mService;
     private boolean mBound = false;
     
-	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -91,14 +88,14 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 		final Handler handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
-		    	final ListView list = (ListView) findViewById(R.id.radioListView1);
-		    	list.setVisibility(View.VISIBLE);
-		    	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
+				loadComplete();
 			}
 		};
-        Intent intent = new Intent(this, FlippyPlayerService.class);
+		
+		Intent intent = new Intent(this, FlippyPlayerService.class);
 		intent.putExtra(Util.EXTRA_MESSENGER, new Messenger(handler));
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+		startService(intent);
+		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 	
 	@Override
@@ -126,7 +123,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
             LocalBinder binder = (LocalBinder) service;
             mService = binder.getService();
             mBound = true;
-            connectList();
+            loadComplete();
 		}
 
 		@Override
@@ -134,11 +131,6 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
             mBound = false;
 		}
     };
-    
-    private void connectList() {
-    	final ListView list = (ListView) findViewById(R.id.radioListView1);
-    	list.setAdapter(mService.getPlsAdapter());
-    }
  
 	@Override
 	public void onClick(View v) {
@@ -213,6 +205,15 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	public void onClick(DialogInterface dialog, int which) {
 		dialog.cancel();
 	}
+
+    private void loadComplete() {
+    	final ListView list = (ListView) findViewById(R.id.radioListView1);
+    	list.setAdapter(mService.getPlsAdapter());
+    	if ( mService.getloadComplete() ) {
+        	list.setVisibility(View.VISIBLE);
+        	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
+    	}
+    }
 
 	public void stopPlayUI(ListView list) {
 		list.getChildAt(mService.getPosition()).findViewById(R.id.EntryIcon).setVisibility(View.GONE);
