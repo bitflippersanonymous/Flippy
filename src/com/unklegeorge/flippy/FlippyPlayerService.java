@@ -44,7 +44,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 	
 	public boolean isPlaying() {
-		return mMediaPlayer.isPlaying();
+		return mMediaPlayer != null && mMediaPlayer.isPlaying();
 	}
 
 	public class LocalBinder extends Binder {
@@ -61,6 +61,10 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		loadTask.execute(entries);
 	}
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -75,7 +79,10 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 	@Override
 	public void onDestroy() {
-		stopPlay();
+		if ( mMediaPlayer != null ) {
+			mMediaPlayer.release();
+			mMediaPlayer = null;
+		}
 	}
 
 	public boolean startPlay(int position) {
@@ -117,13 +124,19 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 
 	public void stopPlay() {
-		if ( mMediaPlayer != null ) {
-			mMediaPlayer.release();
-			mMediaPlayer = null;
-		}
 		stopForeground(true);
 	}
 
+	public void sendLoadComplete() {
+		Messenger messenger = (Messenger)mExtras.get(Util.EXTRA_MESSENGER);
+		Message msg = Message.obtain();
+		try {
+			messenger.send(msg);
+		}
+		catch (android.os.RemoteException e) {
+			Log.w(getClass().getName(), "Exception sending message", e);
+		}
+	}
 
 	class LoadTask extends AsyncTask<ArrayList<PlsEntry>, Integer, Integer> {
 		@Override
@@ -146,17 +159,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 		@Override
 		protected void onPostExecute(Integer result) {
-			Messenger messenger = (Messenger)mExtras.get(Util.EXTRA_MESSENGER);
-			Message msg = Message.obtain();
-
-			msg.arg1=result;
-
-			try {
-				messenger.send(msg);
-			}
-			catch (android.os.RemoteException e) {
-				Log.w(getClass().getName(), "Exception sending message", e);
-			}
+			sendLoadComplete();
 		}
 
 		@Override
