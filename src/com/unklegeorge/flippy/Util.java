@@ -17,5 +17,6 @@ public class Util {
 	static final String PATH = "path";
 	static final String NAME = "name";
 	static final String PLAYLIST = "playlist";
+	static final String EXTRA_MESSENGER = "MESSENGER";
 	
 }

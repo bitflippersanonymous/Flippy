@@ -1,6 +1,7 @@
 package com.unklegeorge.flippy;
 
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,15 +55,19 @@ import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 
 public class FlippyRadioActivity extends Activity implements View.OnClickListener, OnClickListener {
 	private static final int ABOUT_DIALOG = 0;
 	
-	private int mCurPlayingPos = 0;
+
 	
     private FlippyPlayerService mService;
     private boolean mBound = false;
-	
+    
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,13 +80,24 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	startPlay(position, 0);
             }});
-	    setPPIcon(isServiceRunning(FlippyPlayerService.class.getName()));
+	    setPPIcon(false);
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
+		
+		// Done loading callback
+		final Handler handler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+		    	final ListView list = (ListView) findViewById(R.id.radioListView1);
+		    	list.setVisibility(View.VISIBLE);
+		    	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
+			}
+		};
         Intent intent = new Intent(this, FlippyPlayerService.class);
+		intent.putExtra(Util.EXTRA_MESSENGER, new Messenger(handler));
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 	
@@ -122,25 +138,22 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
     private void connectList() {
     	final ListView list = (ListView) findViewById(R.id.radioListView1);
     	list.setAdapter(mService.getPlsAdapter());
-    	// Gets called too early
-    	list.setVisibility(View.VISIBLE);
-    	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
     }
  
 	@Override
 	public void onClick(View v) {
 		switch ( v.getId() ) {
 		case R.id.imageButtonNext:
-			startPlay(mCurPlayingPos, 1);
+			startPlay(mService.getPosition(), 1);
 			break;
 		case R.id.imageButtonPP:
-			if ( stopService(new Intent(this, FlippyPlayerService.class)) )
+			if ( mService.isPlaying() )
 				stopPlay();
 			else
-				startPlay(mCurPlayingPos, 0);
+				startPlay(mService.getPosition(), 0);
 			break;
 		case R.id.imageButtonPrev:
-			startPlay(mCurPlayingPos, -1);
+			startPlay(mService.getPosition(), -1);
 			break;
 		default:
 		}
@@ -200,53 +213,47 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	public void onClick(DialogInterface dialog, int which) {
 		dialog.cancel();
 	}
+
+	public void stopPlayUI(ListView list) {
+		list.getChildAt(mService.getPosition()).findViewById(R.id.EntryIcon).setVisibility(View.GONE);
+		final TextView text = (TextView) findViewById(R.id.radioTextView1);
+		text.setText(null);
+		setPPIcon(false);
+	}
+
+	public void startPlayUI(ListView list) {
+		setPPIcon(true);
+		int position = mService.getPosition();
+		list.setSelection(position);
+		list.getChildAt(position).findViewById(R.id.EntryIcon).setVisibility(View.VISIBLE);
+		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(position);
+		final TextView text = (TextView) findViewById(R.id.radioTextView1);
+		text.setText(entry.getTitle());
+	}
 	
 	public void stopPlay() {
 		final ListView list = (ListView) findViewById(R.id.radioListView1);
-		final TextView text = (TextView) findViewById(R.id.radioTextView1);
-		list.getChildAt(mCurPlayingPos).findViewById(R.id.EntryIcon).setVisibility(View.GONE);
-		text.setText(null);
-	    setPPIcon(false);
+		stopPlayUI(list);
+		mService.stopPlay();		
 	}
 	
 	public void startPlay(int position, int offset) {
-		mService.startPlay(position);
-		
-		/*
-		stopPlay();
 		final ListView list = (ListView) findViewById(R.id.radioListView1);
-
+		stopPlayUI(list);
+		
 		final int newPos = position + offset;
 		if ( newPos < 0 || newPos >= list.getAdapter().getCount() ) {
-			mCurPlayingPos = 0;
+			position = 0;
 		} else {
-			mCurPlayingPos = position + offset;
+			position = position + offset;
 		}
 		
-		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(mCurPlayingPos);
-		
-		list.setSelection(mCurPlayingPos);
-		list.getChildAt(mCurPlayingPos).findViewById(R.id.EntryIcon).setVisibility(View.VISIBLE);
-		final TextView text = (TextView) findViewById(R.id.radioTextView1);
-		text.setText(entry.getTitle());
-		
-	    Intent intent = new Intent(this, FlippyPlayerService.class);
-	    intent.putExtra(PlsEntry.PLSENTRY, entry);
-	    intent.setAction(FlippyPlayerService.ACTION_PLAY);
-	    startService(intent);
-	    setPPIcon(true);
-	    */
-	}
+		if ( !mService.startPlay(position) )
+			return;
 	
-	private boolean isServiceRunning(String name) {
-	    ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-	    for ( RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE) ) {
-	        if ( name.equals(service.service.getClassName()) ) {
-	            return true;
-	        }
-	    }
-	    return false;
+		startPlayUI(list);
 	}
+
 
 	private void setPPIcon(boolean state) {
 		ImageView buttonPlay = (ImageView) findViewById(R.id.imageButtonPP);
