@@ -36,6 +36,12 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	private int mCurPlayingPos = 0;
 	private boolean mLoadComplete = false;
 
+	enum MediaState {
+		STOP, PREPARE, PLAY
+	}
+	
+	private MediaState mState = MediaState.STOP;
+	
 	public boolean getloadComplete() {
 		return mLoadComplete;
 	}
@@ -48,8 +54,8 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		return mCurPlayingPos;
 	}
 	
-	public boolean isPlaying() {
-		return mMediaPlayer != null && mMediaPlayer.isPlaying();
+	public MediaState getState() {
+		return mState;
 	}
 
 	public class LocalBinder extends Binder {
@@ -80,6 +86,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	@Override
 	public void onPrepared(MediaPlayer mp) {
 		mp.start();
+		mState = MediaState.PLAY;
 		sendUpdate();
 	}
 
@@ -89,6 +96,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 			mMediaPlayer.release();
 			mMediaPlayer = null;
 		}
+		mState = MediaState.STOP;
 	}
 
 	public boolean startPlay(int position) {
@@ -115,6 +123,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		}
 
 		mMediaPlayer.prepareAsync();
+		mState = MediaState.PREPARE;
 
 		Intent radioIntent = new Intent(getApplicationContext(), FlippyRadioActivity.class);
 		PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0,
@@ -132,7 +141,6 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	public void stopPlay() {
 		stopForeground(true);
 		onDestroy();
-		sendUpdate();
 	}
 
 	public void sendUpdate() {
@@ -225,13 +233,13 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 				in.close();
 				page = sb.toString();
 			} catch (Exception e) {
-				page = e.getMessage();
+				Log.w(getClass().getName(), "Exception http get", e);
 			} finally {
 				if (in != null) {
 					try {
 						in.close();
 					} catch (Exception e) {
-						page = e.getMessage();
+						Log.w(getClass().getName(), "Exception http get", e);
 					}
 				}
 			}

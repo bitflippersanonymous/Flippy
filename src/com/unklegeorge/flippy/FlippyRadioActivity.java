@@ -44,10 +44,17 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	    list.setOnItemClickListener(new OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            	if ( mService.isPlaying() && mService.getPosition() == position )
-    				stopPlay();
-            	else
+            	switch ( mService.getState() ) {
+            	case PREPARE:
+            	case PLAY:
+            		if ( mService.getPosition() == position ) {
+            			stopPlay();
+            			break;
+            		}
+            	default:
             		startPlay(position, 0);
+            	}
+            		
             }});
 	    setPPIcon(false);
 	}
@@ -113,7 +120,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 			startPlay(mService.getPosition(), 1);
 			break;
 		case R.id.imageButtonPP:
-			if ( mService.isPlaying() )
+			if ( mService.getState() == FlippyPlayerService.MediaState.PLAY )
 				stopPlay();
 			else
 				startPlay(mService.getPosition(), 0);

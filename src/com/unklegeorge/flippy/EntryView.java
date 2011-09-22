@@ -55,7 +55,9 @@ public class EntryView extends LinearLayout {
         title.setText(mEntry.getTitle());
 
         FlippyPlayerService service = FlippyRadioActivity.getService();
-		if ( service.isPlaying() && service.getPlsAdapter().getItem(service.getPosition()) == mEntry ) {
+        if ( (service.getState() == FlippyPlayerService.MediaState.PREPARE 
+        		|| service.getState() == FlippyPlayerService.MediaState.PLAY)
+        	&& service.getPlsAdapter().getItem(service.getPosition()) == mEntry ) {
 			findViewById(R.id.EntryIcon).setVisibility(View.VISIBLE);
 		} else {
 			findViewById(R.id.EntryIcon).setVisibility(View.GONE);
