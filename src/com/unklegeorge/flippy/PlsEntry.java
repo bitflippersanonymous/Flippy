@@ -1,22 +1,25 @@
 package com.unklegeorge.flippy;
 
+import java.util.HashMap;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-class PlsEntry implements Parcelable {
+class PlsEntry /*implements Parcelable*/ {
     public static final String PLSENTRY = Util.PACKAGE + ".PLSENTRY";
-
-	private final String mFile;
-	private String mTitle;
-	public PlsEntry(String file, String title) {
-		mFile = file; mTitle = title;
-	}
-	public void setTitle(String title) {
-		mTitle = title;
-	}
-	public String getFile() { return mFile; }
-	public String getTitle() { return mTitle; }
 	
+	public enum Tags { item, title, description, enclosure, author, pubDate, keywords }
+    
+	private final HashMap<Tags, String> mData;
+	public PlsEntry(HashMap<Tags, String> data) {
+		mData = data;
+	}
+	
+	public String get(Tags tag) {
+		return mData.get(tag);
+	}
+		
+	/*
 	@Override
 	public int describeContents() {
 		return 0;
@@ -41,6 +44,7 @@ class PlsEntry implements Parcelable {
 			return new PlsEntry[size];
 		}
 	};
+	*/
 }
 
 

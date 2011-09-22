@@ -3,6 +3,8 @@ package com.unklegeorge.flippy;
 
 import java.util.WeakHashMap;
 
+import com.unklegeorge.flippy.PlsEntry.Tags;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Messenger;
@@ -52,7 +54,7 @@ public class EntryView extends LinearLayout {
 	
 	public void update() {
         TextView title = (TextView) findViewById(R.id.entryTitle);
-        title.setText(mEntry.getTitle());
+        title.setText(mEntry.get(Tags.title));
 
         FlippyPlayerService service = FlippyRadioActivity.getService();
         if ( (service.getState() == FlippyPlayerService.MediaState.PREPARE 

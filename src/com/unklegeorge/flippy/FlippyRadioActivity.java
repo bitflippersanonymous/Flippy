@@ -3,6 +3,7 @@ package com.unklegeorge.flippy;
 import java.io.IOException;
 import java.io.InputStream;
 import com.unklegeorge.flippy.FlippyPlayerService.LocalBinder;
+import com.unklegeorge.flippy.PlsEntry.Tags;
 import com.unklegeorge.flippy.R.drawable;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -208,11 +209,10 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	public void startPlayUI(ListView list) {
 		setPPIcon(true);
 		int position = mService.getPosition();
-		list.setSelection(position);
 		((EntryView)list.getChildAt(position)).update();
 		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(position);
 		final TextView text = (TextView) findViewById(R.id.radioTextView1);
-		text.setText(entry.getTitle());
+		text.setText(entry.get(Tags.title));
 	}
 	
 	public void stopPlay() {

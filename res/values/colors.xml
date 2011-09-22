@@ -5,7 +5,7 @@
     
     <style name="PlaylistTheme" parent="android:Theme">
         <item name="android:windowBackground">@color/PlaylistBackground</item>
- 		<item name="android:textSize">20sp</item>
+ 		<item name="android:textSize">14sp</item>
     </style>
 
 	<style name="PlayingTheme" parent="android:Theme">
