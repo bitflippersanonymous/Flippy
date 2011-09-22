@@ -200,7 +200,6 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
     }
 
 	public void stopPlayUI(ListView list) {
-		((EntryView)list.getChildAt(mService.getPosition())).update();
 		final TextView text = (TextView) findViewById(R.id.radioTextView1);
 		text.setText(null);
 		setPPIcon(false);
@@ -209,7 +208,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	public void startPlayUI(ListView list) {
 		setPPIcon(true);
 		int position = mService.getPosition();
-		((EntryView)list.getChildAt(position)).update();
+		//((EntryView)list.getChildAt(position)).update();
 		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(position);
 		final TextView text = (TextView) findViewById(R.id.radioTextView1);
 		text.setText(entry.get(Tags.title));

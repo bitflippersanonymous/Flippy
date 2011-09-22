@@ -4,6 +4,7 @@ package com.unklegeorge.flippy;
 import java.util.WeakHashMap;
 
 import com.unklegeorge.flippy.PlsEntry.Tags;
+import com.unklegeorge.flippy.FlippyPlayerService.MediaState;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class EntryView extends LinearLayout {
@@ -53,17 +55,35 @@ public class EntryView extends LinearLayout {
 	}
 	
 	public void update() {
-        TextView title = (TextView) findViewById(R.id.entryTitle);
+        final TextView title = (TextView) findViewById(R.id.entryTitle);
         title.setText(mEntry.get(Tags.title));
-
-        FlippyPlayerService service = FlippyRadioActivity.getService();
-        if ( (service.getState() == FlippyPlayerService.MediaState.PREPARE 
-        		|| service.getState() == FlippyPlayerService.MediaState.PLAY)
-        	&& service.getPlsAdapter().getItem(service.getPosition()) == mEntry ) {
-			findViewById(R.id.EntryIcon).setVisibility(View.VISIBLE);
-		} else {
+        
+        final FlippyPlayerService service = FlippyRadioActivity.getService();
+        final PlsEntry curEntry = service.getPlsAdapter().getItem(service.getPosition());
+        
+        switch ( service.getState() ) {
+        case PREPARE:
+        	if ( curEntry == mEntry ) {
+        		findViewById(R.id.progressBarEntry).setVisibility(View.VISIBLE);
+        		findViewById(R.id.EntryIcon).setVisibility(View.GONE);
+        	} else {
+        		findViewById(R.id.progressBarEntry).setVisibility(View.GONE);
+    			findViewById(R.id.EntryIcon).setVisibility(View.GONE);
+        	}
+        	break;
+        case PLAY:
+        	if ( curEntry == mEntry ) {
+    			findViewById(R.id.EntryIcon).setVisibility(View.VISIBLE);
+        		findViewById(R.id.progressBarEntry).setVisibility(View.GONE);
+        	} else {
+        		findViewById(R.id.progressBarEntry).setVisibility(View.GONE);
+    			findViewById(R.id.EntryIcon).setVisibility(View.GONE);
+        	}
+        	break;
+        default:
+    		findViewById(R.id.progressBarEntry).setVisibility(View.GONE);
 			findViewById(R.id.EntryIcon).setVisibility(View.GONE);
-		}
+        }
 	}
 
 }

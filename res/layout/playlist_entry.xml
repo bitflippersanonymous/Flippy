@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent" android:layout_height="wrap_content">
-	<ImageView android:id="@+id/EntryIcon" android:layout_width="wrap_content" 
-		android:src="@android:drawable/ic_media_play" android:paddingLeft="2sp" 
+	<ImageView android:id="@+id/EntryIcon" android:layout_width="wrap_content"
+		android:src="@android:drawable/ic_media_play" android:paddingLeft="2sp"
 		android:paddingRight="2sp" android:layout_height="match_parent"
-		android:visibility="gone"/>
+		android:visibility="gone" />
+	<ProgressBar android:paddingLeft="2sp" android:paddingRight="2sp"
+		android:layout_width="25sp" android:layout_height="25sp"
+		android:id="@+id/progressBarEntry" android:visibility="gone"/>
 	<TextView android:id="@+id/entryTitle" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" style="@style/PlaylistTheme"
-		android:text="Sample" android:gravity="center" android:paddingLeft="2sp"/>
+		android:text="Sample" android:gravity="center" android:paddingLeft="2sp" />
 </LinearLayout>

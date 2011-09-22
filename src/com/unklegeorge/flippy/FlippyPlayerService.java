@@ -1,19 +1,6 @@
 package com.unklegeorge.flippy;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.ArrayList;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.xmlpull.v1.XmlPullParserException;
-
-import com.unklegeorge.flippy.PlsEntry.Tags;
-
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -28,6 +15,9 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
+
+import com.unklegeorge.flippy.PlsEntry.Tags;
+
 
 public class FlippyPlayerService extends Service implements MediaPlayer.OnPreparedListener {
 	public static final String ACTION_PLAY = Util.PACKAGE + ".action.PLAY";
@@ -104,13 +94,12 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	public boolean startPlay(int position) {
 		if ( mMediaPlayer == null ) {
 			mMediaPlayer = new MediaPlayer();
+			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			mMediaPlayer.setOnPreparedListener(this);
 		}
 		
-		mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-		mMediaPlayer.setOnPreparedListener(this);
-
 		PlsEntry entry = mAdapter.getItem(mCurPlayingPos = position);
-
+		mMediaPlayer.reset();
 		try {
 			mMediaPlayer.setDataSource(entry.get(Tags.enclosure));
 		} catch (IllegalArgumentException e) {
@@ -137,16 +126,17 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		notification.setLatestEventInfo(getApplicationContext(), "Flippy Player",
 				"Playing: " + entry.get(Tags.title), pi);
 		startForeground(R.string.radio_service_notif_id, notification);
+		sendUpdate();
 		return true;
 	}
 
 	public void stopPlay() {
+		sendUpdate();
 		stopForeground(true);
 		onDestroy();
 	}
 
 	public void sendUpdate() {
-		mLoadComplete  = true;
 		Messenger messenger = (Messenger)mExtras.get(Util.EXTRA_MESSENGER);
 		Message msg = Message.obtain();
 		try {
@@ -179,6 +169,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 		@Override
 		protected void onPostExecute(Integer result) {
+			mLoadComplete  = true;
 			sendUpdate();
 		}
 
