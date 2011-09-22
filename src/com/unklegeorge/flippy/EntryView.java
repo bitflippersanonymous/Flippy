@@ -1,5 +1,8 @@
 package com.unklegeorge.flippy;
 
+
+import java.util.WeakHashMap;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Messenger;
@@ -11,13 +14,15 @@ import android.widget.TextView;
 
 public class EntryView extends LinearLayout {
 
+    private static final WeakHashMap<EntryView, ?> sInstances = new WeakHashMap<EntryView, Object>();
 	private PlsEntry mEntry = null;
 	
 	public EntryView(Context context) {
 		super(context);
 		LayoutInflater.from(context).inflate(R.layout.playlist_entry, this, true);
+		sInstances.put(this, null);
 	}
-
+	
 	@Override
 	protected void onVisibilityChanged (View changedView, int visibility) {
 		Log.i(getClass().getName(), "Visibility Changed");
@@ -29,12 +34,28 @@ public class EntryView extends LinearLayout {
 		update();
 	}
 	
+	public static void updateAll() {
+		int updates = 0;
+		try {
+			for (EntryView view : sInstances.keySet()) {
+				if ( view.getVisibility() == View.VISIBLE ) {
+					view.update();
+					updates++;
+				}
+			}
+		} catch (Throwable x) {
+			Log.w(EntryView.class.getName(), "Error when updating entry views.", x);
+		}
+
+		//Log.i(EntryView.class.getName(), String.valueOf(sInstances.size()) + " " + String.valueOf(updates));
+	}
+	
 	public void update() {
         TextView title = (TextView) findViewById(R.id.entryTitle);
         title.setText(mEntry.getTitle());
 
-        FlippyPlayerService playServ = FlippyRadioActivity.getService();
-		if ( playServ.isPlaying() && playServ.getPlsAdapter().getItem(playServ.getPosition()) == mEntry ) {
+        FlippyPlayerService service = FlippyRadioActivity.getService();
+		if ( service.isPlaying() && service.getPlsAdapter().getItem(service.getPosition()) == mEntry ) {
 			findViewById(R.id.EntryIcon).setVisibility(View.VISIBLE);
 		} else {
 			findViewById(R.id.EntryIcon).setVisibility(View.GONE);

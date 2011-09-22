@@ -1,63 +1,31 @@
 package com.unklegeorge.flippy;
 
-import java.io.BufferedReader;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.xmlpull.v1.XmlPullParserException;
-
 import com.unklegeorge.flippy.FlippyPlayerService.LocalBinder;
 import com.unklegeorge.flippy.R.drawable;
-
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.XmlResourceParser;
-import android.database.DataSetObserver;
-import android.graphics.Canvas;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.MediaController;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 
@@ -76,7 +44,10 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	    list.setOnItemClickListener(new OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            	startPlay(position, 0);
+            	if ( mService.isPlaying() && mService.getPosition() == position )
+    				stopPlay();
+            	else
+            		startPlay(position, 0);
             }});
 	    setPPIcon(false);
 	}
@@ -89,7 +60,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 		final Handler handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
-				loadComplete();
+				update();
 			}
 		};
 		
@@ -124,7 +95,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
             LocalBinder binder = (LocalBinder) service;
             mService = binder.getService();
             mBound = true;
-            loadComplete();
+            update();
 		}
 
 		@Override
@@ -209,13 +180,14 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 		dialog.cancel();
 	}
 
-    private void loadComplete() {
+    private void update() {
     	final ListView list = (ListView) findViewById(R.id.radioListView1);
     	final PlsAdapter adapter = mService.getPlsAdapter();
     	list.setAdapter(adapter);
     	if ( mService.getloadComplete() ) {
         	list.setVisibility(View.VISIBLE);
         	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
+        	EntryView.updateAll();
     	}
     }
 
@@ -244,7 +216,6 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	
 	public void startPlay(int position, int offset) {
 		final ListView list = (ListView) findViewById(R.id.radioListView1);
-		stopPlayUI(list);
 		
 		final int newPos = position + offset;
 		if ( newPos < 0 || newPos >= list.getAdapter().getCount() ) {
@@ -267,11 +238,5 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 		else
 			buttonPlay.setImageDrawable(getResources().getDrawable(R.drawable.play));
 	}
-	
-
-	
-
-
-	
 	
 }

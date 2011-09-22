@@ -80,6 +80,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	@Override
 	public void onPrepared(MediaPlayer mp) {
 		mp.start();
+		sendUpdate();
 	}
 
 	@Override
@@ -130,9 +131,11 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 	public void stopPlay() {
 		stopForeground(true);
+		onDestroy();
+		sendUpdate();
 	}
 
-	public void sendLoadComplete() {
+	public void sendUpdate() {
 		mLoadComplete  = true;
 		Messenger messenger = (Messenger)mExtras.get(Util.EXTRA_MESSENGER);
 		Message msg = Message.obtain();
@@ -165,7 +168,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 		@Override
 		protected void onPostExecute(Integer result) {
-			sendLoadComplete();
+			sendUpdate();
 		}
 
 		@Override
