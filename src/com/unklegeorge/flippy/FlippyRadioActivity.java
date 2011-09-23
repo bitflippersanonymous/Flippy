@@ -125,7 +125,9 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 				startPlay(mService.getPosition(), 0);
 			break;
 		case R.id.imageButtonHeader:
-			showDialog(ABOUT_DIALOG);
+			Intent intent = new Intent(this, FlippyInfoActivity.class);
+			startActivity(intent);
+			//showDialog(ABOUT_DIALOG);
 		default:
 		}
 	}
