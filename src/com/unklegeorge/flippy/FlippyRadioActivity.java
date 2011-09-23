@@ -225,6 +225,9 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 		}
 		
 		mService.startPlay(position);
+		
+		Intent intent = new Intent(this, FlippyInfoActivity.class);
+		startActivity(intent);
 	}
 
 

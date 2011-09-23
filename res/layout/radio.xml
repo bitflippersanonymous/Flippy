@@ -19,21 +19,7 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content" />
 	</LinearLayout>
 
-	<SeekBar android:id="@+id/seekBar" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" />
-
-
-	<LinearLayout android:layout_height="wrap_content"
-		android:id="@+id/LinearLayoutControl" android:layout_width="match_parent"
-		android:gravity="left" style="@style/PlayingTheme">
-		<ImageView android:id="@+id/imageButtonPP"
-			android:paddingLeft="4sp" android:paddingRight="4sp" android:onClick="onClick"
-			android:src="@drawable/play" android:layout_width="50sp"
-			android:layout_height="60sp" />
-		<TextView android:id="@+id/radioTextView1"
-			android:layout_width="match_parent" android:gravity="fill"
-			android:text="Sample Playlist Item" android:paddingLeft="4sp"
-			android:layout_height="fill_parent" />
-	</LinearLayout>
+	<include layout="@layout/linearlayoutfooter" android:id="@+id/LinearLayoutFooterRadio"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 
 </LinearLayout>
