@@ -118,18 +118,18 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	@Override
 	public void onClick(View v) {
 		switch ( v.getId() ) {
-		case R.id.imageButtonNext:
+		/*case R.id.imageButtonNext:
 			startPlay(mService.getPosition(), 1);
-			break;
+			break;*/
 		case R.id.imageButtonPP:
 			if ( mService.getState() != MediaState.STOP )
 				stopPlay();
 			else
 				startPlay(mService.getPosition(), 0);
 			break;
-		case R.id.imageButtonPrev:
+		/*case R.id.imageButtonPrev:
 			startPlay(mService.getPosition(), -1);
-			break;
+			break;*/
 		default:
 		}
 	}

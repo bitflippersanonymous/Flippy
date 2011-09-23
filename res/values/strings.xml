@@ -16,24 +16,5 @@
     <string name="pressed">Pressed</string>
     <string name="auto_hide">Auto Hide Dialog</string>
 
-    <string name="planet_prompt">Choose a planet</string>
-    <string-array name="planets">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-    </string-array>
-
-
-	<string-array name="sarray">
-		<item>Cow</item>
-		<item>Cat</item>
-		<item>Dog</item>
-		<item>Ant</item>
-	</string-array>
-		<string name="put_something_here">Put Something Here</string>
+	<string name="put_something_here">Put Something Here</string>
 </resources>

@@ -1,45 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="fill_parent" android:orientation="vertical"
-	android:id="@+id/LinearLayoutRadio"
-	android:layout_width="match_parent">
+	android:id="@+id/LinearLayoutRadio" android:layout_width="match_parent"
+	style="@style/PlaylistTheme">
+
+	<LinearLayout android:layout_height="wrap_content"
+		android:id="@+id/LinearLayoutHeader" android:layout_width="match_parent"
+		android:gravity="left" style="@style/HeaderTheme">
+		<ImageView android:id="@+id/imageButtonHeader"
+			android:paddingLeft="4sp" android:paddingRight="4sp" android:onClick="onClick"
+			android:src="@drawable/a" android:layout_width="50sp"
+			android:layout_height="40sp" />
+		<TextView android:id="@+id/textViewHeader"
+			android:layout_width="match_parent" android:text="Athey Creek Podcasts"
+			android:paddingLeft="4sp" android:layout_height="fill_parent"
+			android:gravity="center" style="@style/HeaderTheme" />
+	</LinearLayout>
 
 	<ListView android:layout_height="fill_parent" android:id="@+id/radioListView1"
 		android:layout_weight="0.30" android:layout_width="match_parent"
 		android:gravity="bottom" android:background="@color/PlaylistBackground"
-		android:dividerHeight="2sp"	android:padding="2sp" android:visibility="gone"/>
-	
-	<LinearLayout android:gravity="center" android:layout_height="fill_parent" 
-		android:id="@+id/linearLayoutProgress"
+		android:dividerHeight="2sp" android:padding="2sp" android:visibility="gone" />
+
+	<LinearLayout android:gravity="center"
+		android:layout_height="fill_parent" android:id="@+id/linearLayoutProgress"
 		android:layout_weight="0.30" android:layout_width="match_parent"
-		android:background="@color/PlaylistBackground">	
-		<ProgressBar android:id="@+id/progressBar1" android:layout_width="wrap_content" 
-			android:layout_height="wrap_content"/>
+		android:background="@color/PlaylistBackground">
+		<ProgressBar android:id="@+id/progressBar1"
+			android:layout_width="wrap_content" android:layout_height="wrap_content" />
 	</LinearLayout>
-	
-	<TextView android:id="@+id/radioTextView1"
-		android:layout_width="match_parent" android:gravity="center"
-		android:text="" android:padding="2sp" android:layout_height="50sp"
-		style="@style/PlayingTheme"/>
-			
-	<LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent"
-		android:gravity="bottom">
+
+	<SeekBar android:id="@+id/seekBar" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" />
+
+
 	<LinearLayout android:layout_height="wrap_content"
-		android:id="@+id/LinearLayoutControl" android:layout_width="match_parent" 
-		android:gravity="center">
-		<ImageView android:id="@+id/imageButtonPrev"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:src="@android:drawable/ic_media_previous"
-			android:onClick="onClick"/>
-		<ImageView android:id="@+id/imageButtonPP" android:paddingLeft="4sp"
-			android:paddingRight="4sp"
-			android:onClick="onClick" android:src="@drawable/play" 
-			android:layout_width="50sp" android:layout_height="60sp"/>
-		<ImageView android:id="@+id/imageButtonNext"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:src="@android:drawable/ic_media_next"
-			android:onClick="onClick"/>
-	</LinearLayout>
+		android:id="@+id/LinearLayoutControl" android:layout_width="match_parent"
+		android:gravity="left" style="@style/PlayingTheme">
+		<ImageView android:id="@+id/imageButtonPP"
+			android:paddingLeft="4sp" android:paddingRight="4sp" android:onClick="onClick"
+			android:src="@drawable/play" android:layout_width="50sp"
+			android:layout_height="60sp" />
+		<TextView android:id="@+id/radioTextView1"
+			android:layout_width="match_parent" android:gravity="fill"
+			android:text="Sample Playlist Item" android:paddingLeft="4sp"
+			android:layout_height="fill_parent" />
 	</LinearLayout>
 
 </LinearLayout>
