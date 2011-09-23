@@ -118,18 +118,14 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	@Override
 	public void onClick(View v) {
 		switch ( v.getId() ) {
-		/*case R.id.imageButtonNext:
-			startPlay(mService.getPosition(), 1);
-			break;*/
 		case R.id.imageButtonPP:
 			if ( mService.getState() != MediaState.STOP )
 				stopPlay();
 			else
 				startPlay(mService.getPosition(), 0);
 			break;
-		/*case R.id.imageButtonPrev:
-			startPlay(mService.getPosition(), -1);
-			break;*/
+		case R.id.imageButtonHeader:
+			showDialog(ABOUT_DIALOG);
 		default:
 		}
 	}
@@ -198,7 +194,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
     		return;
     	
     	list.setVisibility(View.VISIBLE);
-    	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
+    	findViewById(R.id.progressBarLoading).setVisibility(View.GONE);
     	EntryView.updateAll();
     	
 		final TextView text = (TextView) findViewById(R.id.radioTextView1);

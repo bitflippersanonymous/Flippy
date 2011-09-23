@@ -4,29 +4,18 @@
 	android:id="@+id/LinearLayoutRadio" android:layout_width="match_parent"
 	style="@style/PlaylistTheme">
 
-	<LinearLayout android:layout_height="wrap_content"
-		android:id="@+id/LinearLayoutHeader" android:layout_width="match_parent"
-		android:gravity="left" style="@style/HeaderTheme">
-		<ImageView android:id="@+id/imageButtonHeader"
-			android:paddingLeft="4sp" android:paddingRight="4sp" android:onClick="onClick"
-			android:src="@drawable/a" android:layout_width="50sp"
-			android:layout_height="40sp" />
-		<TextView android:id="@+id/textViewHeader"
-			android:layout_width="match_parent" android:text="Athey Creek Podcasts"
-			android:paddingLeft="4sp" android:layout_height="fill_parent"
-			android:gravity="center" style="@style/HeaderTheme" />
-	</LinearLayout>
-
-	<ListView android:layout_height="fill_parent" android:id="@+id/radioListView1"
-		android:layout_weight="0.30" android:layout_width="match_parent"
-		android:gravity="bottom" android:background="@color/PlaylistBackground"
-		android:dividerHeight="2sp" android:padding="2sp" android:visibility="gone" />
+	<include layout="@layout/linearlayoutheader" android:id="@+id/LinearLayoutHeaderRadio"
+		android:layout_width="match_parent" android:layout_height="wrap_content" />
 
 	<LinearLayout android:gravity="center"
 		android:layout_height="fill_parent" android:id="@+id/linearLayoutProgress"
 		android:layout_weight="0.30" android:layout_width="match_parent"
 		android:background="@color/PlaylistBackground">
-		<ProgressBar android:id="@+id/progressBar1"
+		<ListView android:layout_height="fill_parent" android:id="@+id/radioListView1"
+			android:layout_weight="0.30" android:layout_width="match_parent"
+			android:gravity="bottom" android:dividerHeight="2sp" android:padding="2sp"
+			android:visibility="gone" />
+		<ProgressBar android:id="@+id/progressBarLoading"
 			android:layout_width="wrap_content" android:layout_height="wrap_content" />
 	</LinearLayout>
 
