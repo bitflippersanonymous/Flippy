@@ -3,6 +3,7 @@ package com.unklegeorge.flippy;
 import java.io.IOException;
 import java.io.InputStream;
 import com.unklegeorge.flippy.FlippyPlayerService.LocalBinder;
+import com.unklegeorge.flippy.FlippyPlayerService.MediaState;
 import com.unklegeorge.flippy.PlsEntry.Tags;
 import com.unklegeorge.flippy.R.drawable;
 import android.app.Activity;
@@ -121,7 +122,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 			startPlay(mService.getPosition(), 1);
 			break;
 		case R.id.imageButtonPP:
-			if ( mService.getState() == FlippyPlayerService.MediaState.PLAY )
+			if ( mService.getState() != MediaState.STOP )
 				stopPlay();
 			else
 				startPlay(mService.getPosition(), 0);
@@ -188,36 +189,33 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 		dialog.cancel();
 	}
 
+	// Is a little heavy, and is called every time the service changes something
     private void update() {
     	final ListView list = (ListView) findViewById(R.id.radioListView1);
     	final PlsAdapter adapter = mService.getPlsAdapter();
     	list.setAdapter(adapter);
-    	if ( mService.getloadComplete() ) {
-        	list.setVisibility(View.VISIBLE);
-        	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
-        	EntryView.updateAll();
-    	}
+    	if ( !mService.getloadComplete() ) 
+    		return;
+    	
+    	list.setVisibility(View.VISIBLE);
+    	findViewById(R.id.linearLayoutProgress).setVisibility(View.GONE);
+    	EntryView.updateAll();
+    	
+		final TextView text = (TextView) findViewById(R.id.radioTextView1);
+		final int position = mService.getPosition();
+		if ( mService.getState() == MediaState.STOP ) { 
+			setPPIcon(false);
+			text.setText(null);
+		} else {
+			setPPIcon(true);
+			final PlsEntry entry = (PlsEntry) list.getItemAtPosition(position);
+			text.setText(entry.get(Tags.title));			
+		}
+        
     }
-
-	public void stopPlayUI(ListView list) {
-		final TextView text = (TextView) findViewById(R.id.radioTextView1);
-		text.setText(null);
-		setPPIcon(false);
-	}
-
-	public void startPlayUI(ListView list) {
-		setPPIcon(true);
-		int position = mService.getPosition();
-		//((EntryView)list.getChildAt(position)).update();
-		final PlsEntry entry = (PlsEntry) list.getItemAtPosition(position);
-		final TextView text = (TextView) findViewById(R.id.radioTextView1);
-		text.setText(entry.get(Tags.title));
-	}
 	
 	public void stopPlay() {
-		final ListView list = (ListView) findViewById(R.id.radioListView1);
 		mService.stopPlay();	
-		stopPlayUI(list);
 	}
 	
 	public void startPlay(int position, int offset) {
@@ -230,10 +228,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 			position = position + offset;
 		}
 		
-		if ( !mService.startPlay(position) )
-			return;
-	
-		startPlayUI(list);
+		mService.startPlay(position);
 	}
 
 

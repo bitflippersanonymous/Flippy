@@ -19,7 +19,8 @@ import android.util.Log;
 import com.unklegeorge.flippy.PlsEntry.Tags;
 
 
-public class FlippyPlayerService extends Service implements MediaPlayer.OnPreparedListener {
+public class FlippyPlayerService extends Service implements MediaPlayer.OnPreparedListener, 
+	MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 	public static final String ACTION_PLAY = Util.PACKAGE + ".action.PLAY";
 	private MediaPlayer mMediaPlayer = null;
 	private final IBinder mBinder = new LocalBinder();
@@ -131,9 +132,10 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 
 	public void stopPlay() {
-		sendUpdate();
 		stopForeground(true);
 		onDestroy();
+		sendUpdate();
+		Log.i(getClass().getName(), "Stop Play");
 	}
 
 	public void sendUpdate() {
@@ -179,5 +181,16 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		}
 
 
+	}
+
+	@Override
+	public boolean onError(MediaPlayer mp, int what, int extra) {
+		onDestroy();
+		return false;
+	}
+
+	@Override
+	public void onCompletion(MediaPlayer mp) {
+		onDestroy();		
 	}
 }
