@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="wrap_content"
+	android:id="@+id/LinearLayoutHeader" android:layout_width="match_parent"
+	android:gravity="left" style="@style/HeaderTheme">
+	<ImageView android:id="@+id/imageButtonHeader"
+		android:paddingLeft="4sp" android:paddingRight="4sp" android:onClick="onClick"
+		android:src="@drawable/a" android:layout_width="50sp"
+		android:layout_height="40sp" />
+	<TextView android:id="@+id/textViewHeader"
+		android:layout_width="match_parent" android:text="Athey Creek Podcasts"
+		android:paddingLeft="4sp" android:layout_height="fill_parent"
+		android:gravity="center" style="@style/HeaderTheme" />
+</LinearLayout>
+
