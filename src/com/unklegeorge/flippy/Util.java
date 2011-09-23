@@ -12,6 +12,7 @@ public class Util {
 	
 	static final String TAG = "FlippyRadio";
 	static final String NEWLINE = System.getProperty("line.separator");
+	static final String SPACE = " ";
 
 	// PLS file
 	static final String FILE = "File";

@@ -15,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -59,6 +60,12 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
             		
             }});
 	    setPPIcon(false);
+	    
+	    //TODO: Put in static method in util
+        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Amaranth-Italic.otf");
+        TextView tv = (TextView) findViewById(R.id.textViewHeader);
+        tv.setTypeface(tf);
+
 	}
 
 	@Override

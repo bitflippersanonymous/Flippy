@@ -8,7 +8,7 @@
 	<ProgressBar android:paddingLeft="2sp" android:paddingRight="2sp"
 		android:layout_width="25sp" android:layout_height="25sp"
 		android:id="@+id/progressBarEntry" android:visibility="gone"/>
-	<TextView android:id="@+id/entryTitle" android:layout_width="wrap_content"
+	<TextView android:id="@+id/entryTitle" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" style="@style/PlaylistTheme"
-		android:text="Sample" android:gravity="center" android:paddingLeft="2sp" />
+		android:text="Sample" android:gravity="left" android:paddingLeft="2sp" />
 </LinearLayout>

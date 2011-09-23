@@ -56,7 +56,9 @@ public class EntryView extends LinearLayout {
 	
 	public void update() {
         final TextView title = (TextView) findViewById(R.id.entryTitle);
-        title.setText(mEntry.get(Tags.title));
+        String text = mEntry.get(Tags.title) + Util.NEWLINE 
+        	+ mEntry.get(Tags.verses) + Util.SPACE + mEntry.get(Tags.pubDate);
+        title.setText(text);
         
         final FlippyPlayerService service = FlippyRadioActivity.getService();
         final PlsEntry curEntry = service.getPlsAdapter().getItem(service.getPosition());

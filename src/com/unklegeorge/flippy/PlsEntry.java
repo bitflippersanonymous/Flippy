@@ -1,18 +1,32 @@
 package com.unklegeorge.flippy;
 
+import java.sql.Time;
 import java.util.HashMap;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.format.DateFormat;
 
 class PlsEntry /*implements Parcelable*/ {
     public static final String PLSENTRY = Util.PACKAGE + ".PLSENTRY";
 	
-	public enum Tags { item, title, description, enclosure, author, pubDate, keywords }
+	public enum Tags { item, title, verses, description, enclosure, author, pubDate, keywords }
     
 	private final HashMap<Tags, String> mData;
 	public PlsEntry(HashMap<Tags, String> data) {
 		mData = data;
+		if ( mData.containsKey(Tags.title) ) {
+			String bybar[] = get(Tags.title).split("[|]");
+			String byphen[] = bybar[0].split(" - ", -1);
+			mData.put(Tags.title, byphen[0]);
+			mData.put(Tags.verses, byphen[1]);
+		}
+		
+		if ( mData.containsKey(Tags.pubDate) ) {
+			CharSequence prettyDate = DateFormat.format("MMM dd, yyyy", Time.parse(get(Tags.pubDate)));
+			mData.put(Tags.pubDate, prettyDate.toString());
+		}
+
 	}
 	
 	public String get(Tags tag) {
