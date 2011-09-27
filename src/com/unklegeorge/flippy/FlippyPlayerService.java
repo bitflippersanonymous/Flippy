@@ -75,6 +75,13 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		mExtras = intent.getExtras();
 		return mBinder;
 	}
+	
+	
+	@Override
+	public boolean onUnbind(Intent intent) {
+		return false;
+	}
+	
 
 	@Override
 	public void onPrepared(MediaPlayer mp) {
@@ -127,12 +134,14 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		notification.setLatestEventInfo(getApplicationContext(), "Flippy Player",
 				"Playing: " + entry.get(Tags.title), pi);
 		startForeground(R.string.radio_service_notif_id, notification);
+		startService(new Intent(this, this.getClass()));
 		sendUpdate();
 		return true;
 	}
 
 	public void stopPlay() {
 		stopForeground(true);
+		stopSelf(); // Now OK to stop when all binders go away.
 		onDestroy();
 		sendUpdate();
 		Log.i(getClass().getName(), "Stop Play");

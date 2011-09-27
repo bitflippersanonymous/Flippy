@@ -36,7 +36,13 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	private static final int ABOUT_DIALOG = 0;
 		
     private static FlippyPlayerService mService;
-    private boolean mBound = false;
+    
+    private Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			update();
+		}
+	};
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,7 +66,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
             		
             }});
 	    setPPIcon(false);
-	    
+    
 	    //TODO: Put in static method in util
         Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Amaranth-Italic.otf");
         TextView tv = (TextView) findViewById(R.id.textViewHeader);
@@ -71,38 +77,28 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	@Override
 	public void onStart() {
 		super.onStart();
-		
-		// Done loading callback
-		final Handler handler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				update();
-			}
-		};
-		
-		Intent intent = new Intent(this, FlippyPlayerService.class);
-		intent.putExtra(Util.EXTRA_MESSENGER, new Messenger(handler));
-		startService(intent);
-		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 	
 	@Override
 	public void onStop() {
 		super.onStop();
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
+
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
+        if ( mService != null ) {
+            unbindService(mConnection);
+        }
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
+		Intent intent = new Intent(this, FlippyPlayerService.class);
+		intent.putExtra(Util.EXTRA_MESSENGER, new Messenger(mHandler));
+		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 	
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -110,13 +106,12 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 		public void onServiceConnected(ComponentName name, IBinder service) {
             LocalBinder binder = (LocalBinder) service;
             mService = binder.getService();
-            mBound = true;
             update();
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-            mBound = false;
+			mService = null;
 		}
     };
     
