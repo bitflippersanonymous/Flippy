@@ -13,7 +13,7 @@
 			android:layout_height="60sp" />
 		<TextView android:id="@+id/radioTextView1"
 			android:layout_width="match_parent" android:gravity="fill"
-			android:text="Sample Playlist Item" android:paddingLeft="4sp"
+			android:text="" android:paddingLeft="4sp"
 			android:layout_height="fill_parent" />
 	</LinearLayout>
 </LinearLayout>

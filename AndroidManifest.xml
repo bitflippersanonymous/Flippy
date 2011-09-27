@@ -16,7 +16,8 @@
 		</activity>
 		<activity android:name=".FlippySettingsActivity"></activity>
 		<activity android:name=".FlippyHelpActivity"></activity>
-		<activity android:name=".FlippyInfoActivity"></activity>
+		<activity android:name=".FlippyInfoActivity" android:theme="@style/noTitle"
+			android:launchMode="singleTop"/>
 		<service android:name=".FlippyPlayerService"/>
 	</application>
 </manifest>

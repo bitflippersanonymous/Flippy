@@ -3,7 +3,10 @@
     <color name="PlaylistBackground">#101015</color>
     <color name="PlaylistDivider">#EEEFEF</color>
     <color name="PlayingBackground">#D2DFB5</color>
-        
+    <color name="infoBackground">#CCCCCC</color>
+    
+    
+            
     <style name="PlaylistTheme" parent="android:Theme">
         <item name="android:background">@color/PlaylistBackground</item>
  		<item name="android:textSize">16sp</item>

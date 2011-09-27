@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
+import android.widget.ListView;
 
 import com.unklegeorge.flippy.PlsEntry.Tags;
 
@@ -99,12 +100,18 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		mState = MediaState.STOP;
 	}
 
-	public boolean startPlay(int position) {
+	public boolean startPlay(int position, int offset) {
 		if ( mMediaPlayer == null ) {
 			mMediaPlayer = new MediaPlayer();
 			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mMediaPlayer.setOnPreparedListener(this);
 		}
+		
+		final int newPos = position + offset;
+		if ( newPos < 0 || newPos >= getPlsAdapter().getCount() )
+			position = 0;
+		else
+			position = position + offset;
 		
 		PlsEntry entry = mAdapter.getItem(mCurPlayingPos = position);
 		mMediaPlayer.reset();

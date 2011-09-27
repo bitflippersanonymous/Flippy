@@ -1,32 +1,16 @@
 package com.unklegeorge.flippy;
 
-import java.io.IOException;
-import java.io.InputStream;
-import com.unklegeorge.flippy.FlippyPlayerService.MediaState;
-import com.unklegeorge.flippy.PlsEntry.Tags;
-import com.unklegeorge.flippy.R.drawable;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.os.Message;
 
-public class FlippyRadioActivity extends FlippyActivityBase implements View.OnClickListener, OnClickListener {
-	private static final int ABOUT_DIALOG = 0;
+
+public class FlippyRadioActivity extends FlippyActivityBase 
+	implements View.OnClickListener, DialogInterface.OnClickListener {
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,22 +18,20 @@ public class FlippyRadioActivity extends FlippyActivityBase implements View.OnCl
 		setContentView(R.layout.radio);
 
 	    final ListView list = (ListView) findViewById(R.id.radioListView1);
-	    list.setOnItemClickListener(new OnItemClickListener(){
+	    list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	switch ( getService().getState() ) {
             	case PREPARE:
             	case PLAY:
             		if ( getService().getPosition() == position ) {
-            			stopPlay();
+            			getService().stopPlay();
             			break;
             		}
             	default:
-            		startPlay(position, 0);
+    				getService().startPlay(getService().getPosition(), 0);
             	}
-            		
             }});
-	    setPPIcon(false);
     
 	    //TODO: Put in static method in util
         Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Amaranth-Italic.otf");
@@ -58,142 +40,24 @@ public class FlippyRadioActivity extends FlippyActivityBase implements View.OnCl
 
 	}
 
-	@Override
-	public void onStart() {
-		super.onStart();
-	}
-	
-	@Override
-	public void onStop() {
-		super.onStop();
-
-	}
-	
-	@Override
-	public void onClick(View v) {
-		switch ( v.getId() ) {
-		case R.id.imageButtonPP:
-			if ( getService().getState() != MediaState.STOP )
-				stopPlay();
-			else
-				startPlay(getService().getPosition(), 0);
-			break;
-		case R.id.imageButtonHeader:
-			Intent intent = new Intent(this, FlippyInfoActivity.class);
-			startActivity(intent);
-			//showDialog(ABOUT_DIALOG);
-		default:
-		}
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu); // need this?
-		getMenuInflater().inflate(R.menu.options, menu);
-		menu.findItem(R.id.settings_menu_item).setIntent(
-				new Intent(this, FlippySettingsActivity.class));
-		menu.findItem(R.id.help_menu_item).setOnMenuItemClickListener(new OnMenuItemClickListener()
-		{
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				showDialog(ABOUT_DIALOG);
-				return true;
-			}
-		});
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		super.onOptionsItemSelected(item);
-		startActivity(item.getIntent());
-		return true;
-	}
-	
-	@Override
-    protected Dialog onCreateDialog(int id, Bundle args) {
-    	switch ( id ) {
-    	case ABOUT_DIALOG:
-    		String message = "";
-    		try {
-	    		InputStream ins = getResources().openRawResource(R.raw.about);
-	    		int size = ins.available();
-	    		byte[] buffer = new byte[size];
-	    		ins.read(buffer);
-	    		ins.close();
-	    		message = new String(buffer);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-	    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    	builder.setMessage(message)
-	    	.setIcon(drawable.icon)
-	    	.setTitle(R.string.app_name)
-	    	.setPositiveButton(R.string.got_it, this)
-	    	.setCancelable(true);
-	    	return builder.create();
-    	}
-    	return super.onCreateDialog(id, args);
-	}
-	
-	@Override
-	public void onClick(DialogInterface dialog, int which) {
-		dialog.cancel();
-	}
-
 	// Is a little heavy, and is called every time the service changes something
     @Override
 	protected void update() {
     	final ListView list = (ListView) findViewById(R.id.radioListView1);
     	final PlsAdapter adapter = getService().getPlsAdapter();
-    	list.setAdapter(adapter);
+    	if ( list.getAdapter() == null )
+    		list.setAdapter(adapter);
+    	
     	if ( !getService().getloadComplete() ) 
     		return;
+
+    	super.update();
     	
     	list.setVisibility(View.VISIBLE);
     	findViewById(R.id.progressBarLoading).setVisibility(View.GONE);
     	EntryView.updateAll();
-    	
-		final TextView text = (TextView) findViewById(R.id.radioTextView1);
-		final int position = getService().getPosition();
-		if ( getService().getState() == MediaState.STOP ) { 
-			setPPIcon(false);
-			text.setText(null);
-		} else {
-			setPPIcon(true);
-			final PlsEntry entry = (PlsEntry) list.getItemAtPosition(position);
-			text.setText(entry.get(Tags.title));			
-		}
-        
     }
 	
-	public void stopPlay() {
-		getService().stopPlay();	
-	}
-	
-	public void startPlay(int position, int offset) {
-		final ListView list = (ListView) findViewById(R.id.radioListView1);
-		
-		final int newPos = position + offset;
-		if ( newPos < 0 || newPos >= list.getAdapter().getCount() ) {
-			position = 0;
-		} else {
-			position = position + offset;
-		}
 
-		Intent intent = new Intent(this, FlippyInfoActivity.class);
-		startActivity(intent);
-	
-		getService().startPlay(position);
-	}
-
-
-	private void setPPIcon(boolean state) {
-		ImageView buttonPlay = (ImageView) findViewById(R.id.imageButtonPP);
-		if ( state )
-			buttonPlay.setImageDrawable(getResources().getDrawable(R.drawable.pause));
-		else
-			buttonPlay.setImageDrawable(getResources().getDrawable(R.drawable.play));
-	}
 	
 }

@@ -6,9 +6,12 @@
 	<include layout="@layout/linearlayoutheader" android:id="@+id/LinearLayoutHeaderInfo"
 		android:layout_width="match_parent" android:layout_height="wrap_content" />
 	
-	<WebView android:layout_width="match_parent" android:id="@+id/webViewInfo"
-		android:layout_height="match_parent" android:layout_weight=".30"/>
-
+	<!--<WebView android:layout_width="match_parent" android:id="@+id/viewInfo"
+		android:layout_height="match_parent" android:layout_weight=".30"
+		android:scrollbarStyle="insideInset"/>-->		
+		<TextView android:layout_width="match_parent" android:id="@+id/viewInfo"
+		android:layout_height="match_parent" android:layout_weight=".30"
+		style="@style/PlaylistTheme"/>
 	<include layout="@layout/linearlayoutfooter" android:id="@+id/LinearLayoutFooterInfo"
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 </LinearLayout>
