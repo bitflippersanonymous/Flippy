@@ -2,23 +2,17 @@ package com.unklegeorge.flippy;
 
 import java.io.IOException;
 import java.io.InputStream;
-import com.unklegeorge.flippy.FlippyPlayerService.LocalBinder;
 import com.unklegeorge.flippy.FlippyPlayerService.MediaState;
 import com.unklegeorge.flippy.PlsEntry.Tags;
 import com.unklegeorge.flippy.R.drawable;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -30,19 +24,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Message;
-import android.os.Messenger;
 
-public class FlippyRadioActivity extends Activity implements View.OnClickListener, OnClickListener {
+public class FlippyRadioActivity extends FlippyActivityBase implements View.OnClickListener, OnClickListener {
 	private static final int ABOUT_DIALOG = 0;
-		
-    private static FlippyPlayerService mService;
-    
-    private Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			update();
-		}
-	};
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,10 +37,10 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	    list.setOnItemClickListener(new OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            	switch ( mService.getState() ) {
+            	switch ( getService().getState() ) {
             	case PREPARE:
             	case PLAY:
-            		if ( mService.getPosition() == position ) {
+            		if ( getService().getPosition() == position ) {
             			stopPlay();
             			break;
             		}
@@ -86,45 +70,13 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	}
 	
 	@Override
-	public void onPause() {
-		super.onPause();
-        if ( mService != null ) {
-            unbindService(mConnection);
-        }
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		Intent intent = new Intent(this, FlippyPlayerService.class);
-		intent.putExtra(Util.EXTRA_MESSENGER, new Messenger(mHandler));
-		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-	}
-	
-    private ServiceConnection mConnection = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-            LocalBinder binder = (LocalBinder) service;
-            mService = binder.getService();
-            update();
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			mService = null;
-		}
-    };
-    
-    public static FlippyPlayerService getService() { return mService; }
- 
-	@Override
 	public void onClick(View v) {
 		switch ( v.getId() ) {
 		case R.id.imageButtonPP:
-			if ( mService.getState() != MediaState.STOP )
+			if ( getService().getState() != MediaState.STOP )
 				stopPlay();
 			else
-				startPlay(mService.getPosition(), 0);
+				startPlay(getService().getPosition(), 0);
 			break;
 		case R.id.imageButtonHeader:
 			Intent intent = new Intent(this, FlippyInfoActivity.class);
@@ -190,11 +142,12 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 	}
 
 	// Is a little heavy, and is called every time the service changes something
-    private void update() {
+    @Override
+	protected void update() {
     	final ListView list = (ListView) findViewById(R.id.radioListView1);
-    	final PlsAdapter adapter = mService.getPlsAdapter();
+    	final PlsAdapter adapter = getService().getPlsAdapter();
     	list.setAdapter(adapter);
-    	if ( !mService.getloadComplete() ) 
+    	if ( !getService().getloadComplete() ) 
     		return;
     	
     	list.setVisibility(View.VISIBLE);
@@ -202,8 +155,8 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
     	EntryView.updateAll();
     	
 		final TextView text = (TextView) findViewById(R.id.radioTextView1);
-		final int position = mService.getPosition();
-		if ( mService.getState() == MediaState.STOP ) { 
+		final int position = getService().getPosition();
+		if ( getService().getState() == MediaState.STOP ) { 
 			setPPIcon(false);
 			text.setText(null);
 		} else {
@@ -215,7 +168,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
     }
 	
 	public void stopPlay() {
-		mService.stopPlay();	
+		getService().stopPlay();	
 	}
 	
 	public void startPlay(int position, int offset) {
@@ -231,7 +184,7 @@ public class FlippyRadioActivity extends Activity implements View.OnClickListene
 		Intent intent = new Intent(this, FlippyInfoActivity.class);
 		startActivity(intent);
 	
-		mService.startPlay(position);
+		getService().startPlay(position);
 	}
 
 
