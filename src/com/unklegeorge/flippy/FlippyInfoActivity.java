@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.TextView;
 
-public class FlippyInfoActivity extends FlippyActivityBase {
+public class FlippyInfoActivity extends FlippyBaseActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

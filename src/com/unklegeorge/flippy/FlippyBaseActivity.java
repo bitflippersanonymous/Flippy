@@ -29,7 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public abstract class FlippyActivityBase extends Activity 
+public abstract class FlippyBaseActivity extends Activity 
 	implements View.OnClickListener, DialogInterface.OnClickListener {
 
 	private boolean mBound = false;

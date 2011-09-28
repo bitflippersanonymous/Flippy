@@ -17,6 +17,11 @@
 		<item name="android:textSize">14sp</item>
 	</style>
 	
+	<style name="MainTheme" parent="android:Theme">
+		<item name="android:background">@color/PlaylistBackground</item>
+		<item name="android:textSize">18sp</item>
+	</style>
+	
 	<style name="HeaderTheme" parent="android:Theme">
 		<item name="android:background">#D2DFB5</item>
 		<item name="android:textSize">24sp</item>

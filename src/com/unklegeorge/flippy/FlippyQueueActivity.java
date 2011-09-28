@@ -10,13 +10,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
-public class FlippyRadioActivity extends FlippyActivityBase 
+public class FlippyQueueActivity extends FlippyBaseActivity 
 	implements View.OnClickListener, DialogInterface.OnClickListener {
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.radio);
+		setContentView(R.layout.queue);
 
 	    final ListView list = (ListView) findViewById(R.id.radioListView1);
 	    list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -25,15 +25,13 @@ public class FlippyRadioActivity extends FlippyActivityBase
             	switch ( getService().getState() ) {
             	case PREPARE:
             	case PLAY:
-            		if ( getService().getPosition() == position ) {
-            			getService().stopPlay();
+            		if ( position == getService().getPosition() )
             			break;
-            		}
-            	default:
-    				getService().startPlay(getService().getPosition(), 0);
-    				Intent intent = new Intent(view.getContext(), FlippyInfoActivity.class);
-    				startActivity(intent);
+            	case STOP:
+            		getService().startPlay(position, 0);
             	}
+            	Intent intent = new Intent(view.getContext(), FlippyInfoActivity.class);
+            	startActivity(intent);
             }});
     
 	    //TODO: Put in static method in util

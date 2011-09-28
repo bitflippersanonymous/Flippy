@@ -72,7 +72,7 @@ public class EntryView extends LinearLayout {
      	str.setSpan(new TextAppearanceSpan(title.getContext(), 
      			android.R.style.TextAppearance_Small), subPos, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
              	
-        final FlippyPlayerService service = FlippyRadioActivity.getService();
+        final FlippyPlayerService service = FlippyBaseActivity.getService();
         final PlsEntry curEntry = service.getPlsAdapter().getItem(service.getPosition());
         
         switch ( service.getState() ) {

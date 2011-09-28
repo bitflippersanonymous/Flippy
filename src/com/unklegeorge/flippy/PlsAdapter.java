@@ -10,11 +10,9 @@ import android.widget.ListAdapter;
 class PlsAdapter extends BaseAdapter implements ListAdapter {
 
 	private final List<PlsEntry> mContent;
-	private Context mContext;
 
-	public PlsAdapter(List<PlsEntry> content, Context context) {
+	public PlsAdapter(List<PlsEntry> content) {
 		mContent = content;
-		mContext = context;
 	}
 	
 	@Override

@@ -27,7 +27,6 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	private MediaPlayer mMediaPlayer = null;
 	private final IBinder mBinder = new LocalBinder();
 	private PlsAdapter mAdapter = null;
-	private Bundle mExtras = null;
 	private int mCurPlayingPos = 0;
 	private boolean mLoadComplete = false;
 	final private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
@@ -64,7 +63,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	@SuppressWarnings("unchecked")
 	public void onCreate() {
 		final ArrayList<PlsEntry> entries = new ArrayList<PlsEntry>();
-		mAdapter = new PlsAdapter(entries, this);
+		mAdapter = new PlsAdapter(entries);
 		final LoadTask loadTask = new LoadTask();
 		loadTask.execute(entries);
 	}
@@ -135,9 +134,9 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		mMediaPlayer.prepareAsync();
 		mState = MediaState.PREPARE;
 
-		Intent radioIntent = new Intent(getApplicationContext(), FlippyRadioActivity.class);
+		Intent intent = new Intent(getApplicationContext(), FlippyInfoActivity.class);
 		PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0,
-				radioIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		Notification notification = new Notification();
 		notification.tickerText = entry.get(Tags.title);
 		notification.icon = R.drawable.icon;

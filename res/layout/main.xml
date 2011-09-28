@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="fill_parent" android:orientation="vertical"
+	android:id="@+id/LinearLayoutRadio" android:layout_width="match_parent"
+	style="@style/PlaylistTheme">
+
+	<include layout="@layout/linearlayoutheader" android:id="@+id/LinearLayoutHeaderMain"
+		android:layout_width="match_parent" android:layout_height="wrap_content" />
+
+	<ListView android:layout_height="fill_parent" android:id="@+id/ListViewMain"
+		android:layout_weight="0.30" android:layout_width="match_parent"
+		android:gravity="bottom" android:padding="4sp"/>
+
+	<include layout="@layout/linearlayoutfooter" android:id="@+id/LinearLayoutFooterMain"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+
+</LinearLayout>
