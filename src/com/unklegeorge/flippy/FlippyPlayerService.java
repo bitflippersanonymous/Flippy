@@ -101,6 +101,8 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 			mMediaPlayer = null;
 		}
 		mState = MediaState.STOP;
+		Log.w(getClass().getSimpleName(), "Destroyed");
+
 	}
 
 	public boolean startPlay(int position, int offset) {
@@ -192,6 +194,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 		@Override
 		protected void onPostExecute(Integer result) {
+			Log.w(getClass().getSimpleName(), "Load Complete");
 			mLoadComplete  = true;
 			sendUpdate();
 		}

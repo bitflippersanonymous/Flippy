@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -72,6 +73,7 @@ public abstract class FlippyBaseActivity extends Activity
 	@Override
 	public void onStop() {
 		super.onStop();
+		Log.w(getClass().getSimpleName(), "onStop");
 	    if ( mBound ) {
 	    	getService().removeClient(mMessenger);
 	        unbindService(mConnection);

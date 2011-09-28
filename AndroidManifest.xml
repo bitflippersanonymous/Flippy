@@ -22,7 +22,7 @@
 		<activity android:name=".FlippyInfoActivity" android:theme="@style/noTitle"
 			android:launchMode="singleTop"/>
 		<activity android:name=".FlippySettingsActivity"/>
-		<activity android:name=".FlippyAboutActivity"/>
+		<activity android:name=".FlippyAboutActivity" android:theme="@android:style/Theme.Dialog"/>
 
 		<service android:name=".FlippyPlayerService" />
 	</application>
