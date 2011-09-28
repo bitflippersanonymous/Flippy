@@ -1,6 +1,9 @@
 package com.unklegeorge.flippy;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import com.unklegeorge.flippy.PlsEntry.Tags;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -15,9 +18,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
-import android.widget.ListView;
 
-import com.unklegeorge.flippy.PlsEntry.Tags;
 
 
 public class FlippyPlayerService extends Service implements MediaPlayer.OnPreparedListener, 
@@ -29,6 +30,8 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	private Bundle mExtras = null;
 	private int mCurPlayingPos = 0;
 	private boolean mLoadComplete = false;
+	final private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
+
 
 	enum MediaState {
 		STOP, PREPARE, PLAY
@@ -70,20 +73,21 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
     }
-
+	
 	@Override
 	public IBinder onBind(Intent intent) {
-		mExtras = intent.getExtras();
 		return mBinder;
 	}
-	
-	
-	@Override
-	public boolean onUnbind(Intent intent) {
-		return false;
-	}
-	
 
+	public void addClient(Messenger messenger) {
+	if ( messenger != null )
+		mClients.add(messenger);
+	}
+		
+	public void removeClient(Messenger messenger) {
+		mClients.remove(messenger);
+	}
+    
 	@Override
 	public void onPrepared(MediaPlayer mp) {
 		mp.start();
@@ -155,16 +159,18 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 
 	public void sendUpdate() {
-		Messenger messenger = (Messenger)mExtras.get(Util.EXTRA_MESSENGER);
-		Message msg = Message.obtain();
 		try {
-			messenger.send(msg);
+			for ( Messenger messenger : mClients ) {
+				Message msg = Message.obtain();
+				messenger.send(msg);
+			}
 		}
 		catch (android.os.RemoteException e) {
 			Log.w(getClass().getName(), "Exception sending message", e);
 		}
 	}
 
+	// TODO: Need to call some sort of finish when this is done to make the task thread go away
 	class LoadTask extends AsyncTask<ArrayList<PlsEntry>, Integer, Integer> {
 		@Override
 		protected Integer doInBackground(ArrayList<PlsEntry>... params) {
@@ -209,4 +215,5 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	public void onCompletion(MediaPlayer mp) {
 		onDestroy();		
 	}
+
 }

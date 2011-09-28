@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -49,26 +50,30 @@ public abstract class FlippyActivityBase extends Activity
 		return mHandler;
 	}
 	
-	private ServiceConnection mConnection = new ServiceConnection() {
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-	            LocalBinder binder = (LocalBinder) service;
-	            mService = binder.getService();
-	            mBound = true;
-	            update();
-			}
+	private Messenger mMessenger = new Messenger(getHandler());
 	
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				mService = null;
-				mBound = false;
-			}
-	    };
+	private ServiceConnection mConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			LocalBinder binder = (LocalBinder) service;
+			mService = binder.getService();
+			mService.addClient(mMessenger);
+			mBound = true;
+			update();
+		}
 
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			mService = null;
+			mBound = false;
+		}
+	};
+	    
 	@Override
 	public void onStop() {
 		super.onStop();
 	    if ( mBound ) {
+	    	getService().removeClient(mMessenger);
 	        unbindService(mConnection);
 	    }
 	}
@@ -77,7 +82,6 @@ public abstract class FlippyActivityBase extends Activity
 	public void onStart() {
 		super.onStart();
 		Intent intent = new Intent(this, FlippyPlayerService.class);
-		intent.putExtra(Util.EXTRA_MESSENGER, new Messenger(getHandler()));
 		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 	

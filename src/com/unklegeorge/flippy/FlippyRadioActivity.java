@@ -1,6 +1,7 @@
 package com.unklegeorge.flippy;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
@@ -30,6 +31,8 @@ public class FlippyRadioActivity extends FlippyActivityBase
             		}
             	default:
     				getService().startPlay(getService().getPosition(), 0);
+    				Intent intent = new Intent(view.getContext(), FlippyInfoActivity.class);
+    				startActivity(intent);
             	}
             }});
     
