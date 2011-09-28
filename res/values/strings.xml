@@ -16,11 +16,9 @@
 	<string name="pressed">Pressed</string>
 	<string name="auto_hide">Auto Hide Dialog</string>
 	<string name="put_something_here">Put Something Here</string>
-
-	<string-array name="main_items">
-		<item>My Queue</item>
-		<item>Browse</item>
-		<item>Search</item>
-		<item>About</item>
-	</string-array>
+	<string name="info_menu">Now Playing</string>
+	<string name="queue_menu">Your Queue</string>
+	<string name="browse_menu">Browse</string>
+	<string name="search_menu">Search</string>
+	<string name="about_menu">About</string>
 </resources>

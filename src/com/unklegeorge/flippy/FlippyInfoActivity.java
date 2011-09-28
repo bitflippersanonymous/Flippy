@@ -4,6 +4,8 @@ import com.unklegeorge.flippy.PlsEntry.Tags;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class FlippyInfoActivity extends FlippyBaseActivity {
@@ -39,6 +41,14 @@ public class FlippyInfoActivity extends FlippyBaseActivity {
     	
     	TextView viewInfo = (TextView) findViewById(R.id.viewInfo);
     	viewInfo.setText(desc);
+	}
+	
+	// Invoked via reflection in MainActivity
+	public static void popMenuView(View view) {
+		ImageView icon = (ImageView) view.findViewById(R.id.EntryIcon);
+		icon.setImageDrawable(view.getContext().getResources().getDrawable(R.drawable.info));
+		TextView title = (TextView) view.findViewById(R.id.entryTitle);
+		title.setText(view.getResources().getString(R.string.info_menu));
 	}
 
 }

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="wrap_content">
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	android:gravity="left">
 	<ImageView android:id="@+id/EntryIcon" android:layout_width="wrap_content"
 		android:src="@android:drawable/ic_media_play" android:paddingLeft="2sp"
-		android:paddingRight="2sp" android:layout_height="match_parent"/>
-	<TextView android:id="@+id/entryTitle" android:layout_width="fill_parent"
+		android:paddingRight="2sp" android:layout_height="match_parent" 
+		/>
+	<TextView android:id="@+id/entryTitle" android:layout_width="wrap_content"
 		android:layout_height="wrap_content" style="@style/MainTheme"
-		android:text="Sample" android:gravity="left" android:paddingLeft="2sp" />
+		android:text="Sample" android:paddingLeft="4sp" />
 </LinearLayout>

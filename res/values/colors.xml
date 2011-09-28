@@ -4,8 +4,7 @@
     <color name="PlaylistDivider">#EEEFEF</color>
     <color name="PlayingBackground">#D2DFB5</color>
     <color name="infoBackground">#CCCCCC</color>
-    
-    
+       
             
     <style name="PlaylistTheme" parent="android:Theme">
         <item name="android:background">@color/PlaylistBackground</item>
@@ -19,7 +18,9 @@
 	
 	<style name="MainTheme" parent="android:Theme">
 		<item name="android:background">@color/PlaylistBackground</item>
-		<item name="android:textSize">18sp</item>
+		<item name="android:textSize">32sp</item>
+		<item name="android:divider">@color/PlaylistBackground</item>
+		<item name="android:dividerHeight">4sp</item>
 	</style>
 	
 	<style name="HeaderTheme" parent="android:Theme">

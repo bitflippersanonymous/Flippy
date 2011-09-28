@@ -1,5 +1,7 @@
 package com.unklegeorge.flippy;
 
+import android.view.View;
+
 public class Util {
 	static final String PACKAGE = "com.unklegeorge.flippy";
 	static final String APP_PREFERENCES = "App_Prefs";

@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -59,6 +60,12 @@ public class FlippyQueueActivity extends FlippyBaseActivity
     	EntryView.updateAll();
     }
 	
-
+	// Invoked via reflection in MainActivity
+	public static void popMenuView(View view) {
+		ImageView icon = (ImageView) view.findViewById(R.id.EntryIcon);
+		icon.setImageDrawable(view.getContext().getResources().getDrawable(R.drawable.queue));
+		TextView title = (TextView) view.findViewById(R.id.entryTitle);
+		title.setText(view.getResources().getString(R.string.queue_menu));
+	}
 	
 }

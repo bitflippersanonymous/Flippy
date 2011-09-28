@@ -1,7 +1,8 @@
 package com.unklegeorge.flippy;
 
 
-import android.app.Activity;
+import java.lang.reflect.Method;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +16,10 @@ import android.widget.TextView;
 public class FlippyMainActivity extends FlippyBaseActivity {
 	private static final Class<?>[] sMenuItems = {
 		FlippyInfoActivity.class,
-		FlippyQueueActivity.class
+		FlippyQueueActivity.class,
+		FlippyBrowseActivity.class,
+		FlippySearchActivity.class,
+		FlippyAboutActivity.class
 	};
 	
 		
@@ -28,11 +32,15 @@ public class FlippyMainActivity extends FlippyBaseActivity {
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
 				View view = LayoutInflater.from(FlippyMainActivity.this).inflate(R.layout.main_entry, null);
-
 				if ( position < sMenuItems.length ) {
-					String text = sMenuItems[position].getSimpleName();
-					TextView title = (TextView) view.findViewById(R.id.entryTitle);
-					title.setText(text);
+					try {
+						final Method populate = sMenuItems[position].getDeclaredMethod("popMenuView", View.class);
+						populate.invoke(null, view);
+					} catch (Exception e) {
+						String text = sMenuItems[position].getSimpleName();
+						TextView title = (TextView) view.findViewById(R.id.entryTitle);
+						title.setText(text);
+					}
 				}
 				return view;
 			}

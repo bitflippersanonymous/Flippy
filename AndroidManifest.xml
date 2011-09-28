@@ -13,12 +13,17 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".FlippyQueueActivity" android:launchMode="singleTop" 
-			android:theme="@style/noTitle"/>
-		<activity android:name=".FlippySettingsActivity"></activity>
-		<activity android:name=".FlippyHelpActivity"></activity>
+		<activity android:name=".FlippyQueueActivity" android:theme="@style/noTitle"
+			android:launchMode="singleTop"/>
+		<activity android:name=".FlippySearchActivity" android:theme="@style/noTitle"
+			android:launchMode="singleTop"/>
+		<activity android:name=".FlippyBrowseActivity" android:theme="@style/noTitle"
+			android:launchMode="singleTop"/>
 		<activity android:name=".FlippyInfoActivity" android:theme="@style/noTitle"
 			android:launchMode="singleTop"/>
-		<service android:name=".FlippyPlayerService"/>
+		<activity android:name=".FlippySettingsActivity"/>
+		<activity android:name=".FlippyAboutActivity"/>
+
+		<service android:name=".FlippyPlayerService" />
 	</application>
 </manifest>
