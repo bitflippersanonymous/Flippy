@@ -1,4 +1,9 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.activity;
+
+import com.bitflippersanonymous.flippy.R;
+import com.bitflippersanonymous.flippy.domain.EntryView;
+import com.bitflippersanonymous.flippy.domain.PlsAdapter;
+
 
 import android.content.DialogInterface;
 import android.content.Intent;

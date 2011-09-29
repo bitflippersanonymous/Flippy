@@ -1,8 +1,13 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.service;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.unklegeorge.flippy.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.R;
+import com.bitflippersanonymous.flippy.activity.FlippyInfoActivity;
+import com.bitflippersanonymous.flippy.domain.*;
+import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.util.*;
+
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -13,7 +18,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -32,7 +36,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	final private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 
 
-	enum MediaState {
+	public enum MediaState {
 		STOP, PREPARE, PLAY
 	}
 	
@@ -55,7 +59,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 
 	public class LocalBinder extends Binder {
-		FlippyPlayerService getService() {
+		public FlippyPlayerService getService() {
 			return FlippyPlayerService.this;
 		}
 	}

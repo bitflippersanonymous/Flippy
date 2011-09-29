@@ -1,11 +1,15 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.activity;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.unklegeorge.flippy.FlippyPlayerService.LocalBinder;
-import com.unklegeorge.flippy.FlippyPlayerService.MediaState;
-import com.unklegeorge.flippy.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.domain.PlsEntry;
+import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.service.FlippyPlayerService;
+import com.bitflippersanonymous.flippy.service.FlippyPlayerService.LocalBinder;
+import com.bitflippersanonymous.flippy.service.FlippyPlayerService.MediaState;
+import com.bitflippersanonymous.flippy.util.Util;
+import com.bitflippersanonymous.flippy.R;
 
 
 import android.app.Activity;
@@ -26,8 +30,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 public abstract class FlippyBaseActivity extends Activity 

@@ -1,7 +1,10 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.activity;
 
 
 import java.lang.reflect.Method;
+
+import com.bitflippersanonymous.flippy.R;
+
 
 import android.content.Intent;
 import android.os.Bundle;

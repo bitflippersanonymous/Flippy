@@ -1,13 +1,13 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.domain;
 
 import java.sql.Time;
 import java.util.HashMap;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import com.bitflippersanonymous.flippy.util.Util;
+
 import android.text.format.DateFormat;
 
-class PlsEntry /*implements Parcelable*/ {
+public class PlsEntry /*implements Parcelable*/ {
     public static final String PLSENTRY = Util.PACKAGE + ".PLSENTRY";
 	
 	public enum Tags { item, title, verses, description, enclosure, author, pubDate, keywords }

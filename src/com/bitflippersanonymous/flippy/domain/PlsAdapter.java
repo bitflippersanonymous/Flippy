@@ -1,13 +1,12 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.domain;
 
 import java.util.List;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 
-class PlsAdapter extends BaseAdapter implements ListAdapter {
+public class PlsAdapter extends BaseAdapter implements ListAdapter {
 
 	private final List<PlsEntry> mContent;
 

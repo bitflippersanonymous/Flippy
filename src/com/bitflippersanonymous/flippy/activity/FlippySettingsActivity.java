@@ -1,18 +1,12 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.activity;
 
-import com.unklegeorge.flippy.R;
+import com.bitflippersanonymous.flippy.R;
+import com.bitflippersanonymous.flippy.util.Util;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ToggleButton;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 
 
 public class FlippySettingsActivity extends Activity {

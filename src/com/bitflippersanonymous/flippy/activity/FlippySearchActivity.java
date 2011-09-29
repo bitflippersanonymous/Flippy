@@ -1,4 +1,6 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.activity;
+
+import com.bitflippersanonymous.flippy.R;
 
 import android.os.Bundle;
 import android.view.View;

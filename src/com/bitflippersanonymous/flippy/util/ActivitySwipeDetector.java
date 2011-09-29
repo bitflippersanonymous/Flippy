@@ -1,4 +1,4 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.util;
 
 import android.view.MotionEvent;
 import android.view.View;

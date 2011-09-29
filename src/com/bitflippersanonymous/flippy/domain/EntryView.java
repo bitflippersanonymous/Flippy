@@ -1,25 +1,22 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.domain;
 
 
 import java.util.WeakHashMap;
 
-
-import com.unklegeorge.flippy.PlsEntry.Tags;
-import com.unklegeorge.flippy.FlippyPlayerService.MediaState;
+import com.bitflippersanonymous.flippy.R;
+import com.bitflippersanonymous.flippy.activity.FlippyBaseActivity;
+import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.service.FlippyPlayerService;
+import com.bitflippersanonymous.flippy.util.Util;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Messenger;
 import android.text.Spannable;
-import android.text.style.StyleSpan;
 import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.graphics.Typeface;
 
 public class EntryView extends LinearLayout {
 
@@ -56,7 +53,8 @@ public class EntryView extends LinearLayout {
 			Log.w(EntryView.class.getName(), "Error when updating entry views.", x);
 		}
 
-		//Log.i(EntryView.class.getName(), String.valueOf(sInstances.size()) + " " + String.valueOf(updates));
+		if ( updates > 50 )
+			Log.i(EntryView.class.getName(), String.valueOf(sInstances.size()) + " " + String.valueOf(updates));
 	}
 	
 	public void update() {

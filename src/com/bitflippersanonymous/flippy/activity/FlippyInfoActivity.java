@@ -1,6 +1,9 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.activity;
 
-import com.unklegeorge.flippy.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.R;
+import com.bitflippersanonymous.flippy.domain.PlsAdapter;
+import com.bitflippersanonymous.flippy.domain.PlsEntry;
+import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
 
 import android.os.Bundle;
 import android.text.TextUtils;

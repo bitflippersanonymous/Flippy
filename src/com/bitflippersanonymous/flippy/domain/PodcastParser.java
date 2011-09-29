@@ -1,23 +1,14 @@
-package com.unklegeorge.flippy;
+package com.bitflippersanonymous.flippy.domain;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.unklegeorge.flippy.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
 
 import android.content.res.XmlResourceParser;
-import android.os.Parcel;
-import android.util.Log;
 
 public class PodcastParser {
 	
