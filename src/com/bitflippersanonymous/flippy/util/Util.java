@@ -20,5 +20,5 @@ public class Util {
 	public static final String EXTRA_MESSENGER = "MESSENGER";
 	
 	public static final int ABOUT_DIALOG = 0;
-		
+	
 }

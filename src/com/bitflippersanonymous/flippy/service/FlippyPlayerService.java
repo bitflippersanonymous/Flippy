@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.bitflippersanonymous.flippy.R;
 import com.bitflippersanonymous.flippy.activity.FlippyInfoActivity;
+import com.bitflippersanonymous.flippy.db.FlippyDatabaseAdapter;
 import com.bitflippersanonymous.flippy.domain.*;
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
 import com.bitflippersanonymous.flippy.util.*;
@@ -34,6 +35,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	private int mCurPlayingPos = 0;
 	private boolean mLoadComplete = false;
 	final private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
+	private FlippyDatabaseAdapter mDbAdapter = null;
 
 
 	public enum MediaState {
@@ -105,6 +107,11 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 			mMediaPlayer = null;
 		}
 		mState = MediaState.STOP;
+		
+		if ( mDbAdapter != null ) {
+			mDbAdapter.close();
+			mDbAdapter = null;
+		}
 		Log.w(getClass().getSimpleName(), "Destroyed");
 
 	}
@@ -181,15 +188,25 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		protected Integer doInBackground(ArrayList<PlsEntry>... params) {
 			ArrayList<PlsEntry> entries = params[0];
 			XmlResourceParser parser = getResources().getXml(R.xml.accf_recent_message);
-			try { PodcastParser.parse(entries, parser); } 
-			catch(Exception e) { 
+			try { 
+				PodcastParser.parse(entries, parser); 
+			} catch(Exception e) { 
+				Log.e(getClass().getName(), "Exception parsing entries", e);
 				return -1;
 			}
+			try { 
+				populateDatabase(entries);
+			} catch(Exception e) { 
+				Log.e(getClass().getName(), "Exception populating database", e);
+				return -1;
+			}
+
 			return 0;
 		}
 
 		@Override
 		protected void onCancelled() {
+			// Should we close db here?
 		}
 
 		@Override
@@ -198,7 +215,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 		@Override
 		protected void onPostExecute(Integer result) {
-			Log.w(getClass().getSimpleName(), "Load Complete");
+			Log.i(getClass().getSimpleName(), "Load Complete");
 			mLoadComplete  = true;
 			sendUpdate();
 		}
@@ -220,6 +237,16 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	@Override
 	public void onCompletion(MediaPlayer mp) {
 		onDestroy();		
+	}
+	
+	// This happens in another thread LoadTask
+	public void populateDatabase(ArrayList<PlsEntry> entries) {
+		mDbAdapter = new FlippyDatabaseAdapter(this);
+		mDbAdapter.recreate();
+				
+		for ( PlsEntry entry : entries )
+			mDbAdapter.insertEntry(entry);
+
 	}
 
 }
