@@ -39,20 +39,13 @@ public class FlippyDatabaseAdapter {
 		SQLiteDatabase database = mDbHelper.getWritableDatabase();
 		ArrayList<Long> keywordIds = new ArrayList<Long>();
 
-		ContentValues values = new ContentValues();
 		for ( String keyword : entry.get(Tags.keywords).split(", ") ) {
 			long keywordId = lookupKeyword(keyword);
-			if ( keywordId == -1 ) {
-				values.clear();
-				values.put(Tags.keywords.name(), keyword);
-				keywordId = database.insert(TABLE_KEYWORDS, null, values);
-			}
-			
 			if ( keywordId != -1 )
 				keywordIds.add(keywordId);
 		}
 		
-		values = createEntryContentValues(entry);
+		ContentValues values = createEntryContentValues(entry);
 		long idEntry = database.insert(TABLE_ENTRY, null, values);
 		
 		for ( long keywordId : keywordIds ) {
@@ -68,15 +61,20 @@ public class FlippyDatabaseAdapter {
 	//Will escape keyword.  Also could use DatabaseUtils.sqlEscapeString()
 	public long lookupKeyword(String keyword) throws SQLException {
 		long id = -1;
-		keyword = DatabaseUtils.sqlEscapeString(keyword);
+		keyword = DatabaseUtils.sqlEscapeString(keyword.toLowerCase());
 		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_KEYWORDS, 
 				new String[] { KEY_ROWID },
-				Tags.keywords.name() + "='" + keyword + "'", null, null, null, null, null);
+				Tags.keywords.name() + "=?", new String[] {keyword}, null, null, null, null);
 		
-		if (cursor != null) {
+		if ( cursor != null && cursor.getCount() > 0) {
 			cursor.moveToFirst();
 			id = cursor.getLong(0);
+		} else {
+			ContentValues values = new ContentValues();
+			values.put(Tags.keywords.name(), keyword);
+			id = mDbHelper.getWritableDatabase().insert(TABLE_KEYWORDS, null, values);
 		}
+		cursor.close();
 		return id;
 	}
 	

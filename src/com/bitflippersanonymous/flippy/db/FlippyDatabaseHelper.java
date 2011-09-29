@@ -9,7 +9,7 @@ import android.util.Log;
 
 
 public class FlippyDatabaseHelper extends SQLiteOpenHelper {
-	private static final String DATABASE_NAME = "applicationdata";
+	private static final String DATABASE_NAME = "applicationdata.db";
 	private static final int DATABASE_VERSION = 1;
 	
 	private static final String TABLE_ENTRY = FlippyDatabaseAdapter.TABLE_ENTRY;
