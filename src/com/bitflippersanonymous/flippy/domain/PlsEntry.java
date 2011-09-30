@@ -13,6 +13,7 @@ public class PlsEntry /*implements Parcelable*/ {
 	public static final String PLSENTRY = Util.PACKAGE + ".PLSENTRY";
 	public enum Tags { title, verses, description, enclosure, author, pubDate, keywords }
     
+	private int mId;
 	private final HashMap<Tags, String> mData;
 	public PlsEntry(HashMap<Tags, String> data) {
 		mData = data;
@@ -28,6 +29,15 @@ public class PlsEntry /*implements Parcelable*/ {
 			mData.put(Tags.pubDate, prettyDate.toString());
 		}
 
+	}
+	
+	public PlsEntry(HashMap<Tags, String> data, int id) {
+		mId = id;
+		mData = data;
+	}
+
+	public int getId() {
+		return mId;
 	}
 	
 	public String get(Tags tag) {

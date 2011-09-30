@@ -96,7 +96,7 @@ public abstract class FlippyBaseActivity extends Activity
 			if ( getService().getState() != MediaState.STOP )
 				getService().stopPlay();	
 			else
-				getService().startPlay(getService().getPosition(), 0);
+				getService().startPlay(getService().getCurrentEntry().getId(), 0);
 			break;
 		case R.id.imageButtonHeader:
 			Intent intent = new Intent(this, FlippyInfoActivity.class);
@@ -171,13 +171,12 @@ public abstract class FlippyBaseActivity extends Activity
 	
 	protected void update() {
 		final TextView text = (TextView) findViewById(R.id.radioTextView1);
-		final int position = getService().getPosition();
 		if ( getService().getState() == MediaState.STOP ) { 
 			setPPIcon(false);
 			text.setText(null);
 		} else {
 			setPPIcon(true);
-			final PlsEntry entry = (PlsEntry) getService().getPlsAdapter().getItem(position);
+			final PlsEntry entry = getService().getCurrentEntry();
 			text.setText(entry.get(Tags.title));			
 		}
 	}

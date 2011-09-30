@@ -1,3 +1,4 @@
+/*
 package com.bitflippersanonymous.flippy.domain;
 
 import java.util.List;
@@ -40,3 +41,4 @@ public class PlsAdapter extends BaseAdapter implements ListAdapter {
 		return view;
 	}
 }
+*/

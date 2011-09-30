@@ -15,6 +15,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -31,8 +32,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	public static final String ACTION_PLAY = Util.PACKAGE + ".action.PLAY";
 	private MediaPlayer mMediaPlayer = null;
 	private final IBinder mBinder = new LocalBinder();
-	private PlsAdapter mAdapter = null;
-	private int mCurPlayingPos = 0;
+	private PlsEntry mCurrentEntry = null;
 	private boolean mLoadComplete = false;
 	final private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 	private FlippyDatabaseAdapter mDbAdapter = null;
@@ -44,16 +44,16 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	
 	private MediaState mState = MediaState.STOP;
 	
+	public FlippyDatabaseAdapter getDbAdapter() {
+		return mDbAdapter;
+	}
+	
 	public boolean getloadComplete() {
 		return mLoadComplete;
 	}
-	
-	public PlsAdapter getPlsAdapter() {
-		return mAdapter;
-	}
 
-	public int getPosition() {
-		return mCurPlayingPos;
+	public PlsEntry getCurrentEntry() {
+		return mCurrentEntry;
 	}
 	
 	public MediaState getState() {
@@ -68,10 +68,8 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 	@SuppressWarnings("unchecked")
 	public void onCreate() {
-		final ArrayList<PlsEntry> entries = new ArrayList<PlsEntry>();
-		mAdapter = new PlsAdapter(entries);
 		final LoadTask loadTask = new LoadTask();
-		loadTask.execute(entries);
+		loadTask.execute();
 	}
 
     @Override
@@ -116,23 +114,26 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 
 	}
 
-	public boolean startPlay(int position, int offset) {
+	public boolean startPlay(int id, int offset) {
 		if ( mMediaPlayer == null ) {
 			mMediaPlayer = new MediaPlayer();
 			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mMediaPlayer.setOnPreparedListener(this);
 		}
-		
-		final int newPos = position + offset;
-		if ( newPos < 0 || newPos >= getPlsAdapter().getCount() )
-			position = 0;
-		else
-			position = position + offset;
-		
-		PlsEntry entry = mAdapter.getItem(mCurPlayingPos = position);
+
+		Cursor cursor = mDbAdapter.fetchEntry(id, offset);
+		if ( cursor.getCount() == 1)
+			mCurrentEntry = PlsDbAdapter.cursorToEntry(cursor);
+				
 		mMediaPlayer.reset();
+		mState = MediaState.STOP;
+		if ( mCurrentEntry == null ) {
+			sendUpdate();
+			return false;
+		}
+				
 		try {
-			mMediaPlayer.setDataSource(entry.get(Tags.enclosure));
+			mMediaPlayer.setDataSource(mCurrentEntry.get(Tags.enclosure));
 		} catch (IllegalArgumentException e) {
 			Log.w(getClass().getName(), "Exception setting data source", e);
 			return false;
@@ -151,11 +152,11 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 		Notification notification = new Notification();
-		notification.tickerText = entry.get(Tags.title);
+		notification.tickerText = mCurrentEntry.get(Tags.title);
 		notification.icon = R.drawable.icon;
 		notification.flags |= Notification.FLAG_ONGOING_EVENT;
 		notification.setLatestEventInfo(getApplicationContext(), "Flippy Player",
-				"Playing: " + entry.get(Tags.title), pi);
+				"Playing: " + mCurrentEntry.get(Tags.title), pi);
 		startForeground(R.string.radio_service_notif_id, notification);
 		startService(new Intent(this, this.getClass()));
 		sendUpdate();
@@ -183,10 +184,11 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 
 	// TODO: Need to call some sort of finish when this is done to make the task thread go away
-	class LoadTask extends AsyncTask<ArrayList<PlsEntry>, Integer, Integer> {
+	class LoadTask extends AsyncTask<Object, Integer, Integer> {
 		@Override
-		protected Integer doInBackground(ArrayList<PlsEntry>... params) {
-			ArrayList<PlsEntry> entries = params[0];
+		protected Integer doInBackground(Object... params) {
+			//TODO: put in database as we read. Use SAX parser
+			ArrayList<PlsEntry> entries = new ArrayList<PlsEntry>();
 			XmlResourceParser parser = getResources().getXml(R.xml.accf_recent_message);
 			try { 
 				PodcastParser.parse(entries, parser); 
@@ -248,5 +250,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 			mDbAdapter.insertEntry(entry);
 
 	}
+
+	
 
 }

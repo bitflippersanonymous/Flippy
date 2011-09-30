@@ -80,7 +80,7 @@ public class FlippyDatabaseAdapter {
 		return id;
 	}
 	
-	public Cursor fetchEntry(long rowId) throws SQLException {
+	public Cursor fetchEntry(long rowId, int offset) throws SQLException {
 		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY, new String[] {
 				KEY_ROWID, Tags.title.name(), Tags.description.name() },
 				KEY_ROWID + "=" + rowId, null, null, null, null, null);
@@ -98,4 +98,14 @@ public class FlippyDatabaseAdapter {
 		}
 		return values;
 	}
+
+	public Cursor fetchAllEntries() throws SQLException {
+		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY,
+				null, null, null, null, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+
 }

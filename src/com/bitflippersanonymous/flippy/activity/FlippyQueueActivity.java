@@ -1,12 +1,14 @@
 package com.bitflippersanonymous.flippy.activity;
 
 import com.bitflippersanonymous.flippy.R;
+import com.bitflippersanonymous.flippy.db.FlippyDatabaseAdapter;
 import com.bitflippersanonymous.flippy.domain.EntryView;
-import com.bitflippersanonymous.flippy.domain.PlsAdapter;
+import com.bitflippersanonymous.flippy.domain.PlsDbAdapter;
 
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
@@ -28,13 +30,14 @@ public class FlippyQueueActivity extends FlippyBaseActivity
 	    list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            	int clickedId = ((EntryView)view).getEntry().getId();
             	switch ( getService().getState() ) {
             	case PREPARE:
             	case PLAY:
-            		if ( position == getService().getPosition() )
+            		if ( clickedId == getService().getCurrentEntry().getId() )
             			break;
             	case STOP:
-            		getService().startPlay(position, 0);
+            		getService().startPlay(clickedId, 0);
             	}
             	Intent intent = new Intent(view.getContext(), FlippyInfoActivity.class);
             	startActivity(intent);
@@ -51,13 +54,17 @@ public class FlippyQueueActivity extends FlippyBaseActivity
     @Override
 	protected void update() {
     	final ListView list = (ListView) findViewById(R.id.radioListView1);
-    	final PlsAdapter adapter = getService().getPlsAdapter();
-    	if ( list.getAdapter() == null )
-    		list.setAdapter(adapter);
-    	
     	if ( !getService().getloadComplete() ) 
     		return;
-
+    	
+    	if ( list.getAdapter() == null ) {
+    		final Cursor allEntries =  getService().getDbAdapter().fetchAllEntries();
+    		final PlsDbAdapter adapter = new PlsDbAdapter(this, allEntries);
+    		list.setAdapter(adapter);
+    	} //else {
+    	//	((PlsDbAdapter)list.getAdapter()).notifyDataSetChanged();
+    	//}
+    	
     	super.update();
     	
     	list.setVisibility(View.VISIBLE);

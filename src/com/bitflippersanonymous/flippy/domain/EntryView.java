@@ -35,6 +35,10 @@ public class EntryView extends LinearLayout {
 		update();
 	}
 	
+	public PlsEntry getEntry() {
+		return mEntry;
+	}
+	
 	public void setEntry(PlsEntry entry) {
 		mEntry = entry;
 		update();
@@ -71,7 +75,7 @@ public class EntryView extends LinearLayout {
      			android.R.style.TextAppearance_Small), subPos, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
              	
         final FlippyPlayerService service = FlippyBaseActivity.getService();
-        final PlsEntry curEntry = service.getPlsAdapter().getItem(service.getPosition());
+        final PlsEntry curEntry = service.getCurrentEntry();
         
         switch ( service.getState() ) {
         case PREPARE:
