@@ -11,7 +11,7 @@ import android.text.format.DateFormat;
 public class PlsEntry /*implements Parcelable*/ {
 	
 	public static final String PLSENTRY = Util.PACKAGE + ".PLSENTRY";
-	public enum Tags { item, title, verses, description, enclosure, author, pubDate, keywords }
+	public enum Tags { title, verses, description, enclosure, author, pubDate, keywords }
     
 	private final HashMap<Tags, String> mData;
 	public PlsEntry(HashMap<Tags, String> data) {
