@@ -18,10 +18,8 @@ public class FlippyDatabaseHelper extends SQLiteOpenHelper {
 	
 	private static final String [] CREATE_TABLES = { 
 		"create table " + TABLE_ENTRY + " ("
-		+ KEY_ROWID + " integer primary key autoincrement, "
-		+ Tags.title.name() + " text not null, " 
-		+ Tags.description.name() + " text not null);",
-
+		+ KEY_ROWID + " integer primary key autoincrement ",
+		
 		"create table " + TABLE_KEYWORDS + " ("
 		+ KEY_ROWID + " integer primary key autoincrement, "
 		+ Tags.keywords.name() + " text not null);",
@@ -39,6 +37,13 @@ public class FlippyDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+
+		for ( Tags tag : Tags.values() ) {
+			if ( tag == Tags.keywords ) continue;
+			CREATE_TABLES[0] += ", " + tag.name() + " text "; 
+		}
+		CREATE_TABLES[0] += ");";
+		
 		for ( String table : CREATE_TABLES )
 			db.execSQL(table);
 	}

@@ -32,7 +32,9 @@ public class FlippyDatabaseAdapter {
 	}
 
 	public void close() {
+		if ( mDbHelper != null )
 		mDbHelper.close();
+		mDbHelper = null;
 	}
 	
 	public long insertEntry(PlsEntry entry) {
@@ -90,8 +92,10 @@ public class FlippyDatabaseAdapter {
 	
 	private ContentValues createEntryContentValues(PlsEntry entry) {
 		ContentValues values = new ContentValues();
-		values.put(Tags.title.name(), entry.get(Tags.title));
-		values.put(Tags.description.name(), entry.get(Tags.description));
+		for ( Tags tag : Tags.values() ) {
+			if ( tag == Tags.keywords ) continue;
+			values.put(tag.name(), entry.get(tag));
+		}
 		return values;
 	}
 }
