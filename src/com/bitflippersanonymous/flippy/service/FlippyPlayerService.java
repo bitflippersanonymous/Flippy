@@ -66,7 +66,6 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void onCreate() {
 		final LoadTask loadTask = new LoadTask();
 		loadTask.execute();
@@ -122,8 +121,9 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		}
 
 		Cursor cursor = mDbAdapter.fetchEntry(id, offset);
-		if ( cursor.getCount() == 1)
+		if ( cursor.getCount() > 0 )
 			mCurrentEntry = PlsDbAdapter.cursorToEntry(cursor);
+		cursor.close();
 				
 		mMediaPlayer.reset();
 		mState = MediaState.STOP;

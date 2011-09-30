@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.bitflippersanonymous.flippy.domain.PlsEntry;
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.util.Util;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -27,7 +28,7 @@ public class FlippyDatabaseAdapter {
 	}
 
 	public FlippyDatabaseAdapter recreate() throws SQLException {
-		mDbHelper.onUpgrade(mDbHelper.getWritableDatabase(), 1, 1); // Purge database on open
+		//mDbHelper.onUpgrade(mDbHelper.getWritableDatabase(), 1, 1); // Purge database on open
 		return this;
 	}
 

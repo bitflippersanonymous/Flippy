@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.format.Time;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -58,9 +60,13 @@ public class FlippyQueueActivity extends FlippyBaseActivity
     		return;
     	
     	if ( list.getAdapter() == null ) {
+            long start = System.currentTimeMillis() ;
     		final Cursor allEntries =  getService().getDbAdapter().fetchAllEntries();
     		final PlsDbAdapter adapter = new PlsDbAdapter(this, allEntries);
+    		startManagingCursor(allEntries);
     		list.setAdapter(adapter);
+            long end = System.currentTimeMillis();
+    		Log.i(getClass().getName(),	"Cursor load time: " + (end - start));
     	} //else {
     	//	((PlsDbAdapter)list.getAdapter()).notifyDataSetChanged();
     	//}
@@ -69,7 +75,7 @@ public class FlippyQueueActivity extends FlippyBaseActivity
     	
     	list.setVisibility(View.VISIBLE);
     	findViewById(R.id.progressBarLoading).setVisibility(View.GONE);
-    	EntryView.updateAll();
+    	//EntryView.updateAll();
     }
 	
 	// Invoked via reflection in MainActivity
