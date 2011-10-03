@@ -24,8 +24,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
-
-
+import android.widget.BaseAdapter;
 
 public class FlippyPlayerService extends Service implements MediaPlayer.OnPreparedListener, 
 	MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
@@ -36,7 +35,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	private boolean mLoadComplete = false;
 	final private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 	private FlippyDatabaseAdapter mDbAdapter = null;
-
+	private Cursor mQueue = null;
 
 	public enum MediaState {
 		STOP, PREPARE, PLAY
@@ -109,8 +108,11 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 			mDbAdapter.close();
 			mDbAdapter = null;
 		}
+		
+		if ( mQueue != null )
+			mQueue.close();
+		
 		Log.w(getClass().getSimpleName(), "Destroyed");
-
 	}
 
 	public boolean startPlay(int id, int offset) {
@@ -183,6 +185,10 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		}
 	}
 
+	public BaseAdapter getQueueAdapter() {
+		return new PlsDbAdapter(this, mQueue);
+	}
+
 	// TODO: Need to call some sort of finish when this is done to make the task thread go away
 	class LoadTask extends AsyncTask<Object, Integer, Integer> {
 		@Override
@@ -202,7 +208,11 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 				Log.e(getClass().getName(), "Exception populating database", e);
 				return -1;
 			}
-		 	
+			
+			// Update the Queue
+			mQueue =  getDbAdapter().fetchQueue();
+			mCurrentEntry = PlsDbAdapter.cursorToEntry(mQueue);
+		
 			return 0;
 		}
 

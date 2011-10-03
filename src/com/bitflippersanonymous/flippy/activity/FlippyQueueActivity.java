@@ -15,8 +15,10 @@ import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 
@@ -61,10 +63,7 @@ public class FlippyQueueActivity extends FlippyBaseActivity
     	
     	if ( list.getAdapter() == null ) {
             long start = System.currentTimeMillis() ;
-    		final Cursor allEntries =  getService().getDbAdapter().fetchAllEntries();
-    		final PlsDbAdapter adapter = new PlsDbAdapter(this, allEntries);
-    		startManagingCursor(allEntries);
-    		list.setAdapter(adapter);
+            list.setAdapter(getService().getQueueAdapter());
             long end = System.currentTimeMillis();
     		Log.i(getClass().getName(),	"Cursor load time: " + (end - start));
     	} //else {

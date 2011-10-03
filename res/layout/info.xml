@@ -4,7 +4,7 @@
 	android:layout_height="match_parent">
 	
 	<include layout="@layout/linearlayoutheader" android:id="@+id/LinearLayoutHeaderInfo"
-		android:layout_width="match_parent" android:layout_height="wrap_content" />
+		android:layout_width="match_parent" />
 	
 	<!--<WebView android:layout_width="match_parent" android:id="@+id/viewInfo"
 		android:layout_height="match_parent" android:layout_weight=".30"

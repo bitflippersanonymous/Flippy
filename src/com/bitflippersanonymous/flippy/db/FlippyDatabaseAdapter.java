@@ -108,7 +108,7 @@ public class FlippyDatabaseAdapter {
 		return values;
 	}
 
-	public Cursor fetchAllEntries() throws SQLException {
+	public Cursor fetchQueue() throws SQLException {
 		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY,
 				null, null, null, null, null, null, null);
 		if (cursor != null) {
