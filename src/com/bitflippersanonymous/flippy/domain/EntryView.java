@@ -78,9 +78,9 @@ public class EntryView extends LinearLayout {
         
      	//TODO: toggle an image here
      	if ( mEntry.getInQueue() )
-     		title.setBackgroundColor(getResources().getColor(R.color.red));
+     		findViewById(R.id.InQueueIcon).setVisibility(View.VISIBLE);
      	else
-     		title.setBackgroundColor(getResources().getColor(android.R.color.black));
+     		findViewById(R.id.InQueueIcon).setVisibility(View.GONE);
 
      	
         final FlippyPlayerService service = FlippyBaseActivity.getService();

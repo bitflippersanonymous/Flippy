@@ -19,6 +19,7 @@ public class FlippySettingsActivity extends Activity {
         setContentView(R.layout.settings);
         mSettings = getSharedPreferences(Util.APP_PREFERENCES, Context.MODE_PRIVATE);
        
+        //TODO: need setting to auto add new items to queue
     }
 
 }

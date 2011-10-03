@@ -65,6 +65,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 
 	public void onCreate() {
+		//TODO: Need to load database on service create if it is empty
 		//refreshDb();
 	}
 

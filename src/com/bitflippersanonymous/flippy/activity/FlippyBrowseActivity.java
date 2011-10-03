@@ -39,6 +39,7 @@ public class FlippyBrowseActivity extends FlippyBaseActivity {
 	protected void update() {
 		super.update();
 
+		//TODO: too slow.  Need to use fragments and cursor loader
     	final ListView list = (ListView) findViewById(R.id.listViewBrowse);
     	long start = System.currentTimeMillis() ;
 		Cursor queue =  getService().fetchAllEntries();
