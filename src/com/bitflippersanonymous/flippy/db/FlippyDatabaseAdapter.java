@@ -90,9 +90,10 @@ public class FlippyDatabaseAdapter {
 	}
 	
 	public Cursor fetchEntry(long rowId, int offset) throws SQLException {
-		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY, new String[] {
-				KEY_ROWID, Tags.title.name(), Tags.description.name() },
-				KEY_ROWID + "=" + rowId, null, null, null, null, null);
+		final String dir = offset > 0 ? ">" : offset < 0 ? "<" : "=";
+		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY, 
+				null,
+				KEY_ROWID + dir + rowId, null, null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}

@@ -4,6 +4,7 @@ import com.bitflippersanonymous.flippy.R;
 import com.bitflippersanonymous.flippy.db.FlippyDatabaseAdapter;
 import com.bitflippersanonymous.flippy.domain.EntryView;
 import com.bitflippersanonymous.flippy.domain.PlsDbAdapter;
+import com.bitflippersanonymous.flippy.domain.PlsEntry;
 
 
 import android.content.DialogInterface;
@@ -34,14 +35,14 @@ public class FlippyQueueActivity extends FlippyBaseActivity
 	    list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            	int clickedId = ((EntryView)view).getEntry().getId();
+            	PlsEntry entry = ((EntryView)view).getEntry();
             	switch ( getService().getState() ) {
             	case PREPARE:
             	case PLAY:
-            		if ( clickedId == getService().getCurrentEntry().getId() )
+            		if ( entry.getId() == getService().getCurrentEntry().getId() )
             			break;
             	case STOP:
-            		getService().startPlay(clickedId, 0);
+            		getService().startPlay(entry, 0);
             	}
             	Intent intent = new Intent(view.getContext(), FlippyInfoActivity.class);
             	startActivity(intent);
@@ -57,20 +58,16 @@ public class FlippyQueueActivity extends FlippyBaseActivity
 	// Is a little heavy, and is called every time the service changes something
     @Override
     protected void update() {
-    	final ListView list = (ListView) findViewById(R.id.radioListView1);
-    	if ( !getService().getloadComplete() ) 
-    		return;
-    	
-    	//long start = System.currentTimeMillis() ;
-    	list.setAdapter(getService().getQueueAdapter());
-    	//long end = System.currentTimeMillis();
-    	//Log.i(getClass().getName(),	"Cursor load time: " + (end - start));
-    	
     	super.update();
-    	
+
+    	final ListView list = (ListView) findViewById(R.id.radioListView1);
+    	long start = System.currentTimeMillis() ;
+		Cursor queue =  getService().getDbAdapter().fetchQueue();
+		list.setAdapter(new PlsDbAdapter(this, queue));
+    	long end = System.currentTimeMillis();
+    	Log.i(getClass().getName(),	"Cursor load time: " + (end - start));
     	list.setVisibility(View.VISIBLE);
     	findViewById(R.id.progressBarLoading).setVisibility(View.GONE);
-    	//EntryView.updateAll();
     }
 	
 	// Invoked via reflection in MainActivity

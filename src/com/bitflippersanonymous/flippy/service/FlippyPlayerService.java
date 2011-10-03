@@ -34,8 +34,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	private PlsEntry mCurrentEntry = null;
 	private boolean mLoadComplete = false;
 	final private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
-	private FlippyDatabaseAdapter mDbAdapter = null;
-	private Cursor mQueue = null;
+	private FlippyDatabaseAdapter mDbAdapter = new FlippyDatabaseAdapter(this);;
 	private LoadTask mLoadTask = null;
 	private MediaState mState = MediaState.STOP;
 	
@@ -66,7 +65,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 
 	public void onCreate() {
-		refreshDb();
+		//refreshDb();
 	}
 
     @Override
@@ -95,43 +94,47 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		sendUpdate();
 	}
 
-	@Override
-	public void onDestroy() {
+	private void releaseMediaPlayer() {
 		if ( mMediaPlayer != null ) {
 			mMediaPlayer.release();
 			mMediaPlayer = null;
 		}
 		mState = MediaState.STOP;
-		
+	}
+	
+	@Override
+	public void onDestroy() {
+		releaseMediaPlayer();
 		if ( mDbAdapter != null ) {
 			mDbAdapter.close();
 			mDbAdapter = null;
 		}
-		
-		if ( mQueue != null )
-			mQueue.close();
-		
+				
 		Log.w(getClass().getSimpleName(), "Destroyed");
 	}
 
-	public boolean startPlay(int id, int offset) {
+	public boolean startPlay(PlsEntry entry, int offset) {
 		if ( mMediaPlayer == null ) {
 			mMediaPlayer = new MediaPlayer();
 			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mMediaPlayer.setOnPreparedListener(this);
 		}
 
-		Cursor cursor = mDbAdapter.fetchEntry(id, offset);
-		if ( cursor.getCount() > 0 )
-			mCurrentEntry = PlsDbAdapter.cursorToEntry(cursor);
-		cursor.close();
+		mCurrentEntry = entry;
+		if ( offset != 0 || entry == null ) {
+			Cursor cursor = null;
+			if ( entry == null )
+				cursor = mDbAdapter.fetchEntry(0, 1); // May want to save last entry in prefs
+			else
+				cursor = mDbAdapter.fetchEntry(entry.getId(), offset);
+			
+			if ( cursor.getCount() > 0 )
+				mCurrentEntry = PlsDbAdapter.cursorToEntry(cursor);
+			cursor.close();
+		}
 				
 		mMediaPlayer.reset();
 		mState = MediaState.STOP;
-		if ( mCurrentEntry == null ) {
-			sendUpdate();
-			return false;
-		}
 				
 		try {
 			mMediaPlayer.setDataSource(mCurrentEntry.get(Tags.enclosure));
@@ -167,7 +170,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	public void stopPlay() {
 		stopForeground(true);
 		stopSelf(); // Now OK to stop when all binders go away.
-		onDestroy();
+		releaseMediaPlayer();
 		sendUpdate();
 		Log.i(getClass().getName(), "Stop Play");
 	}
@@ -182,10 +185,6 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		catch (android.os.RemoteException e) {
 			Log.w(getClass().getName(), "Exception sending message", e);
 		}
-	}
-
-	public BaseAdapter getQueueAdapter() {
-		return new PlsDbAdapter(this, mQueue);
 	}
 	
 	public boolean refreshDb() {
@@ -218,8 +217,6 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 			}
 			
 			// Update the Queue
-			mQueue =  getDbAdapter().fetchQueue();
-			mCurrentEntry = PlsDbAdapter.cursorToEntry(mQueue);
 		
 			return 0;
 		}
@@ -261,8 +258,6 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	
 	// This happens in another thread LoadTask
 	public void populateDatabase(ArrayList<PlsEntry> entries) {
-		mDbAdapter = new FlippyDatabaseAdapter(this);
-				
 		for ( PlsEntry entry : entries )
 			mDbAdapter.insertEntry(entry);
 	}

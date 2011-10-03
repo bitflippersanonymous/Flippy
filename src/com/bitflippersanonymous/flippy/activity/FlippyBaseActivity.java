@@ -37,9 +37,11 @@ public abstract class FlippyBaseActivity extends Activity
 
 	private boolean mBound = false;
 	
-	private static FlippyPlayerService mService;
+	private static FlippyPlayerService mService = null;
 	public static FlippyPlayerService getService() { 
 		//TODO: If service not bound, bind it and wait until it's bound, then return it
+		if ( mService == null )
+			Log.e(FlippyBaseActivity.class.getName(), "Service not started");
 		return mService; 
 	}
 
@@ -96,7 +98,7 @@ public abstract class FlippyBaseActivity extends Activity
 			if ( getService().getState() != MediaState.STOP )
 				getService().stopPlay();	
 			else
-				getService().startPlay(getService().getCurrentEntry().getId(), 0);
+				getService().startPlay(getService().getCurrentEntry(), 0);
 			break;
 		case R.id.imageButtonHeader:
 			getService().getDbAdapter().recreate();
