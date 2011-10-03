@@ -15,6 +15,7 @@ public class PlsEntry /*implements Parcelable*/ {
     
 	private int mId;
 	private final HashMap<Tags, String> mData;
+	private boolean mInQueue;
 	public PlsEntry(HashMap<Tags, String> data) {
 		mData = data;
 		if ( mData.containsKey(Tags.title) ) {
@@ -31,13 +32,22 @@ public class PlsEntry /*implements Parcelable*/ {
 
 	}
 	
-	public PlsEntry(HashMap<Tags, String> data, int id) {
+	public PlsEntry(HashMap<Tags, String> data, int id, boolean queue) {
 		mId = id;
 		mData = data;
+		mInQueue = queue;
 	}
 
 	public int getId() {
 		return mId;
+	}
+	
+	public boolean getInQueue() {
+		return mInQueue;
+	}
+	
+	public void setInQueue(boolean inQueue) {
+		mInQueue = inQueue;
 	}
 	
 	public String get(Tags tag) {

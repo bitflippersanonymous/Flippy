@@ -10,6 +10,7 @@ import com.bitflippersanonymous.flippy.service.FlippyPlayerService;
 import com.bitflippersanonymous.flippy.util.Util;
 
 import android.content.Context;
+import android.os.DropBoxManager.Entry;
 import android.text.Spannable;
 import android.text.style.TextAppearanceSpan;
 import android.util.Log;
@@ -29,6 +30,7 @@ public class EntryView extends LinearLayout {
 		sInstances.put(this, null);
 	}
 	
+	//TODO: not sure this is ever called
 	@Override
 	protected void onVisibilityChanged (View changedView, int visibility) {
 		Log.i(getClass().getName(), "Visibility Changed");
@@ -73,7 +75,14 @@ public class EntryView extends LinearLayout {
      	//str.setSpan(new StyleSpan(Typeface.BOLD), 0, subPos, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
      	str.setSpan(new TextAppearanceSpan(title.getContext(), 
      			android.R.style.TextAppearance_Small), subPos, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-             	
+        
+     	//TODO: toggle an image here
+     	if ( mEntry.getInQueue() )
+     		title.setBackgroundColor(getResources().getColor(R.color.red));
+     	else
+     		title.setBackgroundColor(getResources().getColor(android.R.color.black));
+
+     	
         final FlippyPlayerService service = FlippyBaseActivity.getService();
         final PlsEntry curEntry = service.getCurrentEntry();
         

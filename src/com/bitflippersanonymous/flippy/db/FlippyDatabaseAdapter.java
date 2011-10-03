@@ -94,7 +94,7 @@ public class FlippyDatabaseAdapter {
 		final String dir = offset > 0 ? ">" : offset < 0 ? "<" : "=";
 		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY, 
 				null,
-				KEY_ROWID + dir + rowId, null, null, null, null, null);
+				KEY_ROWID + dir + "?", new String[]{String.valueOf(rowId)}, null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
@@ -122,12 +122,19 @@ public class FlippyDatabaseAdapter {
 	//TODO: trimdown select to speedup
 	public Cursor fetchAllEntries() throws SQLException {
 		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY,
-				new String[] {KEY_ROWID, Tags.title.name(), Tags.verses.name(), Tags.pubDate.name()}, 
+				new String[] {KEY_ROWID, Util.QUEUE, Tags.title.name(), Tags.verses.name(), Tags.pubDate.name()}, 
 				null, null, null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}
 		return cursor;
+	}
+
+	public void enqueue(long rowId, boolean value) throws SQLException {
+		ContentValues values = new ContentValues();
+		values.put(Util.QUEUE, value?1:0);
+		int update = mDbHelper.getWritableDatabase().update(TABLE_ENTRY, values, 
+				KEY_ROWID + "=?", new String[]{String.valueOf(rowId)});
 	}
 
 }

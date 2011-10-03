@@ -3,6 +3,7 @@ package com.bitflippersanonymous.flippy.domain;
 import java.util.HashMap;
 
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.util.Util;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -33,16 +34,21 @@ public class PlsDbAdapter extends CursorAdapter implements ListAdapter {
 		if ( cursor.getCount() == 0 )
 			return null;
 		
+		boolean queue = false;
 		int id = cursor.getInt(0);
 		HashMap<Tags, String> data = new HashMap<Tags, String>();
 		String[] colNames = cursor.getColumnNames();
 		for ( int i = 0; i< cursor.getColumnCount(); i++ ) {
 			Tags tag = null;
 			try { 
-				tag = Tags.valueOf(colNames[i]);
-				data.put(tag, cursor.getString(i));
+				if ( colNames[i].equals(Util.QUEUE) ) {
+					queue = cursor.getInt(i)>0;
+				} else {
+					tag = Tags.valueOf(colNames[i]);
+					data.put(tag, cursor.getString(i));
+				}
 			} catch(IllegalArgumentException ex) { }
 		}
-		return new PlsEntry(data, id);
+		return new PlsEntry(data, id, queue);
 	}
 }

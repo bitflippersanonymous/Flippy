@@ -4,6 +4,7 @@
     <color name="PlaylistDivider">#EEEFEF</color>
     <color name="PlayingBackground">#D2DFB5</color>
     <color name="infoBackground">#CCCCCC</color>
+    <color name="red">#FF0000</color>
        
             
     <style name="PlaylistTheme" parent="android:Theme">
