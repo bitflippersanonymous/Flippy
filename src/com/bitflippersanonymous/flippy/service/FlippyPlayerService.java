@@ -202,7 +202,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 				Log.e(getClass().getName(), "Exception populating database", e);
 				return -1;
 			}
-
+		 	
 			return 0;
 		}
 
@@ -226,8 +226,6 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		protected void onPreExecute() {
 			mLoadComplete = false;
 		}
-
-
 	}
 
 	@Override

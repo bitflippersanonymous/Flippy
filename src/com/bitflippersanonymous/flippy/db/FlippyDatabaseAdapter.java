@@ -1,10 +1,10 @@
 package com.bitflippersanonymous.flippy.db;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.bitflippersanonymous.flippy.domain.PlsEntry;
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
-import com.bitflippersanonymous.flippy.util.Util;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,15 +20,15 @@ public class FlippyDatabaseAdapter {
 	public static final String TABLE_ENTRY = "entry";
 	public static final String TABLE_KEYWORDS = "keywords";
 
-	
 	private FlippyDatabaseHelper mDbHelper = null;
+	private HashMap<String, Long> mKeywordIds = null;
 
 	public FlippyDatabaseAdapter(Context context) {
 		mDbHelper = new FlippyDatabaseHelper(context);
 	}
 
 	public FlippyDatabaseAdapter recreate() throws SQLException {
-		//mDbHelper.onUpgrade(mDbHelper.getWritableDatabase(), 1, 1); // Purge database on open
+		mDbHelper.onUpgrade(mDbHelper.getWritableDatabase(), 1, 1); // Purge database on open
 		return this;
 	}
 
@@ -64,7 +64,14 @@ public class FlippyDatabaseAdapter {
 	//Will escape keyword.  Also could use DatabaseUtils.sqlEscapeString()
 	public long lookupKeyword(String keyword) throws SQLException {
 		long id = -1;
+		if ( mKeywordIds == null )
+			mKeywordIds = new HashMap<String, Long>();
+
 		keyword = DatabaseUtils.sqlEscapeString(keyword.toLowerCase());
+		Long iId = mKeywordIds.get(keyword);
+		if ( iId != null )
+			return iId.longValue();
+		
 		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_KEYWORDS, 
 				new String[] { KEY_ROWID },
 				Tags.keywords.name() + "=?", new String[] {keyword}, null, null, null, null);
@@ -78,6 +85,7 @@ public class FlippyDatabaseAdapter {
 			id = mDbHelper.getWritableDatabase().insert(TABLE_KEYWORDS, null, values);
 		}
 		cursor.close();
+		mKeywordIds.put(keyword, id);
 		return id;
 	}
 	
