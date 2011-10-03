@@ -21,4 +21,7 @@ public class Util {
 	
 	public static final int ABOUT_DIALOG = 0;
 	
+	// DB
+	public static final String QUEUE = "queue";
+	
 }

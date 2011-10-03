@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.bitflippersanonymous.flippy.domain.PlsEntry;
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.util.Util;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -111,7 +112,7 @@ public class FlippyDatabaseAdapter {
 
 	public Cursor fetchQueue() throws SQLException {
 		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY,
-				null, null, null, null, null, null, null);
+				null, Util.QUEUE + "=1", null, null, null, null, null);
 		if (cursor != null) {
 			cursor.moveToFirst();
 		}

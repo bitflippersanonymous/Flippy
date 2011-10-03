@@ -1,6 +1,7 @@
 package com.bitflippersanonymous.flippy.db;
 
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
+import com.bitflippersanonymous.flippy.util.Util;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,7 +19,8 @@ public class FlippyDatabaseHelper extends SQLiteOpenHelper {
 	
 	private static final String [] CREATE_TABLES = { 
 		"create table " + TABLE_ENTRY + " ("
-		+ KEY_ROWID + " integer primary key autoincrement ",
+		+ KEY_ROWID + " integer primary key autoincrement, "
+		+ Util.QUEUE + " integer not null default(0) ",
 		
 		"create table " + TABLE_KEYWORDS + " ("
 		+ KEY_ROWID + " integer primary key autoincrement, "
@@ -27,7 +29,8 @@ public class FlippyDatabaseHelper extends SQLiteOpenHelper {
 		"create table " + TABLE_ENTRY+TABLE_KEYWORDS
 		+ " (" + TABLE_ENTRY + " integer not null, "
 		+ TABLE_KEYWORDS + " integer not null, "
-		+ "PRIMARY KEY (" + TABLE_ENTRY + ", " + TABLE_KEYWORDS + ") );" };
+		+ "PRIMARY KEY (" + TABLE_ENTRY + ", " + TABLE_KEYWORDS + ") );",
+	};
 	
 	private static final String[] TABLES = { TABLE_ENTRY, TABLE_KEYWORDS, TABLE_ENTRY+TABLE_KEYWORDS };
 

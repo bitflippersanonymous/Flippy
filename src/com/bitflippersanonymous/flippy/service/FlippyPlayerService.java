@@ -109,7 +109,6 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 			mDbAdapter.close();
 			mDbAdapter = null;
 		}
-				
 		Log.w(getClass().getSimpleName(), "Destroyed");
 	}
 
