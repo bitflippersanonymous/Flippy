@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
 	<string name="radio_service_notif_id" />
 	<string name="app_name">Flippy</string>
 	<string name="back">Back</string>
@@ -21,5 +22,7 @@
 	<string name="browse_menu">Browse</string>
 	<string name="search_menu">Search</string>
 	<string name="about_menu">About</string>
+
 	<string name="about_url">file:///android_asset/html/about.html</string>
+	<string name="recent_messages_url">http://dl.dropbox.com/u/17164783/accf_recent_message.xml</string>
 </resources>

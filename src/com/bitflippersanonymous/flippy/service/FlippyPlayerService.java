@@ -6,6 +6,7 @@ import com.bitflippersanonymous.flippy.R;
 import com.bitflippersanonymous.flippy.activity.FlippyInfoActivity;
 import com.bitflippersanonymous.flippy.db.FlippyDatabaseAdapter;
 import com.bitflippersanonymous.flippy.domain.*;
+import com.bitflippersanonymous.flippy.domain.PodcastParser;
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
 import com.bitflippersanonymous.flippy.util.*;
 
@@ -191,32 +192,20 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		if ( mLoadTask != null )
 			return false;
 		
+		String path = getResources().getString(R.string.recent_messages_url);
+		
 		mLoadTask = new LoadTask();
-		mLoadTask.execute();
+		mLoadTask.execute(path);
 		return true;
 	}
 
 	// TODO: Need to call some sort of finish when this is done to make the task thread go away
-	class LoadTask extends AsyncTask<Object, Integer, Integer> {
+	class LoadTask extends AsyncTask<String, Integer, Integer> {
 		@Override
-		protected Integer doInBackground(Object... params) {
-			//TODO: put in database as we read. Use SAX parser
-			ArrayList<PlsEntry> entries = new ArrayList<PlsEntry>();
-			XmlResourceParser parser = getResources().getXml(R.xml.accf_recent_message);
-			try { 
-				PodcastParser.parse(entries, parser); 
-			} catch(Exception e) { 
-				Log.e(getClass().getName(), "Exception parsing entries", e);
-				return -1;
-			}
-			try { 
-				populateDatabase(entries);
-			} catch(Exception e) { 
-				Log.e(getClass().getName(), "Exception populating database", e);
-				return -1;
-			}
-			
-			// Update the Queue
+		protected Integer doInBackground(String... params) {
+			String path = params[0];
+			PodcastParser parser = new PodcastParser(path, mDbAdapter);
+			parser.parse();
 		
 			return 0;
 		}
@@ -256,12 +245,6 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		onDestroy();		
 	}
 	
-	// This happens in another thread LoadTask
-	public void populateDatabase(ArrayList<PlsEntry> entries) {
-		for ( PlsEntry entry : entries )
-			mDbAdapter.insertEntry(entry);
-	}
-
 	//TODO: remove.
 	public void toggleInQueue(PlsEntry entry) {
 		mDbAdapter.enqueue(entry.getId(), !entry.getInQueue());
