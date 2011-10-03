@@ -5,7 +5,8 @@
 	style="@style/PlaylistTheme">
 
 	<include layout="@layout/linearlayoutheader" android:id="@+id/LinearLayoutHeaderRadio"
-		android:layout_width="match_parent" android:layout_height="wrap_content" />
+		android:layout_width="match_parent" 
+		android:layout_weight="0.20"  />
 
 	<LinearLayout android:gravity="center"
 		android:layout_height="fill_parent" android:id="@+id/linearLayoutProgress"

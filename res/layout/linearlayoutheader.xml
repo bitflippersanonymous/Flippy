@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="wrap_content"
-	android:id="@+id/LinearLayoutHeader" android:layout_width="match_parent"
-	android:gravity="left" style="@style/HeaderTheme">
-	<ImageView android:id="@+id/imageButtonHeader"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="50sp" android:id="@+id/LinearLayoutHeader"
+	android:layout_width="match_parent"
+	style="@style/HeaderTheme">
+	<ImageView android:id="@+id/imageButtonHeader" android:layout_alignParentLeft="true"
 		android:paddingLeft="4sp" android:paddingRight="4sp" android:onClick="onClick"
 		android:src="@drawable/a" android:layout_width="50sp"
-		android:layout_height="40sp" />
-	<TextView android:id="@+id/textViewHeader"
-		android:layout_width="match_parent" android:text="Athey Creek Podcasts"
-		android:paddingLeft="4sp" android:layout_height="fill_parent"
-		android:gravity="center" style="@style/HeaderTheme" />
-</LinearLayout>
+		android:layout_height="match_parent" />
+	<TextView android:gravity="center" android:text="Athey Creek Podcasts"
+		android:id="@+id/textViewHeader" android:paddingLeft="4sp"
+		android:layout_height="match_parent" android:layout_width="wrap_content"
+		style="@style/HeaderTheme" android:layout_toRightOf="@id/imageButtonHeader"/>
+	<ImageView android:layout_width="wrap_content" android:id="@+id/imageViewSync"
+		android:layout_alignParentRight="true"
+		android:layout_height="match_parent" android:src="@android:drawable/ic_popup_sync"/>
+</RelativeLayout>
 

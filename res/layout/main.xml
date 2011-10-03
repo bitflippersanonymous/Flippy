@@ -5,7 +5,7 @@
 	style="@style/PlaylistTheme">
 
 	<include layout="@layout/linearlayoutheader" android:id="@+id/LinearLayoutHeaderMain"
-		android:layout_width="match_parent" android:layout_height="wrap_content" />
+		android:layout_width="match_parent" />
 
 	<ListView android:layout_height="fill_parent" android:id="@+id/ListViewMain"
 		android:layout_weight="0.30" android:layout_width="match_parent"
