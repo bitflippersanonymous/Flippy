@@ -56,19 +56,15 @@ public class FlippyQueueActivity extends FlippyBaseActivity
 
 	// Is a little heavy, and is called every time the service changes something
     @Override
-	protected void update() {
+    protected void update() {
     	final ListView list = (ListView) findViewById(R.id.radioListView1);
     	if ( !getService().getloadComplete() ) 
     		return;
     	
-    	if ( list.getAdapter() == null ) {
-            long start = System.currentTimeMillis() ;
-            list.setAdapter(getService().getQueueAdapter());
-            long end = System.currentTimeMillis();
-    		Log.i(getClass().getName(),	"Cursor load time: " + (end - start));
-    	} //else {
-    	//	((PlsDbAdapter)list.getAdapter()).notifyDataSetChanged();
-    	//}
+    	//long start = System.currentTimeMillis() ;
+    	list.setAdapter(getService().getQueueAdapter());
+    	//long end = System.currentTimeMillis();
+    	//Log.i(getClass().getName(),	"Cursor load time: " + (end - start));
     	
     	super.update();
     	

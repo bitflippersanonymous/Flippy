@@ -99,9 +99,15 @@ public abstract class FlippyBaseActivity extends Activity
 				getService().startPlay(getService().getCurrentEntry().getId(), 0);
 			break;
 		case R.id.imageButtonHeader:
-			Intent intent = new Intent(this, FlippyInfoActivity.class);
-			startActivity(intent);
+			getService().getDbAdapter().recreate();
+			//Intent intent = new Intent(this, FlippyInfoActivity.class);
+			//startActivity(intent);
 			//showDialog(ABOUT_DIALOG);
+			break;
+		case R.id.imageViewSync:
+			v.setVisibility(View.INVISIBLE);
+			getService().refreshDb();
+			break;
 		default:
 		}
 	}
@@ -179,6 +185,12 @@ public abstract class FlippyBaseActivity extends Activity
 			final PlsEntry entry = getService().getCurrentEntry();
 			text.setText(entry.get(Tags.title));			
 		}
+
+		if ( getService().getloadComplete() ) {
+			View v = findViewById(R.id.imageViewSync);
+			v.setVisibility(View.VISIBLE);
+		}
+
 	}
 
 }

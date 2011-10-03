@@ -36,12 +36,12 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	final private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 	private FlippyDatabaseAdapter mDbAdapter = null;
 	private Cursor mQueue = null;
-
+	private LoadTask mLoadTask = null;
+	private MediaState mState = MediaState.STOP;
+	
 	public enum MediaState {
 		STOP, PREPARE, PLAY
 	}
-	
-	private MediaState mState = MediaState.STOP;
 	
 	public FlippyDatabaseAdapter getDbAdapter() {
 		return mDbAdapter;
@@ -66,8 +66,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	}
 
 	public void onCreate() {
-		final LoadTask loadTask = new LoadTask();
-		loadTask.execute();
+		refreshDb();
 	}
 
     @Override
@@ -188,6 +187,15 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	public BaseAdapter getQueueAdapter() {
 		return new PlsDbAdapter(this, mQueue);
 	}
+	
+	public boolean refreshDb() {
+		if ( mLoadTask != null )
+			return false;
+		
+		mLoadTask = new LoadTask();
+		mLoadTask.execute();
+		return true;
+	}
 
 	// TODO: Need to call some sort of finish when this is done to make the task thread go away
 	class LoadTask extends AsyncTask<Object, Integer, Integer> {
@@ -219,6 +227,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		@Override
 		protected void onCancelled() {
 			// Should we close db here?
+			mLoadTask = null;
 		}
 
 		@Override
@@ -229,6 +238,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 		protected void onPostExecute(Integer result) {
 			Log.i(getClass().getSimpleName(), "Load Complete");
 			mLoadComplete  = true;
+			mLoadTask = null;
 			sendUpdate();
 		}
 
@@ -252,12 +262,12 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	// This happens in another thread LoadTask
 	public void populateDatabase(ArrayList<PlsEntry> entries) {
 		mDbAdapter = new FlippyDatabaseAdapter(this);
-		mDbAdapter.recreate();
 				
 		for ( PlsEntry entry : entries )
 			mDbAdapter.insertEntry(entry);
-
 	}
+
+
 
 	
 

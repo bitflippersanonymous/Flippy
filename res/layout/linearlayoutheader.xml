@@ -12,7 +12,7 @@
 		android:layout_height="match_parent" android:layout_width="wrap_content"
 		style="@style/HeaderTheme" android:layout_toRightOf="@id/imageButtonHeader"/>
 	<ImageView android:layout_width="wrap_content" android:id="@+id/imageViewSync"
-		android:layout_alignParentRight="true"
+		android:layout_alignParentRight="true" android:onClick="onClick"
 		android:layout_height="match_parent" android:src="@android:drawable/ic_popup_sync"/>
 </RelativeLayout>
 
