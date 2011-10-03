@@ -63,6 +63,7 @@ public class FlippyQueueActivity extends FlippyBaseActivity
     	final ListView list = (ListView) findViewById(R.id.radioListView1);
     	long start = System.currentTimeMillis() ;
 		Cursor queue =  getService().getDbAdapter().fetchQueue();
+		startManagingCursor(queue);
 		list.setAdapter(new PlsDbAdapter(this, queue));
     	long end = System.currentTimeMillis();
     	Log.i(getClass().getName(),	"Cursor load time: " + (end - start));

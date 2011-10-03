@@ -118,5 +118,16 @@ public class FlippyDatabaseAdapter {
 		}
 		return cursor;
 	}
+	
+	//TODO: trimdown select to speedup
+	public Cursor fetchAllEntries() throws SQLException {
+		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY,
+				new String[] {KEY_ROWID, Tags.title.name(), Tags.verses.name(), Tags.pubDate.name()}, 
+				null, null, null, null, null, null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
 
 }
