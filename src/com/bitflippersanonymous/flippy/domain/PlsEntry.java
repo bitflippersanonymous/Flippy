@@ -6,6 +6,7 @@ import java.sql.Time;
 import java.util.HashMap;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.text.format.DateFormat;
 
 public class PlsEntry /*implements Parcelable*/ {
@@ -24,12 +25,6 @@ public class PlsEntry /*implements Parcelable*/ {
 			mData.put(Tags.title, byphen[0]);
 			mData.put(Tags.verses, byphen[1]);
 		}
-		
-		if ( mData.containsKey(Tags.pubDate) ) {
-			CharSequence prettyDate = DateFormat.format("MMM dd, yyyy", Time.parse(get(Tags.pubDate)));
-			mData.put(Tags.pubDate, prettyDate.toString());
-		}
-
 	}
 	
 	public PlsEntry(HashMap<Tags, String> data, int id, boolean queue) {
@@ -53,7 +48,45 @@ public class PlsEntry /*implements Parcelable*/ {
 	public String get(Tags tag) {
 		return mData.get(tag);
 	}
-
+	
+	// Into DB
+	public ContentValues createEntryContentValues() {
+		ContentValues values = new ContentValues();
+		for ( Tags tag : Tags.values() ) {
+			if ( tag == Tags.keywords ) continue;
+			if ( tag == Tags.pubDate ) {
+				values.put(tag.name(), Time.parse(get(tag)));
+			}
+			values.put(tag.name(), get(tag));
+		}
+		return values;
+	}
+	
+	// Outof DB
+	public static PlsEntry cursorToEntry(Cursor cursor) {
+		if ( cursor.getCount() == 0 )
+			return null;
+		
+		boolean queue = false;
+		int id = cursor.getInt(0);
+		HashMap<Tags, String> data = new HashMap<Tags, String>();
+		String[] colNames = cursor.getColumnNames();
+		for ( int i = 0; i< cursor.getColumnCount(); i++ ) {
+			Tags tag = null;
+			try { 
+				if ( colNames[i].equals(Util.QUEUE) ) {
+					queue = cursor.getInt(i)>0;
+				} else if ( colNames[i].equals(Tags.pubDate) ) {
+					data.put(Tags.pubDate, DateFormat.format("MMM dd, yyyy", cursor.getLong(i)).toString());
+				} else {
+					tag = Tags.valueOf(colNames[i]);
+					data.put(tag, cursor.getString(i));
+				}
+			} catch(IllegalArgumentException ex) { }
+		}
+		return new PlsEntry(data, id, queue);
+	}
+	
 	/*
 	@Override
 	public int describeContents() {

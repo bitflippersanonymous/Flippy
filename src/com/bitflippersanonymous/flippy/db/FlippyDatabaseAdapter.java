@@ -1,5 +1,6 @@
 package com.bitflippersanonymous.flippy.db;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -43,14 +44,17 @@ public class FlippyDatabaseAdapter {
 		SQLiteDatabase database = mDbHelper.getWritableDatabase();
 		ArrayList<Long> keywordIds = new ArrayList<Long>();
 
+		ContentValues values = entry.createEntryContentValues();
+		if ( lookupEntry(values) == -1 )
+			return -1;
+		
+		long idEntry = database.insert(TABLE_ENTRY, null, values);
+		
 		for ( String keyword : entry.get(Tags.keywords).split(", ") ) {
 			long keywordId = lookupKeyword(keyword);
 			if ( keywordId != -1 )
 				keywordIds.add(keywordId);
 		}
-		
-		ContentValues values = createEntryContentValues(entry);
-		long idEntry = database.insert(TABLE_ENTRY, null, values);
 		
 		for ( long keywordId : keywordIds ) {
 			values.clear();
@@ -90,6 +94,22 @@ public class FlippyDatabaseAdapter {
 		return id;
 	}
 	
+	// Lookup by pubdate, add more later if needed
+	private long lookupEntry(ContentValues values) throws SQLException {
+		long id = -1;
+		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY, 
+				new String[] {KEY_ROWID, Tags.pubDate.name()},
+				Tags.pubDate.name() + "=" + "?", 
+				new String[]{values.getAsString(Tags.pubDate.name())}, 
+				null, null, null, null);
+		if ( cursor == null )
+			return id;
+		if ( cursor.getCount() > 0 )
+			id = cursor.getLong(0);
+		cursor.close();
+		return id;
+	}
+	
 	public Cursor fetchEntry(long rowId, int offset) throws SQLException {
 		final String dir = offset > 0 ? ">" : offset < 0 ? "<" : "=";
 		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_ENTRY, 
@@ -99,15 +119,6 @@ public class FlippyDatabaseAdapter {
 			cursor.moveToFirst();
 		}
 		return cursor;
-	}
-	
-	private ContentValues createEntryContentValues(PlsEntry entry) {
-		ContentValues values = new ContentValues();
-		for ( Tags tag : Tags.values() ) {
-			if ( tag == Tags.keywords ) continue;
-			values.put(tag.name(), entry.get(tag));
-		}
-		return values;
 	}
 
 	public Cursor fetchQueue() throws SQLException {

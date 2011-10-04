@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class FlippyDatabaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "applicationdata.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 	
 	private static final String TABLE_ENTRY = FlippyDatabaseAdapter.TABLE_ENTRY;
 	private static final String TABLE_KEYWORDS = FlippyDatabaseAdapter.TABLE_KEYWORDS;
@@ -20,7 +20,8 @@ public class FlippyDatabaseHelper extends SQLiteOpenHelper {
 	private static final String [] CREATE_TABLES = { 
 		"create table " + TABLE_ENTRY + " ("
 		+ KEY_ROWID + " integer primary key autoincrement, "
-		+ Util.QUEUE + " integer not null default(0) ",
+		+ Util.QUEUE + " integer not null default(0), "
+		+ Tags.pubDate.name() + " integer",
 		
 		"create table " + TABLE_KEYWORDS + " ("
 		+ KEY_ROWID + " integer primary key autoincrement, "
@@ -43,6 +44,7 @@ public class FlippyDatabaseHelper extends SQLiteOpenHelper {
 
 		for ( Tags tag : Tags.values() ) {
 			if ( tag == Tags.keywords ) continue;
+			if ( tag == Tags.pubDate ) continue;
 			CREATE_TABLES[0] += ", " + tag.name() + " text "; 
 		}
 		CREATE_TABLES[0] += ");";

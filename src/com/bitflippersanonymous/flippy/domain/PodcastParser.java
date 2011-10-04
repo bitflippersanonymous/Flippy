@@ -43,6 +43,7 @@ public class PodcastParser {
 	public PodcastParser(String path, FlippyDatabaseAdapter adapter) {
 		mPath = path;
 		mDbAdapter = adapter;
+		
 	}
 
 	public void parse() {
@@ -72,7 +73,7 @@ public class PodcastParser {
 		private HashMap<PlsEntry.Tags, String> mData = new HashMap<PlsEntry.Tags, String>();
 		private StringBuilder mBuilder = new StringBuilder();
 		private boolean mInItem = false;
-		private Attributes mAttributes;
+		private String mEnclosure;
 	    
 	    @Override
 	    public void characters(char[] ch, int start, int length)
@@ -88,13 +89,11 @@ public class PodcastParser {
 
 	        if ( mData != null ) {
 		        if (localName.equalsIgnoreCase(ITEM)) {
-		        	mDbAdapter.insertEntry(new PlsEntry(mData));
-		            mInItem = false;
-		        	
-		        	if ( enough ) {
+		        	long id = mDbAdapter.insertEntry(new PlsEntry(mData));
+		        	if ( id == -1 ) {
 		        		throw new SAXExceptionEnough();
 		        	}
-
+		            mInItem = false;
 		        } 
 		        if ( mInItem ) {
 		        	Tags tag = null;
@@ -102,7 +101,7 @@ public class PodcastParser {
 		        	catch(IllegalArgumentException ex) { }
 		        	String value = null;
 		        	if ( tag == Tags.enclosure )
-		        		value = mAttributes.getValue(URL);
+		        		value = mEnclosure;
 		        	else
 		        		value = mBuilder.toString();
 		        	mData.put(tag, value.trim());
@@ -116,7 +115,7 @@ public class PodcastParser {
 	    		throws SAXException {
 	        super.startElement(uri, localName, name, attributes);
 	        
-	        mAttributes = attributes;
+	        mEnclosure = attributes.getValue(URL);
 	        if (localName.equalsIgnoreCase(ITEM)) {
 	            mData.clear();
 	            mInItem = true;

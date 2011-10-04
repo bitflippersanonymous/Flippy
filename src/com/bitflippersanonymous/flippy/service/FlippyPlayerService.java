@@ -130,7 +130,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 				cursor = mDbAdapter.fetchEntry(entry.getId(), offset);
 			
 			if ( cursor.getCount() > 0 )
-				mCurrentEntry = PlsDbAdapter.cursorToEntry(cursor);
+				mCurrentEntry = PlsEntry.cursorToEntry(cursor);
 			cursor.close();
 		}
 				

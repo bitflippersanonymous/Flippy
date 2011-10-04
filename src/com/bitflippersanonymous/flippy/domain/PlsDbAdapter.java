@@ -20,35 +20,13 @@ public class PlsDbAdapter extends CursorAdapter implements ListAdapter {
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		((EntryView) view).setEntry(cursorToEntry(cursor));
+		((EntryView) view).setEntry(PlsEntry.cursorToEntry(cursor));
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		EntryView view = new EntryView(context);
-		view.setEntry(cursorToEntry(cursor));
+		view.setEntry(PlsEntry.cursorToEntry(cursor));
 		return view;
-	}
-
-	public static PlsEntry cursorToEntry(Cursor cursor) {
-		if ( cursor.getCount() == 0 )
-			return null;
-		
-		boolean queue = false;
-		int id = cursor.getInt(0);
-		HashMap<Tags, String> data = new HashMap<Tags, String>();
-		String[] colNames = cursor.getColumnNames();
-		for ( int i = 0; i< cursor.getColumnCount(); i++ ) {
-			Tags tag = null;
-			try { 
-				if ( colNames[i].equals(Util.QUEUE) ) {
-					queue = cursor.getInt(i)>0;
-				} else {
-					tag = Tags.valueOf(colNames[i]);
-					data.put(tag, cursor.getString(i));
-				}
-			} catch(IllegalArgumentException ex) { }
-		}
-		return new PlsEntry(data, id, queue);
 	}
 }
