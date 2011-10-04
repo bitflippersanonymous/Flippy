@@ -36,6 +36,7 @@ public class FlippyQueueActivity extends FlippyBaseActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	PlsEntry entry = ((EntryView)view).getEntry();
+            	/*
             	switch ( getService().getState() ) {
             	case PREPARE:
             	case PLAY:
@@ -43,7 +44,7 @@ public class FlippyQueueActivity extends FlippyBaseActivity
             			break;
             	case STOP:
             		getService().startPlay(entry, 0);
-            	}
+            	}*/
             	Intent intent = new Intent(view.getContext(), FlippyInfoActivity.class);
             	startActivity(intent);
             }});

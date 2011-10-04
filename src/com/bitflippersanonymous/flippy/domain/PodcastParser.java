@@ -36,6 +36,10 @@ public class PodcastParser {
 	private FlippyDatabaseAdapter mDbAdapter = null;
 	private String mPath = null;
 	
+	private class SAXExceptionEnough extends SAXException {
+		private static final long serialVersionUID = 240553706960958221L;
+	};
+	
 	public PodcastParser(String path, FlippyDatabaseAdapter adapter) {
 		mPath = path;
 		mDbAdapter = adapter;
@@ -49,6 +53,8 @@ public class PodcastParser {
 			mInputStream  = getInputStream(mPath);
 			if ( mInputStream != null )
 				parser.parse(mInputStream, handler);
+		} catch (SAXExceptionEnough e) {
+			
 		} catch (Exception e) {
 			Log.w(getClass().getName(), "Exception http get", e);
 		}
@@ -65,6 +71,8 @@ public class PodcastParser {
 	private class RssHandler extends DefaultHandler {
 		private HashMap<PlsEntry.Tags, String> mData = new HashMap<PlsEntry.Tags, String>();
 		private StringBuilder mBuilder = new StringBuilder();
+		private boolean mInItem = false;
+		private Attributes mAttributes;
 	    
 	    @Override
 	    public void characters(char[] ch, int start, int length)
@@ -81,18 +89,25 @@ public class PodcastParser {
 	        if ( mData != null ) {
 		        if (localName.equalsIgnoreCase(ITEM)) {
 		        	mDbAdapter.insertEntry(new PlsEntry(mData));
-		        } else {
+		            mInItem = false;
+		        	
+		        	if ( enough ) {
+		        		throw new SAXExceptionEnough();
+		        	}
+
+		        } 
+		        if ( mInItem ) {
 		        	Tags tag = null;
 		        	try { tag = PlsEntry.Tags.valueOf(localName); }
 		        	catch(IllegalArgumentException ex) { }
 		        	String value = null;
 		        	if ( tag == Tags.enclosure )
-		        		;//value = parser.getAttributeValue(null, URL);
+		        		value = mAttributes.getValue(URL);
 		        	else
 		        		value = mBuilder.toString();
-		        	mData.put(tag, value);
-		        	mBuilder.setLength(0);    
+		        	mData.put(tag, value.trim());
 		        }
+	        	mBuilder.setLength(0);    
 	        }
 	    }
 
@@ -101,8 +116,11 @@ public class PodcastParser {
 	    		throws SAXException {
 	        super.startElement(uri, localName, name, attributes);
 	        
-	        if (localName.equalsIgnoreCase(ITEM))
+	        mAttributes = attributes;
+	        if (localName.equalsIgnoreCase(ITEM)) {
 	            mData.clear();
+	            mInItem = true;
+	        }
 	    }
 	}
 	
