@@ -1,21 +1,18 @@
 package com.bitflippersanonymous.flippy.domain;
 
-import java.util.HashMap;
-
-import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
-import com.bitflippersanonymous.flippy.util.Util;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ListAdapter;
+import android.support.v4.widget.*;
+
 
 public class PlsDbAdapter extends CursorAdapter implements ListAdapter {
 
-	public PlsDbAdapter(Context context, Cursor c) {
-		super(context, c);
+	public PlsDbAdapter(Context context, Cursor c, int flags) {
+		super(context, c, flags);
 	}
 
 	@Override

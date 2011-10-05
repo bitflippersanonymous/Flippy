@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +33,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public abstract class FlippyBaseActivity extends Activity 
+public abstract class FlippyBaseActivity extends FragmentActivity 
 	implements View.OnClickListener, DialogInterface.OnClickListener {
 
 	private boolean mBound = false;

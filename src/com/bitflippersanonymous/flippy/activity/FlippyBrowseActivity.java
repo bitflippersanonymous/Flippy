@@ -16,13 +16,22 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class FlippyBrowseActivity extends FlippyBaseActivity {
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+
+
+
+public class FlippyBrowseActivity extends FlippyBaseActivity 
+	implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.browse);
 	
+        getSupportLoaderManager().initLoader(0, null, this);
+        
 	    final ListView list = (ListView) findViewById(R.id.listViewBrowse);
 	    list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
@@ -32,6 +41,7 @@ public class FlippyBrowseActivity extends FlippyBaseActivity {
             	PlsDbAdapter adapter = ((PlsDbAdapter)list.getAdapter());
             	adapter.getCursor().requery();
             	adapter.notifyDataSetChanged();
+            	adapter.swapCursor(null);  //TODO: fixme
             }});
 		
 		update();
@@ -46,7 +56,7 @@ public class FlippyBrowseActivity extends FlippyBaseActivity {
     	long start = System.currentTimeMillis() ;
 		Cursor queue =  getService().fetchAllEntries();
 		startManagingCursor(queue);
-		list.setAdapter(new PlsDbAdapter(this, queue));
+		list.setAdapter(new PlsDbAdapter(this, queue, 0));
     	long end = System.currentTimeMillis();
     	Log.i(getClass().getName(),	"Cursor load time: " + (end - start));
   
@@ -58,5 +68,23 @@ public class FlippyBrowseActivity extends FlippyBaseActivity {
 		icon.setImageDrawable(view.getContext().getResources().getDrawable(R.drawable.browse));
 		TextView title = (TextView) view.findViewById(R.id.entryTitle);
 		title.setText(view.getResources().getString(R.string.browse_menu));
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
