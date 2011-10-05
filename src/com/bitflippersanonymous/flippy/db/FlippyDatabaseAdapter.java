@@ -44,8 +44,9 @@ public class FlippyDatabaseAdapter {
 		SQLiteDatabase database = mDbHelper.getWritableDatabase();
 		ArrayList<Long> keywordIds = new ArrayList<Long>();
 
+		// Return -1 on entry already exists
 		ContentValues values = entry.createEntryContentValues();
-		if ( lookupEntry(values) == -1 )
+		if ( lookupEntry(values) != -1 )
 			return -1;
 		
 		long idEntry = database.insert(TABLE_ENTRY, null, values);
@@ -107,7 +108,7 @@ public class FlippyDatabaseAdapter {
 		if ( cursor.getCount() > 0 )
 			id = cursor.getLong(0);
 		cursor.close();
-		return id;
+		return id;  //-1 on not found
 	}
 	
 	public Cursor fetchEntry(long rowId, int offset) throws SQLException {

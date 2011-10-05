@@ -12,6 +12,7 @@ import com.bitflippersanonymous.flippy.util.Util;
 import android.content.Context;
 import android.os.DropBoxManager.Entry;
 import android.text.Spannable;
+import android.text.format.DateFormat;
 import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -68,7 +69,10 @@ public class EntryView extends LinearLayout {
         
         String text = mEntry.get(Tags.title) + Util.NEWLINE;
         int subPos = text.length();
-        text += mEntry.get(Tags.verses) + Util.SPACE + mEntry.get(Tags.pubDate);
+        text += mEntry.get(Tags.verses) + Util.SPACE;
+        String pstr = mEntry.get(Tags.pubDate);
+        if ( pstr != null )
+        	text += DateFormat.format("MMM dd, yyyy", Long.parseLong(pstr));
         title.setText(text, TextView.BufferType.SPANNABLE);
      	Spannable str = (Spannable)title.getText();
      	

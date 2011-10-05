@@ -54,10 +54,10 @@ public class PlsEntry /*implements Parcelable*/ {
 		ContentValues values = new ContentValues();
 		for ( Tags tag : Tags.values() ) {
 			if ( tag == Tags.keywords ) continue;
-			if ( tag == Tags.pubDate ) {
+			if ( tag == Tags.pubDate )
 				values.put(tag.name(), Time.parse(get(tag)));
-			}
-			values.put(tag.name(), get(tag));
+			else
+				values.put(tag.name(), get(tag));
 		}
 		return values;
 	}
@@ -76,8 +76,6 @@ public class PlsEntry /*implements Parcelable*/ {
 			try { 
 				if ( colNames[i].equals(Util.QUEUE) ) {
 					queue = cursor.getInt(i)>0;
-				} else if ( colNames[i].equals(Tags.pubDate) ) {
-					data.put(Tags.pubDate, DateFormat.format("MMM dd, yyyy", cursor.getLong(i)).toString());
 				} else {
 					tag = Tags.valueOf(colNames[i]);
 					data.put(tag, cursor.getString(i));
