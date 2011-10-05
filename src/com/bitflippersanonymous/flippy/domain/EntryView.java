@@ -81,7 +81,7 @@ public class EntryView extends LinearLayout {
      			android.R.style.TextAppearance_Small), subPos, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         
      	//TODO: toggle an image here
-     	if ( mEntry.getInQueue() )
+     	if ( mEntry.getEnqueue() )
      		findViewById(R.id.InQueueIcon).setVisibility(View.VISIBLE);
      	else
      		findViewById(R.id.InQueueIcon).setVisibility(View.GONE);

@@ -12,11 +12,10 @@ import android.text.format.DateFormat;
 public class PlsEntry /*implements Parcelable*/ {
 	
 	public static final String PLSENTRY = Util.PACKAGE + ".PLSENTRY";
-	public enum Tags { title, verses, description, enclosure, author, pubDate, keywords }
+	public enum Tags { title, verses, description, enclosure, author, pubDate, enqueue, keywords }
     
 	private int mId;
 	private final HashMap<Tags, String> mData;
-	private boolean mInQueue;
 	public PlsEntry(HashMap<Tags, String> data) {
 		mData = data;
 		if ( mData.containsKey(Tags.title) ) {
@@ -27,22 +26,13 @@ public class PlsEntry /*implements Parcelable*/ {
 		}
 	}
 	
-	public PlsEntry(HashMap<Tags, String> data, int id, boolean queue) {
+	public PlsEntry(HashMap<Tags, String> data, int id) {
 		mId = id;
 		mData = data;
-		mInQueue = queue;
 	}
 
 	public int getId() {
 		return mId;
-	}
-	
-	public boolean getInQueue() {
-		return mInQueue;
-	}
-	
-	public void setInQueue(boolean inQueue) {
-		mInQueue = inQueue;
 	}
 	
 	public String get(Tags tag) {
@@ -53,11 +43,19 @@ public class PlsEntry /*implements Parcelable*/ {
 	public ContentValues createEntryContentValues() {
 		ContentValues values = new ContentValues();
 		for ( Tags tag : Tags.values() ) {
-			if ( tag == Tags.keywords ) continue;
-			if ( tag == Tags.pubDate )
+			switch ( tag ) {
+			case keywords:
+				continue;
+			case enqueue:
+				values.put(tag.name(), false);
+				break;
+			case pubDate:
 				values.put(tag.name(), Time.parse(get(tag)));
-			else
+				break;
+			default:
 				values.put(tag.name(), get(tag));
+				break;
+			}
 		}
 		return values;
 	}
@@ -67,22 +65,21 @@ public class PlsEntry /*implements Parcelable*/ {
 		if ( cursor.getCount() == 0 )
 			return null;
 		
-		boolean queue = false;
 		int id = cursor.getInt(0);
 		HashMap<Tags, String> data = new HashMap<Tags, String>();
 		String[] colNames = cursor.getColumnNames();
 		for ( int i = 0; i< cursor.getColumnCount(); i++ ) {
 			Tags tag = null;
 			try { 
-				if ( colNames[i].equals(Util.QUEUE) ) {
-					queue = cursor.getInt(i)>0;
-				} else {
-					tag = Tags.valueOf(colNames[i]);
-					data.put(tag, cursor.getString(i));
-				}
+				tag = Tags.valueOf(colNames[i]);
+				data.put(tag, cursor.getString(i));
 			} catch(IllegalArgumentException ex) { }
 		}
-		return new PlsEntry(data, id, queue);
+		return new PlsEntry(data, id);
+	}
+
+	public boolean getEnqueue() {
+		return get(Tags.enqueue).equals("1");
 	}
 	
 	/*

@@ -29,7 +29,9 @@ public class FlippyBrowseActivity extends FlippyBaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	PlsEntry entry = ((EntryView)view).getEntry();
             	getService().toggleInQueue(entry);
-            	((EntryView)view).update();
+            	PlsDbAdapter adapter = ((PlsDbAdapter)list.getAdapter());
+            	adapter.getCursor().requery();
+            	adapter.notifyDataSetChanged();
             }});
 		
 		update();

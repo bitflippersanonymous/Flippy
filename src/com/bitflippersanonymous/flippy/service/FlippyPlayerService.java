@@ -247,8 +247,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	
 	//TODO: remove.
 	public void toggleInQueue(PlsEntry entry) {
-		mDbAdapter.enqueue(entry.getId(), !entry.getInQueue());
-		entry.setInQueue(!entry.getInQueue());
+		mDbAdapter.enqueue(entry.getId(), !entry.getEnqueue());
 	}
 
 	public Cursor fetchQueue() {
