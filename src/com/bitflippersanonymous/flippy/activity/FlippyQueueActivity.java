@@ -65,7 +65,7 @@ public class FlippyQueueActivity extends FlippyBaseActivity
     	long start = System.currentTimeMillis() ;
 		Cursor queue =  getService().fetchQueue();
 		startManagingCursor(queue);
-		list.setAdapter(new PlsDbAdapter(this, queue));
+		list.setAdapter(new PlsDbAdapter(this, queue, 0));
     	long end = System.currentTimeMillis();
     	Log.i(getClass().getName(),	"Cursor load time: " + (end - start));
     	list.setVisibility(View.VISIBLE);
