@@ -39,6 +39,9 @@ public class FlippySearchActivity extends FlippyBaseActivity
 	    };
 	    mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
 	        public Cursor runQuery(CharSequence constraint) {
+	        	Cursor cursor = mAdapter.getCursor(); 
+	        	if ( cursor != null )
+	        		cursor.close();
 	            String partialKeyword = null;
 	            if (constraint != null) 
 	            	partialKeyword = constraint.toString();
