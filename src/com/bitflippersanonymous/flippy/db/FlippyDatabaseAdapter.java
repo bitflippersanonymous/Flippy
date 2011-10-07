@@ -74,7 +74,7 @@ public class FlippyDatabaseAdapter {
 		if ( mKeywordIds == null )
 			mKeywordIds = new HashMap<String, Long>();
 
-		keyword = DatabaseUtils.sqlEscapeString(keyword.toLowerCase());
+		keyword = keyword.toLowerCase();
 		Long iId = mKeywordIds.get(keyword);
 		if ( iId != null )
 			return iId.longValue();
@@ -151,11 +151,11 @@ public class FlippyDatabaseAdapter {
 	}
 
 	public Cursor fetchAllKeywords(String partialKeyword) throws SQLException {
-
+		//DatabaseUtils.sqlEscapeString
 		String where = null;
 		String[] binder = null;
 		if ( partialKeyword != null && partialKeyword.length() > 0 ) {
-			partialKeyword = DatabaseUtils.sqlEscapeString(partialKeyword+"%");
+			partialKeyword = partialKeyword+"%";
 			where = Tags.keywords.name() + " " + LIKE + " ?";
 			binder = new String[] {partialKeyword};
 		}

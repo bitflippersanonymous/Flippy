@@ -32,7 +32,10 @@ public class FlippySearchActivity extends FlippyBaseActivity
 	    AutoCompleteTextView textView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextViewSearch);
 	    mAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_dropdown_item_1line, 
 	    	null, new String[]{Tags.keywords.name()}, new int[]{android.R.id.text1}, 0) {
-	    
+	    	@Override
+			public	String convertToString(Cursor cursor) {
+				return cursor.getString(1);
+	    	}
 	    };
 	    mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
 	        public Cursor runQuery(CharSequence constraint) {
