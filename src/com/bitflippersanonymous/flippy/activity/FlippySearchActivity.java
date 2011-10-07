@@ -12,10 +12,12 @@ import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.FilterQueryProvider;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class FlippySearchActivity extends FlippyBaseActivity 
 	implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -49,14 +51,27 @@ public class FlippySearchActivity extends FlippyBaseActivity
 	        }
 	    });
 	    textView.setAdapter(mAdapter);
+	    //textView.setHint("Search"); // Pull string from xml
+	    textView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+	    	@Override
+	    	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	    		Cursor cursor = (Cursor)mAdapter.getItem(position);
+	    		if ( cursor == null ) return;
+	    		updateResults(cursor.getInt(0));
+	    	}
+	    });
 	}
-
+	
 	@Override
 	protected void update() {
 		super.update();
     	getSupportLoaderManager().restartLoader(0, null, this);
 	}
 
+	private void updateResults(int int1) {
+		// Update a listview in this activity, or launch browse w/ filter
+	}
+	
 	// Invoked via reflection in MainActivity
 	public static void popMenuView(View view) {
 		ImageView icon = (ImageView) view.findViewById(R.id.EntryIcon);
@@ -85,4 +100,6 @@ public class FlippySearchActivity extends FlippyBaseActivity
         mAdapter.swapCursor(null);
 		
 	}
+
+
 }
