@@ -5,6 +5,18 @@
 
 	<include layout="@layout/linearlayoutheader" android:id="@+id/LinearLayoutHeaderRadio"
 		android:layout_width="match_parent" />
+	<LinearLayout android:id="@+id/linearLayoutSearch"
+		android:layout_height="wrap_content" android:layout_width="match_parent"
+		android:orientation="vertical" android:layout_weight=".3">
+		<AutoCompleteTextView android:id="@+id/autoCompleteTextViewSearch"
+			android:text="" android:layout_height="wrap_content"
+			android:layout_width="match_parent" android:maxLines="1">
+			<requestFocus></requestFocus>
+		</AutoCompleteTextView>
+		<ListView android:layout_height="fill_parent" android:id="@+id/listViewSearch"
+			android:layout_weight="0.30" android:layout_width="match_parent"
+			android:gravity="bottom" android:dividerHeight="2sp" android:padding="2sp" />
+	</LinearLayout>
 
 	<include layout="@layout/linearlayoutfooter" android:id="@+id/LinearLayoutFooterRadio"
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />

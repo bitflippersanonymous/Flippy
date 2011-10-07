@@ -86,7 +86,6 @@ public class FlippyQueueActivity extends FlippyBaseActivity
 		title.setText(view.getResources().getString(R.string.queue_menu));
 	}
 
-
 	@Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return new SimpleCursorLoader(this) {
@@ -106,7 +105,5 @@ public class FlippyQueueActivity extends FlippyBaseActivity
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
 		
-	}
-	
-		
+	}	
 }

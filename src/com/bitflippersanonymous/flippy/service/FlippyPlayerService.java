@@ -6,7 +6,6 @@ import com.bitflippersanonymous.flippy.R;
 import com.bitflippersanonymous.flippy.activity.FlippyInfoActivity;
 import com.bitflippersanonymous.flippy.db.FlippyDatabaseAdapter;
 import com.bitflippersanonymous.flippy.domain.*;
-import com.bitflippersanonymous.flippy.domain.PodcastParser;
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
 import com.bitflippersanonymous.flippy.util.*;
 
@@ -256,6 +255,10 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	
 	public Cursor fetchAllEntries() {
 		return mDbAdapter.fetchAllEntries();
+	}
+
+	public Cursor fetchAllKeywords(String partialKeyword) {
+		return mDbAdapter.fetchAllKeywords(partialKeyword);
 	}
 
 

@@ -21,6 +21,7 @@ public class FlippyDatabaseAdapter {
 	public static final String KEY_ROWID = "_id";
 	public static final String TABLE_ENTRY = "entry";
 	public static final String TABLE_KEYWORDS = "keywords";
+	private static final String LIKE = "LIKE";
 
 	private FlippyDatabaseHelper mDbHelper = null;
 	private HashMap<String, Long> mKeywordIds = null;
@@ -147,6 +148,26 @@ public class FlippyDatabaseAdapter {
 		values.put(Tags.enqueue.name(), value?"1":"0");
 		int update = mDbHelper.getWritableDatabase().update(TABLE_ENTRY, values, 
 				KEY_ROWID + "=?", new String[]{String.valueOf(rowId)});
+	}
+
+	public Cursor fetchAllKeywords(String partialKeyword) throws SQLException {
+
+		String where = null;
+		String[] binder = null;
+		if ( partialKeyword != null && partialKeyword.length() > 0 ) {
+			partialKeyword = DatabaseUtils.sqlEscapeString(partialKeyword+"%");
+			where = Tags.keywords.name() + " " + LIKE + " ?";
+			binder = new String[] {partialKeyword};
+		}
+		
+		Cursor cursor = mDbHelper.getReadableDatabase().query(true, TABLE_KEYWORDS,
+				new String[] {KEY_ROWID, Tags.keywords.name()},
+				where, binder,
+				null, null, Tags.keywords.name(), null);
+		if (cursor != null) {
+			cursor.moveToFirst();
+		}
+		return cursor;
 	}
 
 }
