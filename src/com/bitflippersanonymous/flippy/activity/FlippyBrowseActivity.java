@@ -1,24 +1,21 @@
 package com.bitflippersanonymous.flippy.activity;
 
-import com.bitflippersanonymous.flippy.R;
-import com.bitflippersanonymous.flippy.domain.EntryView;
-import com.bitflippersanonymous.flippy.domain.PlsDbAdapter;
-import com.bitflippersanonymous.flippy.domain.PlsCursorLoader;
-import com.bitflippersanonymous.flippy.domain.PlsEntry;
-
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
+import com.bitflippersanonymous.flippy.R;
+import com.bitflippersanonymous.flippy.domain.EntryView;
+import com.bitflippersanonymous.flippy.domain.PlsDbAdapter;
+import com.bitflippersanonymous.flippy.domain.PlsEntry;
+import com.bitflippersanonymous.flippy.domain.SimpleCursorLoader;
 
 public class FlippyBrowseActivity extends FlippyBaseActivity 
 	implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -34,8 +31,6 @@ public class FlippyBrowseActivity extends FlippyBaseActivity
 		getSupportLoaderManager().initLoader(0, null, this);
     	mAdapter = new PlsDbAdapter(this, null, 0);
 		list.setAdapter(mAdapter);
-    	update();
-
 		
 	    list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
@@ -44,7 +39,6 @@ public class FlippyBrowseActivity extends FlippyBaseActivity
             	getService().toggleInQueue(entry);
             	update();
             }});
-	    
 	}
 
 	@Override
@@ -63,7 +57,12 @@ public class FlippyBrowseActivity extends FlippyBaseActivity
 
 	@Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		return new PlsCursorLoader(this);
+		return new SimpleCursorLoader(this) {
+			@Override
+			public Cursor loadInBackground() {
+				return FlippyBaseActivity.getService().fetchAllEntries();
+			}
+		};
 	}
 
 	@Override
