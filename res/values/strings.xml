@@ -25,4 +25,5 @@
 
 	<string name="about_url">file:///android_asset/html/about.html</string>
 	<string name="recent_messages_url">http://dl.dropbox.com/u/17164783/accf_recent_message.xml</string>
+	<string name="full_messages_url">http://dl.dropbox.com/u/17164783/accf_full_message.xml</string>
 </resources>

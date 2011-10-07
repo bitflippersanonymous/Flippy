@@ -23,7 +23,7 @@ public class FlippySearchActivity extends FlippyBaseActivity
 	implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
-	private CursorAdapter mAdapter = null;
+	private SimpleCursorAdapter mAdapter = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,7 @@ public class FlippySearchActivity extends FlippyBaseActivity
 				return cursor.getString(1);
 	    	}
 	    };
+	    
 	    mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
 	        public Cursor runQuery(CharSequence constraint) {
 	        	Cursor cursor = mAdapter.getCursor(); 

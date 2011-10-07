@@ -92,6 +92,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 	public void onPrepared(MediaPlayer mp) {
 		mp.start();
 		mState = MediaState.PLAY;
+		mp.getDuration();
 		sendUpdate();
 	}
 
@@ -119,6 +120,9 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 			mMediaPlayer.setOnPreparedListener(this);
 		}
+		
+		mMediaPlayer.reset();
+		mState = MediaState.STOP;
 
 		mCurrentEntry = entry;
 		if ( offset != 0 || entry == null ) {
@@ -132,10 +136,7 @@ public class FlippyPlayerService extends Service implements MediaPlayer.OnPrepar
 				mCurrentEntry = PlsEntry.cursorToEntry(cursor);
 			cursor.close();
 		}
-				
-		mMediaPlayer.reset();
-		mState = MediaState.STOP;
-				
+							
 		try {
 			mMediaPlayer.setDataSource(mCurrentEntry.get(Tags.enclosure));
 		} catch (IllegalArgumentException e) {

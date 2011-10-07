@@ -31,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 public abstract class FlippyBaseActivity extends FragmentActivity 
@@ -74,7 +75,7 @@ public abstract class FlippyBaseActivity extends FragmentActivity
 			mBound = false;
 		}
 	};
-	    
+	
 	@Override
 	public void onStop() {
 		super.onStop();
@@ -185,8 +186,13 @@ public abstract class FlippyBaseActivity extends FragmentActivity
 			text.setText(null);
 		} else {
 			setPPIcon(true);
-			final PlsEntry entry = getService().getCurrentEntry();
+		}
+		
+		final PlsEntry entry = getService().getCurrentEntry();
+		if ( entry != null ) {
 			text.setText(entry.get(Tags.title));			
+			SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
+			seekBar.setProgress(seekBar.getMax());
 		}
 
 		if ( getService().getloadComplete() ) {
