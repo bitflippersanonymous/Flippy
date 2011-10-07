@@ -44,7 +44,7 @@ public class FlippyBrowseActivity extends FlippyBaseActivity
 	@Override
 	protected void update() {
 		super.update();
-    	getSupportLoaderManager().restartLoader(0, null, FlippyBrowseActivity.this);
+    	getSupportLoaderManager().restartLoader(0, null, this);
 	}
 
 	// Invoked via reflection in MainActivity
@@ -60,7 +60,7 @@ public class FlippyBrowseActivity extends FlippyBaseActivity
 		return new SimpleCursorLoader(this) {
 			@Override
 			public Cursor loadInBackground() {
-				return FlippyBaseActivity.getService().fetchAllEntries();
+				return getService().fetchAllEntries();
 			}
 		};
 	}
