@@ -104,13 +104,14 @@ public abstract class FlippyBaseActivity extends FragmentActivity
 			break;
 		case R.id.imageButtonHeader:
 			getService().getDbAdapter().recreate();
-			//Intent intent = new Intent(this, FlippyInfoActivity.class);
-			//startActivity(intent);
-			//showDialog(ABOUT_DIALOG);
 			break;
 		case R.id.imageViewSync:
 			v.setVisibility(View.INVISIBLE);
 			getService().refreshDb();
+			break;
+		case R.id.LinearLayoutControl:
+			Intent intent = new Intent(this, FlippyInfoActivity.class);
+			startActivity(intent);
 			break;
 		default:
 		}
@@ -180,7 +181,7 @@ public abstract class FlippyBaseActivity extends FragmentActivity
 	}
 	
 	protected void update() {
-		final TextView text = (TextView) findViewById(R.id.radioTextView1);
+		final TextView text = (TextView) findViewById(R.id.textViewFooter);
 		if ( getService().getState() == MediaState.STOP ) { 
 			setPPIcon(false);
 			text.setText(null);

@@ -1,5 +1,6 @@
 package com.bitflippersanonymous.flippy.activity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -36,15 +37,14 @@ public class FlippyBrowseActivity extends FlippyBaseActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	PlsEntry entry = ((EntryView)view).getEntry();
-            	getService().toggleInQueue(entry);
-            	update();
+    			Intent intent = new Intent(FlippyBrowseActivity.this, FlippyInfoActivity.class);
+    			startActivity(intent);
             }});
 	}
 
 	@Override
 	protected void update() {
 		super.update();
-    	getSupportLoaderManager().restartLoader(0, null, this);
 	}
 
 	// Invoked via reflection in MainActivity

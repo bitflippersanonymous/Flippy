@@ -4,6 +4,7 @@ import com.bitflippersanonymous.flippy.R;
 import com.bitflippersanonymous.flippy.domain.SimpleCursorLoader;
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -21,7 +22,6 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class FlippySearchActivity extends FlippyBaseActivity 
 	implements LoaderManager.LoaderCallbacks<Cursor> {
-
 
 	private SimpleCursorAdapter mAdapter = null;
 	
@@ -69,8 +69,10 @@ public class FlippySearchActivity extends FlippyBaseActivity
     	getSupportLoaderManager().restartLoader(0, null, this);
 	}
 
-	private void updateResults(int int1) {
+	private void updateResults(int keywordId) {
 		// Update a listview in this activity, or launch browse w/ filter
+    	final Intent intent = new Intent(this, FlippyBrowseActivity.class);
+    	startActivity(intent);	
 	}
 	
 	// Invoked via reflection in MainActivity
