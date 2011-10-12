@@ -17,6 +17,7 @@ import com.bitflippersanonymous.flippy.domain.EntryView;
 import com.bitflippersanonymous.flippy.domain.PlsDbAdapter;
 import com.bitflippersanonymous.flippy.domain.PlsEntry;
 import com.bitflippersanonymous.flippy.domain.SimpleCursorLoader;
+import com.bitflippersanonymous.flippy.util.Util;
 
 public class FlippyBrowseActivity extends FlippyBaseActivity 
 	implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -36,15 +37,14 @@ public class FlippyBrowseActivity extends FlippyBaseActivity
 	    list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            	PlsEntry entry = ((EntryView)view).getEntry();
-    			Intent intent = new Intent(FlippyBrowseActivity.this, FlippyInfoActivity.class);
-    			startActivity(intent);
+            	infoForEntry(((EntryView)view).getEntry());
             }});
 	}
 
 	@Override
 	protected void update() {
 		super.update();
+    	getSupportLoaderManager().restartLoader(0, null, this);
 	}
 
 	// Invoked via reflection in MainActivity

@@ -19,7 +19,4 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content" />
 	</LinearLayout>
 
-	<include layout="@layout/linearlayoutfooter" android:id="@+id/LinearLayoutFooterRadio"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
-
 </LinearLayout>

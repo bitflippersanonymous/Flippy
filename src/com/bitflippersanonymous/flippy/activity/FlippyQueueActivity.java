@@ -46,18 +46,7 @@ public class FlippyQueueActivity extends FlippyBaseActivity
 	    list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            	PlsEntry entry = ((EntryView)view).getEntry();
-            	
-            	switch ( getService().getState() ) {
-            	case PREPARE:
-            	case PLAY:
-            		if ( entry.getId() == getService().getCurrentEntry().getId() )
-            			break;
-            	case STOP:
-            		getService().startPlay(entry, 0);
-            	}
-            	Intent intent = new Intent(view.getContext(), FlippyInfoActivity.class);
-            	startActivity(intent);
+            	infoForEntry(((EntryView)view).getEntry());
             }});
     
 	    //TODO: Put in static method in util

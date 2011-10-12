@@ -18,7 +18,7 @@ import android.database.sqlite.SQLiteDatabase;
 public class FlippyDatabaseAdapter {
 	
 	// Database fields
-	public static final String KEY_ROWID = "_id";
+	public static final String KEY_ROWID = Util.ID;
 	public static final String TABLE_ENTRY = "entry";
 	public static final String TABLE_KEYWORDS = "keywords";
 	private static final String LIKE = "LIKE";

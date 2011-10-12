@@ -3,6 +3,7 @@ package com.bitflippersanonymous.flippy.activity;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.bitflippersanonymous.flippy.domain.EntryView;
 import com.bitflippersanonymous.flippy.domain.PlsEntry;
 import com.bitflippersanonymous.flippy.domain.PlsEntry.Tags;
 import com.bitflippersanonymous.flippy.service.FlippyPlayerService;
@@ -96,22 +97,12 @@ public abstract class FlippyBaseActivity extends FragmentActivity
 	@Override
 	public void onClick(View v) {
 		switch ( v.getId() ) {
-		case R.id.imageButtonPP:
-			if ( getService().getState() != MediaState.STOP )
-				getService().stopPlay();	
-			else
-				getService().startPlay(getService().getCurrentEntry(), 0);
-			break;
 		case R.id.imageButtonHeader:
 			getService().getDbAdapter().recreate();
 			break;
 		case R.id.imageViewSync:
 			v.setVisibility(View.INVISIBLE);
 			getService().refreshDb();
-			break;
-		case R.id.LinearLayoutControl:
-			Intent intent = new Intent(this, FlippyInfoActivity.class);
-			startActivity(intent);
 			break;
 		default:
 		}
@@ -171,36 +162,20 @@ public abstract class FlippyBaseActivity extends FragmentActivity
 	public void onClick(DialogInterface dialog, int which) {
 		dialog.cancel();
 	}
-
-	protected void setPPIcon(boolean state) {
-		ImageView buttonPlay = (ImageView) findViewById(R.id.imageButtonPP);
-		if ( state )
-			buttonPlay.setImageDrawable(getResources().getDrawable(R.drawable.pause));
-		else
-			buttonPlay.setImageDrawable(getResources().getDrawable(R.drawable.play));
-	}
 	
 	protected void update() {
-		final TextView text = (TextView) findViewById(R.id.textViewFooter);
-		if ( getService().getState() == MediaState.STOP ) { 
-			setPPIcon(false);
-			text.setText(null);
-		} else {
-			setPPIcon(true);
-		}
-		
-		final PlsEntry entry = getService().getCurrentEntry();
-		if ( entry != null ) {
-			text.setText(entry.get(Tags.title));			
-			SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
-			seekBar.setProgress(seekBar.getMax());
-		}
-
 		if ( getService().getloadComplete() ) {
 			View v = findViewById(R.id.imageViewSync);
 			v.setVisibility(View.VISIBLE);
 		}
-
+	}
+	
+	protected void infoForEntry(PlsEntry entry) {
+		if ( entry == null )
+			return;
+		Intent intent = new Intent(this, FlippyInfoActivity.class);
+		intent.putExtra(Util.ID, entry.getId());
+		startActivity(intent);
 	}
 
 }

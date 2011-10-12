@@ -7,9 +7,11 @@ import java.util.HashMap;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.format.DateFormat;
 
-public class PlsEntry /*implements Parcelable*/ {
+public class PlsEntry /* implements Parcelable */{
 	
 	public static final String PLSENTRY = Util.PACKAGE + ".PLSENTRY";
 	public enum Tags { title, verses, description, enclosure, author, pubDate, enqueue, keywords }
@@ -62,7 +64,7 @@ public class PlsEntry /*implements Parcelable*/ {
 	
 	// Outof DB
 	public static PlsEntry cursorToEntry(Cursor cursor) {
-		if ( cursor.getCount() == 0 )
+		if ( cursor == null || cursor.getCount() == 0 )
 			return null;
 		
 		int id = cursor.getInt(0);
@@ -90,8 +92,7 @@ public class PlsEntry /*implements Parcelable*/ {
 	
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeString(mFile);
-		dest.writeString(mTitle);
+		dest.writeInt(mId);
 	}
 	
 	public PlsEntry(Parcel in) {
