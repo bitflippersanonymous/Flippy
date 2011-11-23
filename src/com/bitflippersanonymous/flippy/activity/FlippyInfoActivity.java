@@ -33,6 +33,7 @@ public class FlippyInfoActivity extends FlippyBaseActivity {
 		if ( entryId > 0 ) {
 			Cursor cursor = getService().getDbAdapter().fetchEntry(entryId, 0);
 			mEntry = PlsEntry.cursorToEntry(cursor);
+			cursor.close();
 		} else { 
 			mEntry = getService().getCurrentEntry();
 		}
